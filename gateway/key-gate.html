@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>◈ 密钥门 | 回声茶馆</title>
+<style>
+  /* ===== 全局重置 ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #000000;
+    color: #8B0000;
+    font-family: "Courier New", "Consolas", "Source Code Pro", monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== 光晕动画背景 ===== */
+  #halo-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* ===== 扫描线叠层 ===== */
+  .scanlines {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 0, 0, 0.03) 2px,
+      rgba(139, 0, 0, 0.03) 4px
+    );
+  }
+
+  /* ===== 噪点纹理 ===== */
+  .noise-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* ===== 导航条 ===== */
+  .navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: #0D3050;
+    border-bottom: 1px solid #1a4a6e;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+  .navbar a {
+    color: #5a8aae;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: color 0.3s, text-shadow 0.3s;
+  }
+  .navbar a:hover {
+    color: #8fc9e8;
+    text-shadow: 0 0 8px rgba(143, 201, 232, 0.4);
+  }
+  .navbar .nav-sep {
+    color: #1a4a6e;
+    margin: 0 12px;
+    font-size: 12px;
+  }
+
+  /* ===== 主容器 ===== */
+  .main-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 720px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 24px 120px;
+  }
+
+  /* ===== 门图标 ===== */
+  .door-icon {
+    font-size: 48px;
+    color: #8B0000;
+    margin: 20px 0 16px;
+    opacity: 0.8;
+    text-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 20px rgba(139, 0, 0, 0.3); }
+    50% { text-shadow: 0 0 40px rgba(204, 0, 0, 0.5), 0 0 80px rgba(139, 0, 0, 0.2); }
+  }
+
+  /* ===== 打字机文本区域 ===== */
+  .typewriter-area {
+    width: 100%;
+    min-height: 240px;
+    margin: 16px 0 32px;
+    padding: 24px;
+    background: rgba(13, 48, 80, 0.08);
+    border-left: 3px solid #8B0000;
+    border-radius: 0 8px 8px 0;
+    position: relative;
+  }
+  .typewriter-area::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -3px;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, #8B0000, #CC0000, #8B0000);
+    animation: line-pulse 4s ease-in-out infinite;
+  }
+  @keyframes line-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .tw-line {
+    font-size: 15px;
+    line-height: 1.9;
+    letter-spacing: 0.5px;
+    color: #8B0000;
+    min-height: 1.9em;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .tw-line.visible {
+    opacity: 1;
+  }
+  .tw-line.blank {
+    min-height: 1.9em;
+  }
+  .tw-line.highlight {
+    color: #CC0000;
+    text-shadow: 0 0 12px rgba(204, 0, 0, 0.4);
+    font-weight: bold;
+  }
+  .tw-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background: #8B0000;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink-cursor 0.8s step-end infinite;
+  }
+  .tw-cursor.done {
+    animation: none;
+    opacity: 0;
+  }
+  @keyframes blink-cursor {
+    50% { opacity: 0; }
+  }
+
+  /* ===== 输入区域 ===== */
+  .input-section {
+    width: 100%;
+    max-width: 480px;
+    margin: 16px 0 32px;
+    padding: 24px;
+    background: rgba(13, 48, 80, 0.05);
+    border: 1px solid rgba(139, 0, 0, 0.2);
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .input-section.reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .input-label {
+    font-size: 12px;
+    color: #5a2a2a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .input-row input {
+    flex: 1;
+    background: #0a0a0a;
+    border: 1px solid #3a1a1a;
+    color: #CC0000;
+    font-family: "Courier New", monospace;
+    font-size: 18px;
+    padding: 12px 16px;
+    outline: none;
+    border-radius: 4px;
+    letter-spacing: 3px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .input-row input:focus {
+    border-color: #8B0000;
+    box-shadow: 0 0 12px rgba(139, 0, 0, 0.2), inset 0 0 12px rgba(139, 0, 0, 0.05);
+  }
+  .input-row input::placeholder {
+    color: #3a1a1a;
+    letter-spacing: 1px;
+    font-size: 14px;
+  }
+
+  .input-row button {
+    background: #1a0a0a;
+    border: 1px solid #8B0000;
+    color: #CC0000;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    letter-spacing: 2px;
+    transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+    white-space: nowrap;
+  }
+  .input-row button:hover {
+    background: #2a0a0a;
+    border-color: #CC0000;
+    box-shadow: 0 0 16px rgba(204, 0, 0, 0.2);
+  }
+  .input-row button:active {
+    background: #3a0a0a;
+    transform: scale(0.98);
+  }
+
+  /* ===== 弹窗系统 ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    animation: modal-fade-in 0.3s ease;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  @keyframes modal-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-box {
+    background: #0a0505;
+    border: 1px solid #3a1a1a;
+    border-radius: 4px;
+    padding: 0;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(139, 0, 0, 0.15), 0 0 120px rgba(139, 0, 0, 0.05);
+    animation: modal-box-in 0.3s ease;
+    overflow: hidden;
+  }
+  @keyframes modal-box-in {
+    from { transform: scale(0.92) translateY(12px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #1a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-size: 13px;
+    color: #5a2a2a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: #3a1a1a;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.3s;
+    font-family: "Courier New", monospace;
+  }
+  .modal-close:hover {
+    color: #8B0000;
+  }
+
+  .modal-body {
+    padding: 24px 20px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #8B0000;
+    min-height: 60px;
+    white-space: pre-line;
+  }
+  .modal-body.error {
+    color: #CC0000;
+  }
+  .modal-body.hint {
+    color: #5a8aae;
+  }
+  .modal-body.success {
+    color: #1a8a3a;
+  }
+
+  .modal-footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #1a0a0a;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .modal-btn {
+    background: transparent;
+    border: 1px solid #3a1a1a;
+    color: #8B0000;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .modal-btn:hover {
+    background: rgba(139, 0, 0, 0.1);
+    border-color: #8B0000;
+  }
+  .modal-btn.primary {
+    border-color: #8B0000;
+    color: #CC0000;
+  }
+  .modal-btn.primary:hover {
+    background: rgba(139, 0, 0, 0.15);
+  }
+
+  /* ===== 底部提示 ===== */
+  .footer-hint {
+    margin-top: auto;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+  }
+  .footer-hint p {
+    font-size: 11px;
+    color: #3a2a2a;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+  }
+  .footer-hint a {
+    color: #5a4a4a;
+    text-decoration: none;
+    border-bottom: 1px dashed #3a2a2a;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .footer-hint a:hover {
+    color: #8B0000;
+    border-bottom-color: #8B0000;
+  }
+
+  /* ===== 底部导航 ===== */
+  .bottom-nav {
+    width: 100%;
+    max-width: 720px;
+    padding: 16px 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-top: 1px solid rgba(13, 48, 80, 0.15);
+    z-index: 10;
+    position: relative;
+  }
+  .bottom-nav a {
+    font-size: 12px;
+    color: #3a4a4a;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.3s, text-shadow 0.3s;
+    padding: 4px 8px;
+  }
+  .bottom-nav a:hover {
+    color: #8B0000;
+    text-shadow: 0 0 8px rgba(139, 0, 0, 0.2);
+  }
+  .bottom-nav .nav-divider {
+    color: #1a2a2a;
+    font-size: 11px;
+  }
+
+  /* ===== 隐秘管理入口 ===== */
+  .admin-secret {
+    position: fixed;
+    bottom: 8px;
+    right: 12px;
+    z-index: 50;
+    font-size: 9px;
+    color: rgba(139, 0, 0, 0.06);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: color 0.5s;
+  }
+  .admin-secret:hover {
+    color: rgba(139, 0, 0, 0.15);
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 600px) {
+    .main-container { padding: 72px 16px 100px; }
+    .typewriter-area { padding: 16px; }
+    .tw-line { font-size: 14px; }
+    .input-row { flex-direction: column; }
+    .input-row button { width: 100%; text-align: center; }
+    .bottom-nav { flex-direction: column; text-align: center; gap: 4px; }
+    .bottom-nav .nav-divider { display: none; }
+    .door-icon { font-size: 36px; }
+    .modal-box { width: 95%; }
+  }
+
+  @media (max-width: 400px) {
+    .typewriter-area { padding: 12px; }
+    .tw-line { font-size: 13px; }
+    .navbar { padding: 0 12px; }
+    .navbar a { font-size: 12px; }
+    .input-section { padding: 16px; }
+  }
+
+  /* ===== 滚动条美化 ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: #1a2a2a; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a3a3a; }
+
+  /* ===== 选择颜色 ===== */
+  ::selection {
+    background: rgba(139, 0, 0, 0.3);
+    color: #CC0000;
+  }
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── 分割线脉冲 ── */
+.divider { animation: dividerGlow 3s ease-in-out infinite; }
+@keyframes dividerGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<!-- ===== 光晕画布 ===== -->
+<canvas id="halo-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="noise-overlay"></div>
+
+<!-- ===== 导航条 ===== -->
+<nav class="navbar">
+  <a href="../forum.html">◈ 回声茶馆</a>
+</nav>
+
+<!-- ===== 主容器 ===== -->
+<div class="main-container">
+
+  <div class="door-icon">🚪</div>
+
+  <!-- 打字机区域 -->
+  <div class="typewriter-area" id="typewriter-area">
+    <div class="tw-line blank" id="tw-0"></div>
+    <div class="tw-line" id="tw-1"></div>
+    <div class="tw-line blank" id="tw-2"></div>
+    <div class="tw-line" id="tw-3"></div>
+    <div class="tw-line" id="tw-4"></div>
+    <div class="tw-line" id="tw-5"></div>
+    <div class="tw-line blank" id="tw-6"></div>
+    <div class="tw-line highlight" id="tw-7"></div>
+  </div>
+
+  <!-- 输入区域（初始隐藏，打字机结束后显示） -->
+  <div class="input-section" id="input-section">
+    <span class="input-label">通行密钥</span>
+    <div class="input-row">
+      <input type="text" id="key-input" placeholder="输入密钥..." autocomplete="off" spellcheck="false" maxlength="32">
+      <button id="submit-btn" onclick="verifyKey()">验证</button>
+    </div>
+  </div>
+
+  <!-- 底部提示 -->
+  <div class="footer-hint">
+    <p>提示在管理员面板的 LAMP46 日志中……<a href="../surface/admin.html">[admin.html]</a></p>
+  </div>
+
+</div>
+
+<!-- ===== 弹窗系统 ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">◈ 系统消息</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="modal-btn primary" onclick="closeModal()">确 认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 底部导航 ===== -->
+<div class="bottom-nav">
+  <a href="../forum.html">← 返回论坛</a>
+  <span class="nav-divider">|</span>
+  <a href="../surface/admin.html">返回管理面板</a>
+</div>
+
+<!-- ===== 隐秘管理入口 ===== -->
+<a class="admin-secret" href="../surface/admin.html">⏚ sys</a>
+
+<script>
+  // ================================================================
+  //  弹窗系统
+  // ================================================================
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalBody    = document.getElementById('modal-body');
+  const modalTitle   = document.getElementById('modal-title');
+
+  function showModal(message, type) {
+    modalBody.style.whiteSpace = 'pre-line';
+    modalBody.innerHTML = message;
+    modalBody.className = 'modal-body';
+    if (type) modalBody.classList.add(type);
+    modalTitle.textContent = type === 'success' ? '◈ 访问授权' :
+                            type === 'hint'     ? '◈ 线索' :
+                            type === 'error'    ? '◈ 访问被拒' :
+                            '◈ 系统消息';
+    modalOverlay.classList.add('active');
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    // 如果是成功跳转，在弹窗关闭后执行
+    if (window._pendingRedirect) {
+      var target = window._pendingRedirect;
+      window._pendingRedirect = false;
+      window.location.href = target;
+    }
+  }
+
+  // 点击遮罩也可关闭
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // ESC 键关闭
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  // ================================================================
+  //  打字机效果
+  // ================================================================
+  const lines = [
+    { id: 'tw-1', text: '你站在一扇门前。' },
+    { id: 'tw-3', text: '门上没有把手。没有锁孔。' },
+    { id: 'tw-4', text: '但有一行发光的文字：' },
+    { id: 'tw-7', text: '「输入通行密钥」' }
+  ];
+
+  // 逐字符打字机效果（带光标闪烁）
+  function typeLine(lineObj, callback) {
+    const el = document.getElementById(lineObj.id);
+    if (!el) { if (callback) callback(); return; }
+
+    const fullText = lineObj.text;
+    el.textContent = '';
+    el.classList.add('visible');
+
+    let idx = 0;
+    // 追加光标
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'tw-cursor';
+    el.appendChild(cursorSpan);
+
+    function typeChar() {
+      if (idx < fullText.length) {
+        // 在光标前插入字符
+        cursorSpan.insertAdjacentText('beforebegin', fullText[idx]);
+        idx++;
+        setTimeout(typeChar, 40 + Math.random() * 40);
+      } else {
+        // 打字完成，光标多闪烁几次然后消失
+        let blinks = 0;
+        const blinkInterval = setInterval(() => {
+          blinks++;
+          if (blinks >= 6) {
+            clearInterval(blinkInterval);
+            cursorSpan.className = 'tw-cursor done';
+            if (callback) setTimeout(callback, 300);
+          }
+        }, 300);
+      }
+    }
+    // 初始延迟后再开始打字
+    setTimeout(typeChar, 200);
+  }
+
+  // 逐行显示（不用打字机，快速显现）
+  function showLine(lineObj, callback) {
+    const el = document.getElementById(lineObj.id);
+    if (!el) { if (callback) callback(); return; }
+    el.textContent = lineObj.text;
+    el.classList.add('visible');
+    if (callback) setTimeout(callback, 200);
+  }
+
+  function startTypewriter() {
+    // 时间线：逐行打字/显示
+    setTimeout(() => typeLine(lines[0], () => {
+      setTimeout(() => typeLine(lines[1], () => {
+        setTimeout(() => typeLine(lines[2], () => {
+          setTimeout(() => typeLine(lines[3], () => {
+            // 全部完成，显示输入区域
+            setTimeout(showInputSection, 600);
+          }), 200);
+        }), 200);
+      }), 200);
+    }), 400);
+  }
+
+  function showInputSection() {
+    const section = document.getElementById('input-section');
+    section.classList.add('reveal');
+    document.getElementById('key-input').focus();
+  }
+
+  // ================================================================
+  //  密码验证
+  // ================================================================
+  function verifyKey() {
+    const input = document.getElementById('key-input');
+    const value = input.value.trim();
+
+    if (!value) {
+      showModal('请输入密钥。', 'error');
+      return;
+    }
+
+    // 特殊彩蛋：OPEN SESAME
+    if (value === 'OPEN SESAME') {
+      showModal('哈哈——不是这个。', 'hint');
+      return;
+    }
+
+    // 特殊彩蛋：1975
+    if (value === '1975') {
+      showModal('密钥不完整。继续。', 'hint');
+      return;
+    }
+
+    // 正确密码（双通道）
+    if (value === '46Hz' || value === 'Keep Your Brain Clear') {
+      if (value === '46Hz') {
+        showModal('<b style="font-size:18px;color:#44AAAA;">◈ 46Hz</b>\n\n这两个音节刚从你嘴里说出口，你就感觉到了——\n有什么东西在你胸腔里松动了。\n不是心脏。是更深处的东西。\n\n门没有开。\n<b style="color:#44AAAA;">是你在被抽离。</b>\n\n你的意识顺着声波流出去，\n被拆解成数据包，\n被一扇你从未看见的门接收。\n\n太晚了。\n<b style="color:#CC4444;">你已经说出口了。</b>', 'success');
+      } else {
+        showModal('密钥验证通过。\n正在开启门扉……', 'success');
+      }
+      // 延迟跳转
+      window._pendingRedirect = value === '46Hz' ? '../ending/upload.html' : '../inner/index.html';
+      return;
+    }
+
+    // 其他错误
+    showModal('密钥错误。再试一次。', 'error');
+  }
+
+  // 回车键提交
+  document.getElementById('key-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      verifyKey();
+    }
+  });
+
+  // ================================================================
+  //  光晕动画（Canvas）
+  // ================================================================
+  (function initHalo() {
+    const canvas = document.getElementById('halo-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h;
+    function resize() {
+      w = canvas.width  = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // 光晕粒子
+    const particles = [];
+    const PARTICLE_COUNT = 24;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3 - 0.08,
+        radius: 20 + Math.random() * 60,
+        alpha: 0.03 + Math.random() * 0.06,
+        hue: 0 + Math.random() * 15, // 红色系 0-15
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.005 + Math.random() * 0.01
+      });
+    }
+
+    let frame = 0;
+    function animate() {
+      frame++;
+      ctx.clearRect(0, 0, w, h);
+
+      // 绘制每个光晕
+      for (const p of particles) {
+        p.pulse += p.pulseSpeed;
+        const pulseAlpha = p.alpha * (0.7 + 0.3 * Math.sin(p.pulse));
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+        gradient.addColorStop(0, `hsla(${p.hue}, 80%, 30%, ${pulseAlpha})`);
+        gradient.addColorStop(0.4, `hsla(${p.hue + 5}, 70%, 20%, ${pulseAlpha * 0.5})`);
+        gradient.addColorStop(1, `hsla(${p.hue + 10}, 60%, 10%, 0)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+
+        // 缓慢移动
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // 边界回弹
+        if (p.x < -p.radius || p.x > w + p.radius) p.vx *= -1;
+        if (p.y < -p.radius || p.y > h + p.radius) p.vy *= -1;
+
+        // 太远则重置
+        if (p.y < -p.radius * 2) {
+          p.y = h + p.radius;
+          p.x = Math.random() * w;
+        }
+      }
+
+      // 偶尔连接附近的粒子形成光网
+      if (frame % 3 === 0) {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 180) {
+              const alpha = (1 - dist / 180) * 0.06;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `hsla(0, 60%, 25%, ${alpha})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+
+  // ================================================================
+  //  控制台彩蛋
+  // ================================================================
+  console.log('◈ 密钥门已激活。密码提示：频率。');
+  console.log('◈ 提示：46 后面跟着什么？');
+
+  // ================================================================
+  //  页面加载完成后启动
+  // ================================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    // 给空白行设置 visible class
+    document.querySelectorAll('.tw-line.blank').forEach(el => el.classList.add('visible'));
+
+    // 延迟启动打字机
+    setTimeout(startTypewriter, 600);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 镜中回声 · 镜像论坛</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+.mirror-world{transform:scaleX(-1);transform-origin:center center;min-height:100vh}
+body{background:#080808;color:#881111;font:12px/1.6 "Courier New",monospace;min-height:100vh;overflow-x:hidden}
+a{color:#664422;text-decoration:none}
+a:hover{color:#996633}
+.topbar{background:#0A0A0A;padding:8px 16px;display:flex;align-items:center;border-bottom:1px solid #2A0A0A;flex-wrap:wrap;gap:4px}
+.topbar .logo{font:bold 15px "Times New Roman",serif;color:#442222;cursor:pointer;transform:scaleX(-1);display:inline-block}
+.topbar .nav{margin-left:auto;display:flex;gap:4px;transform:scaleX(-1)}
+.topbar .nav a{color:#442222;font-size:10px;margin:0 4px}
+.topbar .nav a:hover{color:#886644}
+.container{max-width:800px;margin:0 auto;padding:10px 18px}
+.mirror-banner{text-align:center;padding:14px;margin-bottom:12px;border:1px solid #1A0A0A;background:#0A0A0A}
+.mirror-banner h1{font-size:16px;color:#553333;letter-spacing:4px}
+.mirror-banner p{font-size:9px;color:#331111}
+.mirror-banner .blink{animation:blink 1.5s infinite}
+@keyframes blink{50%{opacity:0.2}}
+.panel{background:#0A0A0A;border:1px solid #1A0A0A;margin-bottom:8px}
+.panel-header{background:#0D0D0D;color:#553333;padding:5px 10px;font:bold 10px "Courier New",monospace;border-bottom:1px solid #1A0A0A;display:flex;justify-content:space-between}
+.panel-header .count{font-weight:normal;color:#331111;font-size:9px}
+.post-row{display:flex;align-items:center;padding:5px 10px;border-bottom:1px solid #111;cursor:pointer}
+.post-row:hover{background:#0D0D0D}
+.post-row .icon{width:16px;height:16px;margin-right:8px;flex-shrink:0;font-size:8px;text-align:center;line-height:16px;border:1px solid #220000;color:#442222}
+.post-row .main{flex:1;min-width:0}
+.post-row .main .title{font-size:11px;color:#553333}
+.post-row .main .title .badge{font-size:8px;padding:1px 4px}
+.post-row .main .title .badge.mirror{background:#1A0A0A;color:#664433}
+.post-row .main .meta{font-size:9px;color:#331111}
+.post-row .stat{text-align:center;margin:0 8px;flex-shrink:0;min-width:30px}
+.post-row .stat .num{font-size:10px;color:#442222}
+.post-row .stat .label{font-size:8px;color:#331111}
+.post-row .last{font-size:9px;color:#331111;text-align:right;flex-shrink:0;min-width:80px}
+.mirror-note{text-align:center;padding:20px;margin:16px 0;border:1px solid #1A0A0A;background:#0A0A0A;font-size:10px;color:#331111;line-height:2}
+.mirror-note .rev{unicode-bidi:bidi-override;direction:rtl;color:#442222;font-size:11px}
+.footer{text-align:center;padding:16px;font-size:9px;color:#1A0A0A;border-top:1px solid #0A0000;margin-top:16px}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px)}
+@media(max-width:640px){.post-row{padding:4px 6px;flex-wrap:wrap}.post-row .last{min-width:60px}}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="mirror-world">
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ 声回</div>
+  <div class="nav">
+    <a href="../forum.html">页首</a>
+    <a href="blank-door.html">门扇这</a>
+  </div>
+</div>
+<div class="container">
+<div class="mirror-banner">
+  <h1>◈ 坛论 · 声回 ◈</h1>
+  <p><span class="blink">⚠</span> 面页的转翻了现出你，面后门的了开你 <span class="blink">⚠</span></p>
+  <p style="margin-top:6px;font-size:8px;color:#220000">里这到来迎欢 · 界世的像镜</p>
+</div>
+<div class="panel">
+<div class="panel-header"><span>◈ 区聊闲</span><span class="count">帖32 :日令</span></div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">📌</div>
+  <div class="main"><div class="title">南指帖发馆茶声回】规版【</div><div class="meta">· 丁园</div></div>
+  <div class="stat"><div class="num">64</div><div class="label">复回</div></div>
+  <div class="last">· 人私的锁封被<br>· 伙家好</div>
+</div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">🔥</div>
+  <div class="main"><div class="title"><span class="badge mirror">门热</span>音回到来听是总近最我</div><div class="meta">· 32_者患眠失</div></div>
+  <div class="stat"><div class="num">64</div><div class="label">复回</div></div>
+  <div class="last">· 师大密解<br>01:22-30-5002</div>
+</div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">🔥</div>
+  <div class="main"><div class="title"><span class="badge mirror">门热</span>了梦个一同做天64连续连经已我</div><div class="meta">· 鱼海深</div></div>
+  <div class="stat"><div class="num">241</div><div class="label">复回</div></div>
+  <div class="last">· 32_者患眠失<br>41:70-40-5002</div>
+</div>
+</div>
+<div class="panel">
+<div class="panel-header"><span>◈ 落角术技</span><span class="count">帖61 :日令</span></div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">🔥</div>
+  <div class="main"><div class="title"><span class="badge mirror">门热</span>号符形菱个一是题标，面页生陌开打动自总器览浏</div><div class="meta">· 客行夜</div></div>
+  <div class="stat"><div class="num">98</div><div class="label">复回</div></div>
+  <div class="last">· 户用名匿<br>51:30-31-60-5002</div>
+</div>
+</div>
+<div class="panel">
+<div class="panel-header"><span>◈ 录记活生</span><span class="count">帖9 :日令</span></div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">📷</div>
+  <div class="main"><div class="title">片照些拍了，游一日林园州苏</div><div class="meta">· 工门快</div></div>
+  <div class="stat"><div class="num">81</div><div class="label">复回</div></div>
+  <div class="last">· 者好爱影摄<br>02-80-70-5002</div>
+</div>
+</div>
+<div class="panel">
+<div class="panel-header"><span>◈ 区档归</span><span class="count">锁已</span></div>
+<div class="post-row" style="cursor:default;">
+  <div class="icon">🔒</div>
+  <div class="main"><div class="title" style="color:#442222;">0902-4002 档归度年</div><div class="meta" style="color:#331111;">· 统系</div></div>
+  <div class="stat"><div class="num" style="color:#331111;">—</div></div>
+  <div class="last" style="color:#331111;">锁已</div>
+</div>
+<div class="post-row" onclick="window.location.href='blank-door.html'">
+  <div class="icon">🔒</div>
+  <div class="main"><div class="title" style="color:#553333;">理管网务站</div><div class="meta" style="color:#331111;">· 64</div></div>
+  <div class="stat"><div class="num" style="color:#331111;">—</div></div>
+  <div class="last" style="color:#331111;">入进击点</div>
+</div>
+</div>
+<div class="mirror-note">
+<p>的来原面页是这为以你。</p>
+<p>不。</p>
+<p>的面页了反翻转个一整是这。</p>
+<p class="rev">。界世的在存能可不是，界世的在现你——面后的门</p>
+<p style="margin-top:10px;font-size:8px;color:#220000">◈ 你看到的不是论坛的另一面。论坛没有另一面。<br>◈ 你看到的是你自己在论坛里的倒影。<br>◈ 镜子里能看到的只有你自己。</p>
+</div>
+<div class="footer">◈ 面页的转反 · 46:04:60 · 馆茶声回 ◈</div>
+</div>
+</div>
+<script>
+console.log('%c◈ 欢迎来到镜中论坛。', 'color:#883333;font-size:14px');
+console.log('%c◈ 这里的一切都是反的。连你也是。', 'color:#553333;font-size:11px');
+console.log('%c◈ 你回不去了。', 'color:#883333;font-size:13px;font-weight:bold');
+setInterval(function(){if(Math.random()<0.04){document.body.style.opacity='0.3';setTimeout(function(){document.body.style.opacity='1'},80);console.warn('◈ 镜像不稳定。');}},5000);
+document.addEventListener('visibilitychange',function(){if(document.hidden)console.log('◈ 你离开了镜像。但镜像没有离开你。');});
+</script>
+</body>
+</html>

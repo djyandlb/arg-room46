@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>帮助 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 帮助页内容 ── -->
+<div class="container">
+
+<div class="breadcrumb">
+  <a href="../forum.html">首页</a> &gt; 帮助中心
+</div>
+
+<div class="box">
+  <h2>❓ 帮助中心 · 常见问题</h2>
+  <p style="font-size:11px;margin-bottom:12px;color:#888;">
+    这里整理了一些关于论坛使用的常见问题。如果你在这里找不到答案——那大概就是没有答案了。
+  </p>
+
+  <div style="margin-top:16px;">
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 怎么搜索帖子？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>页面顶部的搜索框可以搜索论坛内容。输入关键词后按回车或点击搜索按钮，系统会自动匹配相关的帖子标题和内容。</p>
+      <p>搜索功能支持模糊匹配和关键词联想——不过由于管理员已离线多年，搜索索引可能没有及时更新，部分新帖（或者说，最后那几篇帖子）可能搜不到。</p>
+      <p style="font-size:10px;color:#999;margin-top:4px;">提示：试试搜"46"——会有惊喜也说不定。</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 注册有什么用？为什么注册不了？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>注册后可以发帖、回复、访问所有公开版块，还能拥有个人主页和私信功能。</p>
+      <p>但注册通道已于 2009 年 6 月 15 日关闭——那是管理员最后一次登录的日子。自那以后，没有人能注册新账号，也没有人能找回密码。</p>
+      <p>如果你还没有账号——那可能就真的没有了。</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 归档区是什么？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>归档区用于存放旧帖子和已关闭的讨论。大部分普通用户无法在归档区发新帖，只能浏览。</p>
+      <p>不过——有一些细心的用户发现，归档区的帖子数量似乎不太对。有时候今天看到的帖子明天就不见了。数据库记录还在，但页面返回 404。</p>
+      <p style="font-size:10px;color:#999;margin-top:4px;">有人说是缓存问题。有人说是系统 bug。但没有人真正去修——因为管理员不在。</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 论坛有隐藏版块吗？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>……这个不太好回答。</p>
+      <p>论坛的版块列表里显示的是公开版块。但有一些版块——或者说，有一些页面——不在列表里。它们存在，但你看不见。除非你知道它们的地址。</p>
+      <p style="font-size:10px;color:#999;margin-top:4px;">至于是哪些版块——如果你需要知道，你大概已经知道了。</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 个人主页怎么用？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>在浏览器地址栏输入 <code style="background:#F0F0F0;padding:1px 4px;font-size:10px;">profile.html?user=用户名</code> 即可查看对应用户的资料页。</p>
+      <p>个人主页会显示用户的基本信息、发帖记录和签名档。部分用户的私信和草稿需要登录为本人或管理员才能查看。</p>
+      <p style="font-size:10px;color:#999;margin-top:4px;">现有用户：V47 · 解密大师 · 深海鱼 · 夜行客 · out_sider · 园丁</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 我看到一些奇怪的符号和乱码——</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>论坛运行了很多年，有些数据可能损坏了。如果你在页面源码或帖子内容中看到奇怪的符号、乱码或者看起来不像中文的文字——不用太在意。</p>
+      <p>当然，你也可以试着解码它们。有些人就是这么做的。</p>
+    </div>
+
+    <div class="q" style="color:#0D3050;font-weight:bold;font-size:12px;margin-top:18px;">Q: 管理员去哪了？</div>
+    <div class="a" style="color:#555;font-size:11px;margin:4px 0 10px 12px;padding-left:8px;border-left:2px solid #E0E0E0;">
+      <p>管理员"园丁"最后登录论坛是在 2009 年 6 月 15 日 23:46:46。</p>
+      <p>那是一次例行维护——他更新了论坛版本（v2.0.46），清理了服务器缓存，然后下线了。</p>
+      <p>他再也没有回来。</p>
+      <p>没有人知道他去了哪里。没有人知道他为什么不回来。服务器一直在运行，论坛一直在等待——但管理员不在了。</p>
+    </div>
+  </div>
+</div>
+
+<div class="box">
+  <h2>📋 论坛简则</h2>
+  <p style="font-size:11px;line-height:1.8;">
+    1. 禁止发布违法内容。<br>
+    2. 禁止人身攻击和恶意引战。<br>
+    3. 禁止广告刷屏和商业推广。<br>
+    4. 请不要挖坟——超过 46 天无新回复的帖子请勿回复。<br>
+    5. 归档区内容请勿转载至站外。<br>
+    6. 管理员保留最终解释权和所有内容的处置权。<br>
+    7. 管理员不在的时候——版规仍然有效。
+  </p>
+  <p style="font-size:10px;color:#999;margin-top:10px;border-top:1px dotted #E0E0E0;padding-top:8px;">
+    完整版规则请查看<a href="rules.html">版规帖</a>。<br>
+    以上简则最后修订于 2009-06-15 · 管理员离线后未再更新。
+  </p>
+</div>
+
+<div class="box">
+  <h2>📮 联系管理员</h2>
+  <p>如果你有问题需要联系管理员——很遗憾，管理员已经离线 46 年了。</p>
+  <p>你可以尝试给"园丁"或"admin"发送站内私信，但没有人会阅读它们。</p>
+  <p style="font-size:10px;color:#999;margin-top:8px;border-top:1px dotted #E0E0E0;padding-top:8px;">
+    服务器还在运行。邮件系统还在工作。信发出去之后，它会安静地躺在收件箱里。<br>
+    就像这个论坛一样——还在运行，但已经没有人打理了。
+  </p>
+</div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+</script>
+</body>
+</html>

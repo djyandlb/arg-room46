@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · 回声茶馆</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080808;color:#888;font:13px/1.8 "Courier New",monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.container{text-align:center;max-width:460px;padding:20px;animation:fadeIn 0.6s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.big-404{font-size:120px;font-weight:bold;color:#1A1A1A;letter-spacing:8px;line-height:1;margin-bottom:8px;text-shadow:0 0 40px rgba(0,0,0,0.5)}
+.big-404 .hl{color:#442222}
+
+.divider{width:60px;height:1px;background:#2A2A2A;margin:16px auto}
+
+.msg{color:#555;font-size:13px;line-height:2;margin-bottom:24px;letter-spacing:1px}
+.msg .dim{color:#333;font-size:11px}
+.msg .reason{color:#774444;font-size:14px;font-weight:bold;margin:8px 0}
+
+.btn{display:inline-block;padding:10px 36px;border:1px solid #333;background:transparent;color:#555;font:11px "Courier New",monospace;letter-spacing:3px;cursor:pointer;transition:all 0.3s;text-decoration:none}
+.btn:hover{border-color:#553333;color:#774444;background:rgba(80,20,20,0.06);letter-spacing:5px}
+
+.footer{position:fixed;bottom:16px;font-size:9px;color:#1A1A1A;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="big-404">
+    <span class="hl">4</span>0<span class="hl">4</span>
+  </div>
+  <div class="divider"></div>
+  <div class="msg" id="msgArea">
+    <div class="reason" id="reasonText"></div>
+    <p id="subText"></p>
+    <p class="dim" id="hintText"></p>
+  </div>
+  <a class="btn" href="../forum.html">◈ 回到论坛 ◈</a>
+</div>
+
+<div class="footer">◈ 回声茶馆 · 2004-2009 ◈</div>
+
+<script>
+(function(){
+  var reason = '';
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('reason')) reason = params.get('reason');
+
+  // 检测来源页面
+  var ref = document.referrer || '';
+  if(!reason){
+    if(ref.indexOf('admin') !== -1) reason = 'admin';
+    else if(ref.indexOf('gateway') !== -1) reason = 'gateway';
+    else if(ref.indexOf('inner') !== -1) reason = 'inner';
+  }
+
+  var msgMap = {
+    'admin': {
+      reason: '权限不足',
+      sub: '您没有管理员权限，无法访问站务管理系统。',
+      hint: '如果您是管理员，请先登录账号。'
+    },
+    'gateway': {
+      reason: '密钥错误',
+      sub: '您没有通过密钥验证，无法进入里论坛。',
+      hint: '也许您需要的不是钥匙，而是密码。'
+    },
+    'inner': {
+      reason: '信号丢失',
+      sub: '与里论坛的连接已中断。',
+      hint: '信号不稳定。请稍后再试。'
+    },
+    'login': {
+      reason: '未登录',
+      sub: '您需要登录后才能访问此页面。',
+      hint: '请先前往登录页面。'
+    }
+  };
+
+  var msg = msgMap[reason] || {
+    reason: '页面未找到',
+    sub: '你来到了回声茶馆的某个角落——但这里什么都没有。',
+    hint: '也许它曾经存在过。也许它从未存在过。'
+  };
+
+  document.getElementById('reasonText').textContent = msg.reason;
+  document.getElementById('subText').textContent = msg.sub;
+  document.getElementById('hintText').textContent = msg.hint;
+
+  console.log('%c◈ 404', 'font-size:16px;color:#442222;font-weight:bold');
+  console.log('%c' + msg.reason + '：' + msg.sub, 'font-size:11px;color:#555');
+})();
+</script>
+</body>
+</html>

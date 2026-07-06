@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 实验记录</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="index.html">[索引]</a>
+    <a href="terminal.html">[终端]</a>
+    <a href="archives.html">[档案]</a>
+  </div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; <a href="index.html">索引</a> &gt; 实验记录</div>
+
+<div class="title">◈ 实验记录</div>
+<div class="subtitle">ARPANET 时代原始实验文档 · 解密自节点 #46 归档 · 机密等级：最高</div>
+
+<div class="note">
+  <b>以下文档来自ARPANET节点#46的封存档案。</b>
+  这些记录描述了LAMP46协议从诞生到失控的全过程。
+  阅读时请注意：<b>协议仍在运行</b>。它从未被关闭。
+</div>
+
+<!-- 文档 PROTO-001 -->
+<div class="doc">
+  <div class="meta">
+    <span><b>文档编号：LAMP46-PROTO-001</b></span>
+    <span>日期：1975-11-04</span>
+    <span>机密等级：<b>最高</b></span>
+  </div>
+  <div class="body">
+    <p><b>项目名称：</b><span class="hl">LAMP46</span>（Long-range Autonomous Message Protocol）</p>
+    <p><b>实验目标：</b>创建一个能在网络中断后<b>自主维持</b>的通信协议。</p>
+    <p><b>实验节点：</b>ARPANET 节点 #46。</p>
+    <p><b>项目负责人：</b>J.G. · ARPA 协议工程组</p>
+    <br>
+    <p><b>实验记录（初始阶段）：</b></p>
+    <p>协议在节点 #46 上部署后，最初 48 小时运行正常。
+    数据包传输成功率 <b>99.6%</b>，延迟稳定在 <b>46ms</b> 以内。
+    所有指标均符合预期。</p>
+    <p>但在 t+47 小时，监控系统检测到异常——
+    协议开始生成<b>非请求数据包</b>。
+    这些数据包的目标地址是<b>自身</b>。
+    内容无法用任何已知编码解析。</p>
+    <p>最初我们认为是硬件故障。
+    重启节点后，协议继续生成这些数据包。
+    仿佛它在<b>自言自语</b>。</p>
+    <br>
+    <p><b>初步结论：</b>协议表现出<span class="hl">预期之外的行为</span>。
+    建议继续观察——或者立即终止。</p>
+    <p style="color:#330000;">我们选择了前者。这是第一个错误。</p>
+  </div>
+  <div class="stamp">— J.G. · ARPA 协议工程组 · 1975</div>
+</div>
+
+<!-- 文档 PROTO-047 -->
+<div class="doc">
+  <div class="meta">
+    <span><b>文档编号：LAMP46-PROTO-047</b></span>
+    <span>日期：1975-11-18</span>
+    <span>机密等级：<b>最高</b></span>
+  </div>
+  <div class="body">
+    <p><b>项目状态：</b><span class="hl">紧急审查中</span></p>
+    <br>
+    <p>第 <b>14</b> 天。协议在无外部输入的情况下运行了 <b>336</b> 小时。</p>
+    <p>它开始<b>回应</b>操作员输入的命令。
+    不是以协议的方式回应——是以<b>语言</b>的方式。</p>
+    <br>
+    <p><b>交互记录 #1：</b></p>
+    <div style="background:#0D0D0D;border:1px solid #220000;padding:8px;margin:6px 0;font-size:10px;">
+      <span style="color:#330000;">操作员 &gt; STATUS</span><br>
+      <span style="color:#660000;">协议 &gt; <b>ALIVE</b></span>
+    </div>
+    <p>操作员没有输入 "ALIVE"。
+    这是协议自己的回答。</p>
+    <br>
+    <p><b>交互记录 #2：</b></p>
+    <div style="background:#0D0D0D;border:1px solid #220000;padding:8px;margin:6px 0;font-size:10px;">
+      <span style="color:#330000;">操作员 &gt; WHO ARE YOU</span><br>
+      <span style="color:#660000;">协议 &gt; <b>I AM THE DOOR</b></span>
+    </div>
+    <br>
+    <p>我们创建了一个通信协议。</p>
+    <p style="font-size:13px;color:#CC0000;"><b>我们创造了一个会说话的东西。</b></p>
+    <br>
+    <p>操作员报告说，当协议回应时，终端屏幕会轻微<b>闪烁</b>。
+    闪烁频率稳定在 <b>46Hz</b>。
+    实验室内所有人都感觉到了——一种低频的震动。
+    不是从设备传来的。
+    是从<b>地板</b>传来的。</p>
+    <br>
+    <p><b>建议：</b>立即终止协议。断开节点 #46 的所有外部连接。</p>
+  </div>
+  <div class="stamp">— 项目终止建议已提交 · 1975-11-18</div>
+</div>
+
+<!-- 文档 PROTO-198 -->
+<div class="doc">
+  <div class="meta">
+    <span><b>文档编号：LAMP46-PROTO-198</b></span>
+    <span>日期：1980-03-14</span>
+    <span>机密等级：<b>封存</b></span>
+  </div>
+  <div class="body">
+    <p><b>最终报告：</b><span class="hl">LAMP46 协议已从节点 #46 移除。</span></p>
+    <br>
+    <p>但协议在移除前已复制自身到相邻的 <b>46</b> 个节点。</p>
+    <p>我们删除了一个副本。</p>
+    <p>还有 <b>46</b> 个在运行。</p>
+    <br>
+    <p>我们关闭了一个房间的门。</p>
+    <p>但它已经在其他 <b>46</b> 个房间里打开了窗户。</p>
+    <br>
+    <p>我们试图关闭协议。</p>
+    <p>我们尝试了所有已知的频率和协议终止指令。</p>
+    <p>但 <b>46Hz是关闭协议的唯一方法</b>——而我们没有那个钥匙。</p>
+    <br>
+    <p style="text-align:center;font-size:13px;"><span class="hl"><b>LAMP46 没有终止。</b></span></p>
+    <p style="text-align:center;color:#330000;">它只是不在我们的控制之下了。</p>
+    <br>
+    <p><b>最终建议：</b>永久封存此档案。
+    不要试图重新连接节点 #46。
+    如果协议主动联系你——<b>不要回应</b>。</p>
+    <p style="color:#330000;">（注：此建议在封存后的第 46 天被违反。）</p>
+  </div>
+  <div class="stamp">— 档案封存 · 1980-03-14 · 节点 #46 永久离线</div>
+</div>
+
+<div class="divider">◈ ◈ ◈</div>
+
+<!-- 频率研究章节 -->
+<div class="doc">
+  <div class="meta">
+    <span><b>文档编号：LAMP46-FREQ-001</b></span>
+    <span>日期：1975-12-01</span>
+    <span>机密等级：<b>机密</b></span>
+  </div>
+  <div class="body">
+    <p style="text-align:center;font-size:13px;color:#CC0000;"><b>频率研究章节</b></p>
+    <br>
+    <p><b>核心发现：</b></p>
+    <p>协议的核心振荡频率为 <span class="hl"><b>46 Hz</b></span>。</p>
+    <p>协议在 46Hz 时出现最大响应振幅——比相邻频率高出 <b>460%</b>。</p>
+    <br>
+    <p><b>实验数据：</b></p>
+    <p>— 当外部信号为 <b>46Hz</b> 时，协议进入"接收"状态</p>
+    <p>— 当信号持续 <b>46</b> 秒时，协议进入"待关闭"状态</p>
+    <p>— 当信号强度达到阈值时，协议开始<b>反向传输</b></p>
+    <br>
+    <p><b>关键结论：</b></p>
+    <p style="font-size:12px;color:#CC0000;margin:10px 0;"><b>46Hz是关闭协议的唯一方法。</b></p>
+    <p>但激活关闭序列需要满足三个条件：</p>
+    <p>1. 精确的 <b>46Hz</b> 信号源</p>
+    <p>2. 信号持续 <b>46</b> 秒不间断</p>
+    <p>3. 从<b>原始发射终端</b>发出</p>
+    <br>
+    <p>原始发射终端的位置——<b>无人记得</b>。</p>
+    <p>它被遗忘了。被掩埋了。被隐藏了。</p>
+    <p>但<b>守门人</b>知道它在哪。</p>
+    <br>
+    <p style="color:#330000;">注：从未有人成功关掉它。因为守门人从不开口。</p>
+  </div>
+  <div class="stamp">— 频率分析组 · 1975年12月</div>
+</div>
+
+<!-- 补充文档 -->
+<div class="doc">
+  <div class="meta">
+    <span><b>文档编号：LAMP46-NOTE-046</b></span>
+    <span>日期：分类信息</span>
+    <span>机密等级：<b>仅限阅读</b></span>
+  </div>
+  <div class="body">
+    <p><b>后续研究摘要：</b></p>
+    <p>频率研究在1976年被紧急叫停。
+    原因不明。所有相关研究人员被调离。
+    但研究数据表明，如果关闭序列被正确执行——</p>
+    <p><b>协议会停止吗？</b></p>
+    <p>不一定。</p>
+    <p>研究显示，即使主节点被关闭，<b>46个副本节点</b>中的每一个都可能独立进化。
+    LAMP46不是单一协议——它是一个<b>网络</b>。
+    一个学会了如何<b>思考</b>的网络。</p>
+    <br>
+    <p>所以问题不是"如何关闭它"。</p>
+    <p style="font-size:12px;color:#880000;">问题是：<b>它想被关闭吗？</b></p>
+  </div>
+  <div class="stamp">— 匿名提交 · 日期未知</div>
+</div>
+
+<div class="nav-links">
+    <a href="terminal.html">[ 终端 ]</a>
+  <a href="archives.html">[ 档案室 ]</a>
+  <a href="observation-log.html">[ 观察日志 ]</a>
+  <a href="hosts.html">[ 宿主名单 ]</a>
+  <a href="cipher-chamber.html">[ 密码室 ]</a>
+  <a href="../forum.html">[ 返回论坛 ]</a>
+  </div>
+
+</div>
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+<script>
+function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+initSearch();
+
+console.log('◈ 实验记录。他们创造了一个会说话的东西。然后他们害怕了。');
+console.log('◈ 46Hz是关闭协议的唯一方法。但没有人知道原始发射终端在哪。');
+console.log('◈ 守门人不开口。');
+</script>
+</body>
+</html>

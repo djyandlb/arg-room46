@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 遗忘之路</title>
+<style>
+/* ===== 重置 & 基础 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0A0A0A;
+  color:#666;
+  font:14px/1.8 "Courier New",monospace;
+  min-height:100vh;
+  overflow-x:hidden
+}
+
+/* ===== 3D走廊 ===== */
+.corridor{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  perspective:800px;
+  perspective-origin:50% 40%;
+  z-index:0;
+  overflow:hidden;
+  background:#050505
+}
+.corridor::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at 50% 30%, rgba(30,20,10,0.6) 0%, rgba(5,5,5,1) 70%);
+  z-index:2;
+  pointer-events:none
+}
+.corridor-floor{
+  position:absolute;
+  bottom:0;left:-10%;right:-10%;
+  height:60%;
+  background:repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 60px,
+    rgba(40,30,20,0.08) 60px,
+    rgba(40,30,20,0.08) 61px
+  );
+  transform:rotateX(60deg);
+  transform-origin:50% 100%;
+  z-index:1;
+  animation:floorShimmer 8s infinite linear
+}
+@keyframes floorShimmer{
+  0%{opacity:0.6}
+  50%{opacity:1}
+  100%{opacity:0.6}
+}
+.corridor-walls{
+  position:absolute;
+  top:-5%;left:-5%;right:-5%;bottom:-5%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 40px,
+      rgba(30,20,15,0.04) 40px,
+      rgba(30,20,15,0.04) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(20,15,10,0.03) 80px,
+      rgba(20,15,10,0.03) 81px
+    );
+  z-index:0;
+  animation:wallDrift 20s infinite linear
+}
+@keyframes wallDrift{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(40px)}
+}
+/* ===== 走廊灯光 ===== */
+.corridor-light{
+  position:absolute;
+  top:8%;left:50%;
+  width:4px;height:20%;
+  background:linear-gradient(to bottom, rgba(180,140,80,0.15), transparent);
+  transform:translateX(-50%);
+  z-index:1;
+  animation:lightFlicker 3s infinite alternate
+}
+.corridor-light:nth-child(3){left:20%;animation-delay:-1s;height:15%}
+.corridor-light:nth-child(4){left:80%;animation-delay:-2s;height:12%}
+@keyframes lightFlicker{
+  0%,100%{opacity:0.5}
+  30%{opacity:0.8}
+  60%{opacity:0.3}
+  80%{opacity:0.9}
+}
+/* ===== 走廊深处 ===== */
+.corridor-depth{
+  position:absolute;
+  top:5%;left:50%;
+  transform:translateX(-50%);
+  width:60%;height:30%;
+  background:radial-gradient(ellipse at 50% 50%, rgba(60,40,20,0.08) 0%, transparent 70%);
+  z-index:1;
+  animation:depthPulse 5s infinite alternate
+}
+@keyframes depthPulse{
+  0%{opacity:0.3;transform:translateX(-50%) scale(1)}
+  100%{opacity:0.6;transform:translateX(-50%) scale(1.05)}
+}
+/* ===== 脚步声文字 ===== */
+.footstep-text{
+  position:fixed;
+  bottom:20%;left:50%;
+  transform:translateX(-50%);
+  color:#1A1A1A;
+  font-size:11px;
+  letter-spacing:6px;
+  z-index:2;
+  pointer-events:none;
+  animation:footstepEcho 4s infinite;
+  opacity:0.3
+}
+@keyframes footstepEcho{
+  0%,100%{opacity:0.1;letter-spacing:4px}
+  50%{opacity:0.4;letter-spacing:8px}
+}
+
+/* ===== 主容器 ===== */
+.container{
+  position:relative;
+  z-index:3;
+  max-width:620px;
+  margin:0 auto;
+  padding:40px 20px 80px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center
+}
+
+/* ===== 门 ===== */
+.door-container{
+  width:100%;
+  max-width:400px;
+  margin:20px auto;
+  position:relative;
+  cursor:default
+}
+.door-frame{
+  position:relative;
+  background:linear-gradient(180deg, #1A1510 0%, #12100D 40%, #0D0B09 100%);
+  border:2px solid #2A2018;
+  border-radius:4px 4px 0 0;
+  padding:30px 30px 40px;
+  box-shadow:
+    0 0 40px rgba(60,40,20,0.1),
+    inset 0 0 60px rgba(0,0,0,0.5);
+  overflow:hidden
+}
+.door-frame::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 30px,
+    rgba(60,40,20,0.03) 30px,
+    rgba(60,40,20,0.03) 31px
+  );
+  pointer-events:none
+}
+.door-frame::after{
+  content:'';
+  position:absolute;
+  top:10%;left:-2px;
+  width:4px;height:80%;
+  background:linear-gradient(180deg, #3A2A1A, #1A1008);
+  border-radius:0 2px 2px 0
+}
+/* 右侧门框装饰 */
+.door-frame .right-stile{
+  position:absolute;
+  top:10%;right:-2px;
+  width:4px;height:80%;
+  background:linear-gradient(180deg, #3A2A1A, #1A1008);
+  border-radius:2px 0 0 2px
+}
+.door-header{
+  text-align:center;
+  margin-bottom:30px;
+  font-size:10px;
+  color:#3A3028;
+  letter-spacing:3px
+}
+.door-header span{display:block;margin-top:4px}
+.door-panel{
+  background:rgba(30,20,15,0.3);
+  border:1px solid #2A2018;
+  padding:30px 20px;
+  margin:10px 0;
+  position:relative;
+  text-align:center;
+  box-shadow:inset 0 0 30px rgba(0,0,0,0.3)
+}
+.door-panel .question{
+  font-size:13px;
+  color:#887060;
+  line-height:2;
+  letter-spacing:2px
+}
+.door-panel .question .hl{
+  color:#B09070;
+  font-weight:bold;
+  text-shadow:0 0 10px rgba(180,140,100,0.15)
+}
+.door-panel .hint{
+  font-size:10px;
+  color:#3A3028;
+  margin-top:15px;
+  letter-spacing:1px;
+  animation:hintPulse 4s infinite
+}
+@keyframes hintPulse{
+  0%,100%{opacity:0.3}
+  50%{opacity:0.7}
+}
+.door-knob{
+  position:absolute;
+  right:20px;
+  top:50%;
+  width:20px;height:20px;
+  border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #8A7A60, #3A3020);
+  border:1px solid #5A4A38;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  transform:translateY(-50%)
+}
+.door-knob-inner{
+  position:absolute;
+  top:25%;left:25%;
+  width:50%;height:50%;
+  border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #B0A080, #6A5A48)
+}
+
+/* ===== 输入区域（门） ===== */
+.door-input-area{
+  margin:20px 0 10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center
+}
+.door-input-area .name-input{
+  background:rgba(20,15,10,0.6);
+  border:1px solid #3A3028;
+  color:#B09070;
+  font:13px/1.6 "Courier New",monospace;
+  padding:10px 14px;
+  width:100%;
+  max-width:260px;
+  text-align:center;
+  outline:none;
+  transition:all 0.4s;
+  letter-spacing:3px
+}
+.door-input-area .name-input:focus{
+  border-color:#6A5A48;
+  background:rgba(30,20,15,0.8);
+  box-shadow:0 0 20px rgba(60,40,20,0.1)
+}
+.door-input-area .name-input::placeholder{
+  color:#2A2018;
+  letter-spacing:2px;
+  font-size:11px
+}
+.door-input-area .name-btn{
+  background:transparent;
+  border:1px solid #3A3028;
+  color:#6A5A48;
+  padding:8px 30px;
+  font:12px/1.6 "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.3s;
+  letter-spacing:2px
+}
+.door-input-area .name-btn:hover{
+  border-color:#6A5A48;
+  color:#B09070;
+  background:rgba(60,40,20,0.1)
+}
+.door-feedback{
+  text-align:center;
+  font-size:11px;
+  min-height:40px;
+  padding:8px 0;
+  color:#5A4A38;
+  opacity:0;
+  transition:all 0.5s
+}
+.door-feedback.show{opacity:1}
+.door-feedback.error{color:#8A5040}
+.door-feedback.success{color:#B09070}
+.door-feedback.hint-reveal{color:#6A5A48;animation:hintBlink 1s 3}
+@keyframes hintBlink{
+  0%,100%{opacity:1}
+  50%{opacity:0.2}
+}
+
+/* ===== 门打开动画 ===== */
+.door-opening{
+  display:none;
+  opacity:0;
+  transition:all 1.5s
+}
+.door-opening.show{
+  display:block;
+  opacity:1
+}
+.door-opening .light-stream{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse at 50% 50%, rgba(200,180,150,0.15), transparent 70%);
+  animation:lightStream 2s infinite alternate
+}
+@keyframes lightStream{
+  0%{opacity:0.3;transform:scale(0.95)}
+  100%{opacity:0.8;transform:scale(1.05)}
+}
+.door-open-text{
+  text-align:center;
+  font-size:14px;
+  color:#B09070;
+  letter-spacing:4px;
+  animation:textAppear 2s forwards;
+  opacity:0;
+  margin:20px 0
+}
+@keyframes textAppear{
+  to{opacity:1}
+}
+
+/* ===== 门后世界（正常论坛） ===== */
+.forum-after{
+  display:none;
+  opacity:0;
+  transition:all 1s;
+  width:100%;
+  margin-top:30px
+}
+.forum-after.show{
+  display:block;
+  opacity:1
+}
+.forum-topbar{
+  background:#0D3050;
+  padding:8px 16px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  border-bottom:2px solid #0A2440;
+  border-radius:3px 3px 0 0
+}
+.forum-topbar .logo{
+  font:bold 15px "Times New Roman",serif;
+  color:#FFD700;
+  letter-spacing:2px
+}
+.forum-topbar .logo span{color:#8AB8D9}
+.forum-topbar .user-info{
+  margin-left:auto;
+  font-size:10px;
+  color:#7A9BB5
+}
+.forum-card{
+  background:#F8F8F8;
+  border:1px solid #D0D0D0;
+  padding:20px;
+  margin:0;
+  text-align:center
+}
+.forum-card h2{
+  font-size:15px;
+  color:#0D3050;
+  margin-bottom:10px;
+  font-family:Verdana,"Microsoft YaHei",sans-serif
+}
+.forum-card p{
+  font-size:11px;
+  color:#555;
+  line-height:1.8;
+  margin:6px 0;
+  font-family:Verdana,"Microsoft YaHei",sans-serif
+}
+.forum-card .stats{
+  font-size:10px;
+  color:#999;
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid #E0E0E0
+}
+.forum-card .diamond{
+  color:#CCC;
+  font-size:13px;
+  margin:10px 0;
+  letter-spacing:3px
+}
+.forum-card .forgotten-note{
+  font-size:10px;
+  color:#BBB;
+  line-height:1.8;
+  margin:12px 0
+}
+.forum-card .return-link{
+  display:inline-block;
+  margin-top:12px;
+  color:#0000CC;
+  font-size:11px;
+  text-decoration:none
+}
+.forum-card .return-link:hover{text-decoration:underline}
+.forum-footer{
+  text-align:center;
+  padding:12px;
+  font-size:10px;
+  color:#999;
+  border-top:1px solid #D0D0D0;
+  background:#F0F0F0;
+  font-family:Verdana,"Microsoft YaHei",sans-serif
+}
+
+/* 幽灵符号 */
+.ghost-diamond{
+  position:fixed;
+  bottom:16px;right:16px;
+  color:#DDD;
+  font-size:26px;
+  z-index:999;
+  pointer-events:none;
+  opacity:0.6;
+  text-shadow:0 0 10px rgba(200,200,200,0.2);
+  animation:ghostBreathe 3s infinite alternate
+}
+@keyframes ghostBreathe{
+  0%{opacity:0.3;transform:scale(0.95)}
+  100%{opacity:0.7;transform:scale(1.05)}
+}
+
+/* ===== 走廊渐进叙事 ===== */
+.corridor-narrative{
+  width:100%;
+  max-width:500px;
+  margin:20px 0;
+  text-align:center
+}
+.corridor-narrative .nar-line{
+  font-size:12px;
+  color:#3A3028;
+  margin:10px 0;
+  opacity:0;
+  animation:narFade 2s forwards;
+  line-height:1.8
+}
+@keyframes narFade{to{opacity:1}}
+.corridor-narrative .nar-line.dim{color:#2A2018}
+.corridor-narrative .nar-line .hl{color:#6A5A48}
+
+/* ===== 尝试计数器（隐藏） ===== */
+.attempt-counter{
+  position:fixed;
+  top:15px;right:15px;
+  font-size:9px;
+  color:#1A1A1A;
+  z-index:5;
+  opacity:0.3
+}
+
+/* ===== 隐藏提示 ===== */
+.hidden-whisper{
+  position:fixed;
+  bottom:30%;left:50%;
+  transform:translateX(-50%);
+  font-size:9px;
+  color:#1A1510;
+  z-index:2;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 3s;
+  text-align:center;
+  letter-spacing:1px;
+  line-height:1.6
+}
+.hidden-whisper.show{opacity:0.4}
+
+/* ===== 遗忘揭示 ===== */
+.revelation{
+  display:none;
+  opacity:0;
+  transition:all 2s;
+  text-align:center;
+  padding:20px;
+  border:1px solid #2A2018;
+  margin:15px 0;
+  background:rgba(20,15,10,0.2)
+}
+.revelation.show{display:block;opacity:1}
+.revelation .rev-line{
+  font-size:12px;
+  color:#6A5A48;
+  margin:8px 0;
+  opacity:0;
+  animation:revAppear 2s forwards;
+  letter-spacing:2px;
+  line-height:2
+}
+@keyframes revAppear{to{opacity:1}}
+.revelation .rev-line .hl{
+  color:#B09070;
+  font-weight:bold
+}
+
+/* ===== 故障效果 ===== */
+.glitch-flash{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  z-index:9998;
+  pointer-events:none;
+  opacity:0
+}
+.glitch-flash.active{
+  opacity:0.08;
+  background:#1A1510;
+  animation:glitchPop 0.15s forwards
+}
+@keyframes glitchPop{
+  0%{opacity:0.15}
+  100%{opacity:0}
+}
+
+/* ===== 底部导航 ===== */
+.bottom-nav{
+  margin-top:20px;
+  text-align:center;
+  opacity:0;
+  animation:narFade 3s 5s forwards
+}
+.bottom-nav a{
+  color:#3A3028;
+  font-size:10px;
+  text-decoration:none;
+  transition:color 0.3s;
+  letter-spacing:1px
+}
+.bottom-nav a:hover{color:#6A5A48}
+
+/* ===== 页脚 ===== */
+.footer{
+  color:#1A1A1A;
+  font-size:9px;
+  text-align:center;
+  margin-top:30px;
+  padding:15px 0;
+  border-top:1px solid #1A1510;
+  opacity:0;
+  animation:narFade 3s 30s forwards;
+  letter-spacing:1px
+}
+
+/* ===== 响应式 ===== */
+@media(max-width:600px){
+  .container{padding:20px 15px 60px}
+  .door-container{max-width:340px}
+  .door-frame{padding:20px 18px 30px}
+  .door-panel{padding:20px 14px}
+  .door-panel .question{font-size:12px}
+  .corridor-narrative .nar-line{font-size:11px}
+  .footstep-text{font-size:9px;bottom:15%}
+}
+@media(max-width:400px){
+  .door-container{max-width:300px}
+  .door-frame{padding:15px 12px 25px}
+  .door-panel .question{font-size:11px}
+  .door-input-area .name-input{font-size:12px;padding:8px 10px}
+}
+
+/* ===== 结局美化动画 ===== */
+.container { animation: fadeIn 1s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
+
+
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+
+</head>
+<body>
+<!-- 走廊背景 -->
+<div class="corridor">
+  <div class="corridor-depth"></div>
+  <div class="corridor-light"></div>
+  <div class="corridor-light"></div>
+  <div class="corridor-light"></div>
+  <div class="corridor-walls"></div>
+  <div class="corridor-floor"></div>
+</div>
+
+<!-- 脚步声 -->
+<div class="footstep-text">· · · 脚 步 声 在 回 荡 · · ·</div>
+
+<!-- 隐藏的低语 -->
+<div class="hidden-whisper" id="hiddenWhisper">
+  你试了多少次了？<br>
+  每一次尝试都在提醒你——<br>
+  你记得他的名字。<br>
+  只是……你还没意识到你知道。
+</div>
+
+<!-- 故障闪 -->
+<div class="glitch-flash" id="glitchFlash"></div>
+
+<!-- 尝试计数 -->
+<div class="attempt-counter" id="attemptCounter">尝试：0 次</div>
+
+<!-- ===== 主容器 ===== -->
+<div class="container">
+
+  <!-- 走廊叙事 -->
+  <div class="corridor-narrative">
+    <div class="nar-line" style="animation-delay:0.5s">走廊很长。</div>
+    <div class="nar-line dim" style="animation-delay:2s">你走了很久。</div>
+    <div class="nar-line dim" style="animation-delay:3.5s">两边的墙壁上有模糊的刻痕——</div>
+    <div class="nar-line dim" style="animation-delay:5s">一些名字。一些日期。一些遗忘的记号。</div>
+    <div class="nar-line" style="animation-delay:6.5s">走廊的尽头，有一扇门。</div>
+  </div>
+
+  <!-- ===== 门 ===== -->
+  <div class="door-container">
+    <div class="door-frame">
+      <div class="right-stile"></div>
+      <div class="door-header">
+        ◈ 走 廊 尽 头 的 门 ◈
+        <span>— ECHO CORRIDOR —</span>
+      </div>
+
+      <!-- 门面板 -->
+      <div class="door-panel" id="doorPanel">
+        <div class="question">
+          门上刻着一行字：<br>
+          「<span class="hl">说出那个走出去的人的名字</span>」
+        </div>
+        <div class="hint" id="doorHint">他的名 字以 "y" 结尾……</div>
+      </div>
+
+      <!-- 门把手 -->
+      <div class="door-knob"><div class="door-knob-inner"></div></div>
+
+      <!-- 门输入 -->
+      <div class="door-input-area" id="doorInputArea">
+        <input class="name-input" id="nameInput" type="text" placeholder="输入名字……" autocomplete="off" spellcheck="false" maxlength="20">
+        <button class="name-btn" id="nameBtn">◈ 说出名字</button>
+      </div>
+
+      <!-- 反馈 -->
+      <div class="door-feedback" id="doorFeedback"></div>
+
+      <!-- 门打开 -->
+      <div class="door-opening" id="doorOpening">
+        <div class="light-stream"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隐藏的揭示区域 -->
+  <div class="revelation" id="revelation">
+    <div class="rev-line" style="animation-delay:0.5s">你突然停下了。</div>
+    <div class="rev-line" style="animation-delay:2s">走廊里的脚步声也停了。</div>
+    <div class="rev-line" style="animation-delay:3.5s">你意识到一件事——</div>
+    <div class="rev-line" style="animation-delay:5s">你一直在找的那个名字……</div>
+    <div class="rev-line" style="animation-delay:6.5s">……是 <span class="hl">你</span> 自己的。</div>
+    <div class="rev-line" style="animation-delay:8s">走出去的人，从来就只有一个人。</div>
+    <div class="rev-line dim" style="animation-delay:9.5s;font-size:10px;">走廊消失了。门在你的面前无声地敞开。</div>
+  </div>
+
+  <!-- 门打开后的论坛 -->
+  <div class="forum-after" id="forumAfter">
+    <div class="forum-topbar">
+      <div class="logo">◈ <span>回声</span>茶馆</div>
+      <div class="user-info">访客</div>
+    </div>
+    <div class="forum-card">
+      <h2>👋 欢迎回来</h2>
+      <p>你回来了。</p>
+      <p>论坛一切正常。</p>
+      <p>帖子总数：12,046。会员总数：1,204。在线人数：6。</p>
+      <p>——看起来很正常的数字。</p>
+      <p style="color:#888;">你忘记了什么重要的事情。</p>
+      <p style="color:#888;">但你想不起来了。</p>
+      <p style="color:#888;">也好。</p>
+      <div class="diamond">◈ ◈ ◈</div>
+      <div class="stats">您上次访问时间：今天 · 在线 0 分钟</div>
+    </div>
+    <div class="forum-card" style="border-top:none;background:#F5F5F5;">
+      <div class="forgotten-note">
+        你做了一个很长的梦。<br>
+        梦里有一个论坛、一扇门、一个房间、一个数字——<br>
+        醒来了就记不清了。<br>
+        只是偶尔——<br>
+        在网页的右下角——<br>
+        你会看到一个 ◈ 符号。<br>
+        眨一下眼——它就不见了。
+      </div>
+      <a href="../forum.html" class="return-link">← 回到论坛首页</a>
+    </div>
+    <div class="forum-footer">回声茶馆 · 建于 2004</div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="bottom-nav">
+    <a href="../forum.html">← 回到走廊起点</a>
+  </div>
+  <div class="footer">◈ 逃离结局 · 遗忘之路 ◈</div>
+</div>
+
+<!-- 幽灵符号 -->
+<div class="ghost-diamond" id="ghostDiamond" style="display:none;">◈</div>
+
+<script>
+// ===== 逃离结局 · 核心逻辑 =====
+(function(){
+  console.log('◈ 走廊加载完成。');
+  console.log('◈ 你站在一扇门前。');
+
+  // 元素
+  var nameInput   = document.getElementById('nameInput');
+  var nameBtn     = document.getElementById('nameBtn');
+  var feedback    = document.getElementById('doorFeedback');
+  var doorPanel   = document.getElementById('doorPanel');
+  var doorHint    = document.getElementById('doorHint');
+  var doorOpening = document.getElementById('doorOpening');
+  var revelation  = document.getElementById('revelation');
+  var forumAfter  = document.getElementById('forumAfter');
+  var ghostDiamond= document.getElementById('ghostDiamond');
+  var attemptSpan = document.getElementById('attemptCounter');
+  var whisper     = document.getElementById('hiddenWhisper');
+  var glitchFlash = document.getElementById('glitchFlash');
+
+  // 状态
+  var attemptCount = 0;
+  var solved = false;
+  var hintLevel = 0;
+
+  // ===== 失败回应池 =====
+  var failResponses = [
+    '门没有反应。这个名字不对。',
+    '这个名字……已经在这里了。但不是"走出去"的那个人。',
+    '墙上的刻痕微微发光，又暗淡下去。名字不对。',
+    '你感觉到门在拒绝这个名字。再想想。',
+    '不是这个名字。"y"结尾……你再想想。',
+    '这个名字也在这条走廊里。但它不是走出去的那个。',
+    '门沉默着。这个名字属于留在这里的人。',
+    '你几乎能听到走廊里的叹息声。不对。',
+    '有些人进来了，有些人留下了。这个名字——留下了。',
+    '门上浮现出一行字："再试一次。"'
+  ];
+
+  // ===== 特殊名字的回应 =====
+  function getSpecialResponse(val){
+    var lower = val.toLowerCase();
+    var map = {
+      'v47':       'V47？他是前一任守门人。他没有走出去——他成为了门的一部分。',
+      '园丁':      '园丁一直在这里。他不是走出去的人——他是守着门的人。',
+      '深海鱼':    '深海鱼还在做梦。他从来没有醒过，更别说走出去了。',
+      '夜行客':    '夜行客在夜里走，但他没有走出这扇门。',
+      '解密大师':  '解密大师解开了许多密码——但没解开离开的密码。',
+      'out_sider': '局外人？他确实是"外面的人"——但不在门的那一边。',
+      'lucid':     'LUCID……前几任守门人的名字为什么会在这里？',
+      'orpheus':   '俄耳甫斯——他回头了。所以他没有走出去。',
+      '我':        '你？你在门的这一边。你要走出去——但你还没有。',
+      '自己':      '你？你在门的这一边。你要走出去——但你还没有。',
+      '你':        '门轻轻地颤了一下。然后归于平静。还不到时候。',
+      '遗忘':      '门发出低沉的回响。这个词……很接近了。但名字呢？名字是什么？',
+      '遗忘之路':  '这是你走的路。但走在这条路上的人——他叫什么？',
+      '佚名':      '佚名……匿名者。这个名字让门发出了一声叹息。"不是这个。"',
+      '无名氏':    '无名氏。门上的光芒闪烁了一下。"也不是这个。"',
+      'echo':      'Echo？那是回音。回音不会走出去——它只会反复响起。',
+      '46':        '一个数字。不是名字。门没有反应。',
+      'memory':    '记忆碎片……但不是名字。',
+      '碎片':      '碎片本身不会走路。走出碎片的人——名字是什么？'
+    };
+    return map[lower];
+  }
+
+  // ===== 触发故障特效 =====
+  function triggerFlash(){
+    glitchFlash.classList.remove('active');
+    void glitchFlash.offsetWidth;
+    glitchFlash.classList.add('active');
+  }
+
+  // ===== 更新提示等级 =====
+  function updateHints(){
+    if(attemptCount >= 12 && hintLevel < 3){
+      hintLevel = 3;
+      doorHint.textContent = '走出去的那个人……是你。';
+      whisper.classList.add('show');
+    }else if(attemptCount >= 7 && hintLevel < 2){
+      hintLevel = 2;
+      doorHint.textContent = '"y"……也在"遗忘"里。也许走的就是"遗忘之路"？';
+      whisper.textContent = '走廊里的每一扇门都关着。\n但你面前的这扇——\n不需要钥匙。它需要你想起你自己。';
+      whisper.classList.add('show');
+    }else if(attemptCount >= 3 && hintLevel < 1){
+      hintLevel = 1;
+      doorHint.textContent = '他的名字以 "y" 结尾……但 "y" 也可以读作"遗忘"的"遗"。';
+    }
+  }
+
+  // ===== 尝试名字 =====
+  function tryName(){
+    if(solved) return;
+
+    var val = nameInput.value.trim();
+    attemptCount++;
+    attemptSpan.textContent = '尝试：' + attemptCount + ' 次';
+
+    if(val === ''){
+      feedback.textContent = '请输入一个名字。';
+      feedback.className = 'door-feedback show error';
+      return;
+    }
+
+    // 特殊名字回应
+    var special = getSpecialResponse(val);
+    if(special){
+      feedback.textContent = special;
+      feedback.className = 'door-feedback show';
+      triggerFlash();
+      updateHints();
+      return;
+    }
+
+    // ===== 常规失败（按尝试次数渐进） =====
+    if(attemptCount < 5){
+      feedback.textContent = failResponses[(attemptCount - 1) % failResponses.length];
+      feedback.className = 'door-feedback show';
+      triggerFlash();
+      updateHints();
+      return;
+    }
+
+    if(attemptCount >= 5 && attemptCount < 8){
+      var midFails = [
+        '门沉默了很久。然后你听到一个声音——从门的另一边传来："你找错方向了。"',
+        '"走出去的人"……也许不是"别人"呢？',
+        '墙壁上的刻痕开始闪烁。你瞥见了一个熟悉的字——但它立刻就消失了。',
+        '走廊深处传来一声低语："……你一直在找的……就是你自己。"',
+        '门上浮现出一行字，又迅速消退："你已经在这里了。你已经在外面了。"'
+      ];
+      feedback.textContent = midFails[(attemptCount - 5) % midFails.length];
+      feedback.className = 'door-feedback show';
+      triggerFlash();
+      updateHints();
+      return;
+    }
+
+    if(attemptCount >= 8 && attemptCount < 12){
+      var deepFails = [
+        '门把手微微转动了一下。但没有打开。你需要的是——不是名字。是理解。',
+        '你听到走廊里传来脚步声。你自己的脚步声。你一直在原地走。',
+        '门口浮现出两个字："遗忘"。你好像抓住了什么。',
+        '你尝试的名字越多——门就越沉默。也许答案不在"名字"里。',
+        '一个想法闪过：走出去的人……或许根本没有名字。',
+        '或者——他的名字就叫"遗忘"。因为走出去的人——被遗忘了。'
+      ];
+      feedback.textContent = deepFails[(attemptCount - 8) % deepFails.length];
+      feedback.className = 'door-feedback show';
+      triggerFlash();
+      updateHints();
+      return;
+    }
+
+    // 超过12次自动揭示
+    feedback.textContent = failResponses[(attemptCount - 1) % failResponses.length];
+    feedback.className = 'door-feedback show';
+    triggerFlash();
+
+    if(attemptCount >= 12){
+      triggerRevelation();
+      return;
+    }
+
+    updateHints();
+  }
+
+  // ===== 特殊触发 =====
+  function checkSecretTrigger(val){
+    if(solved) return false;
+    if(hintLevel < 1) return false;
+
+    var t = val.trim().toLowerCase();
+    if(t === 'y' || t === '遗忘' || t === ''){
+      triggerRevelation();
+      return true;
+    }
+    return false;
+  }
+
+  // ===== 揭示动画 + 门打开 =====
+  function triggerRevelation(){
+    if(solved) return;
+    solved = true;
+
+    feedback.textContent = '◈ 门开始发光……';
+    feedback.className = 'door-feedback show';
+    feedback.style.color = '#B09070';
+    nameInput.disabled = true;
+    nameBtn.disabled = true;
+    doorOpening.classList.add('show');
+
+    // 控制台
+    console.log('◈ 你找到了他的名字。他的名字——是你。');
+
+    // 多次故障
+    for(var i=0;i<5;i++){
+      setTimeout(function(){triggerFlash();}, i * 300);
+    }
+
+    // 显示揭示区域
+    setTimeout(function(){
+      revelation.classList.add('show');
+      doorPanel.style.opacity = '0';
+      doorPanel.style.transition = 'opacity 1s';
+    }, 1500);
+
+    // 门打开
+    setTimeout(function(){
+      doorOpening.style.background = 'rgba(200,180,150,0.1)';
+      doorOpening.style.borderRadius = '4px';
+      doorOpening.style.padding = '20px';
+      doorOpening.innerHTML = '<div class="door-open-text">◈ 门 打 开 了 ◈</div>' +
+        '<div style="text-align:center;font-size:11px;color:#6A5A48;animation:textAppear 2s 1s forwards;opacity:0;">走廊消失了。光从门缝中涌出。</div>';
+    }, 4000);
+
+    // 显示论坛
+    setTimeout(function(){
+      forumAfter.classList.add('show');
+      ghostDiamond.style.display = 'block';
+      setTimeout(function(){
+        forumAfter.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 500);
+      console.log('◈ 回声茶馆 · 欢迎回来');
+      console.log('◈ 一切都正常了。一切都……正常了。');
+    }, 7000);
+  }
+
+  // ===== 事件绑定 =====
+  nameBtn.addEventListener('click', function(){
+    var val = nameInput.value.trim();
+    if(checkSecretTrigger(val)) return;
+    tryName();
+  });
+
+  nameInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      var val = nameInput.value.trim();
+      if(checkSecretTrigger(val)) return;
+      tryName();
+    }
+  });
+
+  setTimeout(function(){nameInput.focus();}, 8000);
+
+  // ===== 走廊震动 =====
+  var corridor = document.querySelector('.corridor');
+  setInterval(function(){
+    if(solved) return;
+    var x = (Math.random() - 0.5) * 0.3;
+    corridor.style.transform = 'translateX(' + x + 'px)';
+    setTimeout(function(){
+      corridor.style.transform = 'translateX(0)';
+    }, 100);
+  }, 5000);
+
+  console.log('◈ 记忆碎片 #5 —— "我走了。有人成功过。"');
+  console.log('◈ 走廊尽头有一扇门。门上有一行字。');
+})();
+</script>
+
+<!-- ===== 弹窗系统 ===== -->
+<style>
+.modal-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-family:"Courier New",monospace
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:#12100D;
+  border:2px solid #3A3028;
+  padding:0;
+  width:340px;
+  max-width:90%;
+  box-shadow:0 0 40px rgba(0,0,0,0.5)
+}
+.modal-titlebar{
+  background:#1A1510;
+  color:#B09070;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:2px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #3A3028
+}
+.modal-close-btn{
+  width:18px;height:18px;
+  background:#3A3028;
+  border:1px solid #5A4A38;
+  text-align:center;
+  line-height:16px;
+  cursor:pointer;
+  font-size:10px;
+  color:#6A5A48;
+  transition:all 0.3s
+}
+.modal-close-btn:hover{
+  background:#5A4A38;
+  color:#B09070
+}
+.modal-body{
+  padding:16px;
+  font-size:11px;
+  color:#6A5A48;
+  line-height:1.8
+}
+.modal-body .hl{color:#B09070;text-shadow:0 0 6px rgba(180,140,100,0.2)}
+.modal-body .dim{color:#3A3028}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span id="modalTitle">◈ 走廊回声</span>
+      <span class="modal-close-btn" id="modalCloseBtn">✕</span>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var mO=document.getElementById('modalOverlay');
+  var mT=document.getElementById('modalTitle');
+  var mB=document.getElementById('modalBody');
+  var mC=document.getElementById('modalCloseBtn');
+  window.showModal=function(t,c){mT.textContent=t||'◈ 提示';mB.innerHTML=c||'';mO.classList.add('show');};
+  mC.addEventListener('click',function(){mO.classList.remove('show');});
+  mO.addEventListener('click',function(e){if(e.target===mO)mO.classList.remove('show');});
+})();
+</script>
+</body>
+</html>

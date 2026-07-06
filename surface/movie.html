@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>来推荐点冷门电影吧 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 5px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 6px; align-items: center; justify-content: flex-start; }
+.search-bar input { width: 220px; padding: 4px 8px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 4px 14px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .body .img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; line-height: 1.5; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="#">影音天地</a> › 来推荐点冷门电影吧
+  </div>
+
+  <div class="stats-banner">
+    本版块共有 <b>36</b> 个帖子 · 今日发帖 <span class="highlight">2</span> · 在线会员 <b>4</b> 人
+  </div>
+
+  <div class="thread-card">
+    <!-- ── 楼主帖 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0D0E8;">熬</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">熬夜选手</span>
+          <span>#1 · 2008-10-12 23:47</span>
+        </div>
+        <div class="body">
+          <p>深夜睡不着，来给大家推荐几部我最近淘到的<b>冷门佳片</b>。</p>
+          <p>作为一个资深影迷，主流榜单上的那些片子我基本都看过七七八八了，所以最近一直在挖一些没人关注的老电影。以下三部是我这一个月里看完觉得<b>最值得推荐</b>的，资源不算特别好找但网上都有，有心的朋友自己搜一下。</p>
+
+          <p><b>🎬 第一部：《黑洞频率》（Frequency, 2000）</b></p>
+          <div class="img-ph">📷 [img/movie-frequency.jpg] — 《黑洞频率》海报，画面中央是一台老式短波电台，背景是极光闪耀的夜空，字体使用90年代科幻片风格的粗体标题，色调以深蓝和紫色为主</div>
+          <p>这部可能不算极致冷门，但感觉周围知道的人真的不多。讲的是一个警察通过一台老式短波电台和三十年前的父亲跨时空通话，然后试图改变历史拯救父亲性命的故事。</p>
+          <p>别看是2000年的片子，剧本结构极其精巧。前半段你以为是个温情科幻片，后半段直接变成悬疑惊悚，节奏把控一流。父子两个在各自的时间线里配合破案的那种默契感真的燃到不行。最后一场火灾救援的戏我看了三遍，每一遍都起鸡皮疙瘩。豆瓣评分8.3但看过的人不到两万，属于严重被低估的那种。</p>
+          <p>而且这片子里的<b>时间线逻辑</b>居然没有硬伤，在穿越题材里真的算很难得的——它没有那种"祖父悖论"的纠结，而是用了"改变过去会导致记忆跟随改变"的设定，逻辑自洽。</p>
+
+          <p><b>🎬 第二部：《盗日者》（太阳を盗んだ男, 1979）</b></p>
+          <div class="img-ph">📷 [img/movie-sun-thief.jpg] — 《盗日者》电影截图，男主角穿着白色衬衫站在天台边缘，背后是夕阳下的城市轮廓，画面色调偏暖黄，具有70年代日本电影的颗粒感</div>
+          <p>这部是真正的大冷门——日本老电影，泽田研二主演。讲的是一个高中物理老师自制了一颗原子弹，然后以此要挟政府的故事。</p>
+          <p>别被这个听起来很严肃的设定劝退，实际上这部电影的调子非常黑色幽默。主角是个平时唯唯诺诺的老好人，被生活压迫到极限之后突然爆发，用一种极其荒诞的方式向整个社会体系宣战。你会在他的疯狂中看到一种诡异的合理性和解脱感。</p>
+          <p>泽田研二在片中的演技真的绝了——从最初的懦弱温顺到后来的癫狂偏执，眼神的变化层次分明。最后那场在天台上的对手戏，他一边哼着歌一边和警察对峙，那种混合着疯狂和悲伤的表情我到现在都忘不掉。</p>
+          <p>这片子在日本本土也几乎绝版了，我是在一个老电影论坛上找到的资源，画质一般但字幕还行。喜欢70年代日本电影风格的朋友<b>强烈推荐</b>。</p>
+
+          <p><b>🎬 第三部：《神秘的代码》（The Final Cut, 2004）</b></p>
+          <div class="img-ph">📷 [img/movie-final-cut.jpg] — 《神秘的代码》剧照，男主角凝视着全息投影中的人生回放画面，周围环绕着数据流，赛博朋克风格的冷色调布光，画面中有大量屏幕反射光效</div>
+          <p>这一部可能是三部里最冷的。罗宾·威廉姆斯主演——对，就是那个演《死亡诗社》和《心灵捕手》的罗宾·威廉姆斯——但他在这部片子里完全不是我们熟悉的那个样子。</p>
+          <p>世界观设定在不远的未来：每个人出生时就会被植入一种叫"Zoe芯片"的生物记忆记录装置，死后可以通过提取芯片中的记忆数据来剪辑一部"人生回顾影片"（也就是片名里的"The Final Cut"）。主角的职业就是一名"剪辑师"，负责为死者剪辑这些记忆影片——删掉那些丑陋的、不光彩的片段，只留下美好的东西呈现给家属。</p>
+          <p>整个片子都在探讨一个核心问题：<b>如果记忆可以被编辑，那"真实的人生"还有什么意义？</b>主角在自己职业生涯中剪辑过无数人的记忆，但却一直无法面对自己童年的一段创伤记忆。最后他发现自己也被植入了这种芯片——但他从来没被告知过。</p>
+          <p>这片子在当年的评价很两极分化，有人说它节奏太慢太沉闷，但也有人说它对记忆和身份的探讨是2000年代最深刻的科幻电影之一。我属于后者。罗宾·威廉姆斯在这部片里的表演完全没有他一贯的喜剧痕迹——他的眼神里有种深不见底的疲惫和悲伤，仿佛他演的不是角色而是自己内心的某一部分。</p>
+
+          <p><b>总结一下</b>：这三部片子之间有某种共通的气质——都是那种让你在看完之后会沉默很久的电影，不是单纯的娱乐产品，而是会让你思考一些平时不会去想的问题。如果你也喜欢这种"后劲很大"的电影，那我强烈推荐你找来看看。</p>
+          <p>大家如果有其他冷门好片也欢迎分享。深夜无聊，在线等回复。</p>
+        </div>
+        <div class="sig">—— 熬夜选手 · 凌晨三点的电影院 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 影迷甲回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0E0E0;">影</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">影迷甲</span>
+          <span>#2 · 2008-10-13 01:12</span>
+        </div>
+        <div class="body">
+          <p>熬夜选手推荐的这三部我必须说——品味真的不错。</p>
+          <p><b>《黑洞频率》</b>我很多年前在电视上看过，CCTV-6放过的冷门佳片。当时我还在上初中，看完之后激动得半夜睡不着觉，爬起来用家里的固定电话试着给我去世的爷爷打电话——当然打不通。但现在回想起来，那种"也许科技能让我们再见到想见的人"的浪漫感，就是好电影的力量吧。</p>
+          <p>这部片子最妙的地方在于它对无线电通信的描写出人意料地准确。作为一个业余无线电爱好者（我的呼号是BG4XYZ），我可以负责任地说片子里对短波电台的操作细节基本是对的——包括频率调谐、天调的操作、还有那个年代的通联方式。这说明导演肯定做了功课的。</p>
+          <p><b>《盗日者》</b>我没看过，但被你安利到了。泽田研二我知道——他是日本60年代到80年代的超级偶像，The Tigers乐队的主唱，在日本演艺圈的地位大概相当于中国这边的张国荣。他演电影我倒真没看过几部，这部我要去找找。</p>
+          <p><b>《神秘的代码》</b>我看了！2004年上映的时候我在电影院看的——对，国内居然有少数影院引进过这部片子。说实话当时看完之后我觉得很压抑，那种"每个人的人生都是被剪辑过的"的想法让我不舒服了好几天。但确实是一部好片，罗宾·威廉姆斯的表演完全配得上一个奥斯卡提名——可惜那年连提名都没拿到。</p>
+          <p>既然你推荐了三部，那我也回推三部吧：</p>
+          <p>1. <b>《千年女优》（2001）</b>——今敏的作品，其实不算特别冷门但在国内知道的人确实不多。用一部动画片讲了一个女演员横跨千年追寻爱情的故事，剪辑堪称神级，结尾我哭成狗。</p>
+          <p>2. <b>《这个男人来自地球》（2007）</b>——全片基本就一个场景、几个人在房间里聊天，但剧本的想象力之宏大让你完全不会觉得无聊。讲的是一个大学教授突然告诉他的同事们——他其实是一个活了一万四千年的原始人。</p>
+          <p>3. <b>《心房》（The Machinist, 2004）</b>——克里斯蒂安·贝尔为了演这部片子减重了28公斤，瘦成了一具骷髅。讲的是一个长期失眠的工人逐渐发现自己的生活充满了无法解释的诡异事件……结局反转非常震撼。</p>
+        </div>
+        <div class="sig">—— 影迷甲 · 家里囤了3000张DVD的男人 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 其他回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E8E0D0;">电</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">电影发烧友</span>
+          <span>#3 · 2008-10-13 08:35</span>
+        </div>
+        <div class="body">
+          <p>《盗日者》这片子我知道！去年东京国际电影节有一个"日本电影遗产"单元展映过这部片子，我当时托在日本的朋友帮忙搞了一张票。据说35mm的原版胶片只存世两卷了，所以正片放映之前还放了五分钟的胶片修复说明。</p>
+          <p>这片子在70年代末的日本引起了不小的争议——当时正好是日本左翼运动的高峰期，有人觉得这部片子是在教唆犯罪，还有人试图以"扰乱公共秩序"为由起诉制片方。不过后来不了了之了，因为片子里的原子弹其实是假的（主角根本做不出真的核弹，那个"原子弹"只是一个唬人的装置），所以讽刺意味远大于实际的破坏性。</p>
+          <p>泽田研二在拍完这部片子之后接受采访时说过一句话我印象很深——"我只是演了一个被社会逼到墙角的普通人，奇怪的是每个观众都在这个'普通人'身上看到了自己。"</p>
+        </div>
+        <div class="sig">—— 电影发烧友 · 看过4276部电影 ——</div>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="avatar" style="background:#D8E0E0;">半</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">半睡半醒</span>
+          <span>#4 · 2008-10-13 12:04</span>
+        </div>
+        <div class="body">
+          <p>半夜看到这个帖子忍不住上来说一句：《神秘的代码》结尾那段独白我几乎能背出来。</p>
+          <p>"每个人的一生都是一部未剪辑的影片。有些画面太丑陋，我们选择删掉。但删掉不代表它没有发生过。那些被你剪掉的片段，会在你意想不到的时候以另一种方式回到你的生命中。"</p>
+          <p>这台词写得真好。每次生活不如意的时候我就会想起这段话——那些失败和丢脸的瞬间也是我的一部分，删不掉也不必删。</p>
+        </div>
+        <div class="sig">—— 半睡半醒 · 介于梦与现实之间 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复框 ── -->
+    <div class="reply-form">
+      <textarea placeholder="写下你的回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;"></textarea>
+      <button class="btn" onclick="replyCheck()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+    </div>
+  </div>
+
+  <!-- ── 推荐帖子 ── -->
+  <div class="stats-banner" style="margin-top:8px;text-align:left;">
+    📎 本版其他热门：<a href="tech.html" style="color:#0000CC;">Chrome最近更新后变得特别卡</a> · <a href="food.html" style="color:#0000CC;">周末做了红烧排骨</a>
+  </div>
+
+</div>
+
+<!-- ── 右下角广告 ── -->
+<div class="ad-corner" id="ad-corner">
+  <div class="ad-close" onclick="closeAd()">✕</div>
+  <div class="ad-body">
+    <div class="ad-visitor">🔵 论坛访客</div>
+    <div class="ad-user">
+      当前在线：<em id="ad-count">4</em> 人<br>
+      注册用户：<span id="ad-users">熬夜选手, 影迷甲, 电影发烧友, 半睡半醒</span>
+    </div>
+    <div style="font-size:9px;color:#CCC;border-top:1px solid #F0F0E0;padding-top:6px;margin-top:6px;">
+      — 广告位招租 —
+    </div>
+  </div>
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+function replyCheck() {
+  var u = localStorage.getItem('echo_login_user');
+  if (u) {
+    showModal('✅', '<b>回复已提交</b><br><br>你的回复已发送。但管理员已离线，审核可能不会很快。');
+  } else {
+    showModal('🔒', '<b>请先登录</b><br><br>只有注册用户才能回复。<br><a href="login.html" style="color:#0000CC;">前往登录 →</a>');
+  }
+}
+function closeAd() {
+  var el = document.getElementById('ad-corner');
+  if (el) el.classList.add('hidden');
+  try { localStorage.setItem('echo_ad_closed', '1'); } catch(e) {}
+}
+try {
+  if (localStorage.getItem('echo_ad_closed') === '1') {
+    var el = document.getElementById('ad-corner');
+    if (el) el.classList.add('hidden');
+  }
+} catch(e) {}
+
+console.log('◈ 熬夜选手在凌晨三点还在看电影。');
+console.log('◈ 影迷甲说他也看过。但真的有人看过吗？');
+console.log('◈ 46 这个数字反复出现。可能只是巧合。');
+</script>
+
+</body>
+</html>

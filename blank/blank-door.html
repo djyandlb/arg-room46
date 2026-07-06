@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 这扇门</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#8B0000;font:13px/1.8 "Courier New",monospace;min-height:100vh;overflow-x:hidden}
+.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;position:relative;z-index:10;opacity:0.5}
+.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.5}
+.topbar .logo span{color:#8AB8D9}
+.topbar .nav{margin-left:auto}
+.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.5}
+.topbar .nav a:hover{opacity:1}
+.container{max-width:600px;margin:40px auto;padding:0 20px;text-align:center;position:relative;z-index:2}
+
+/* ── 门动画 ── */
+.door-frame{font-size:120px;margin:10px 0 30px;display:inline-block;animation:doorApproach 12s ease-in-out infinite alternate;position:relative;filter:blur(0.5px);transition:filter 0.5s}
+.door-frame:hover{filter:blur(0)}
+@keyframes doorApproach{
+  0%{transform:scale(0.6);opacity:0.03;text-shadow:0 0 5px rgba(204,0,0,0.1)}
+  30%{transform:scale(0.9);opacity:0.1;text-shadow:0 0 20px rgba(204,0,0,0.2)}
+  60%{transform:scale(1.1);opacity:0.25;text-shadow:0 0 50px rgba(204,0,0,0.4)}
+  100%{transform:scale(1.4);opacity:0.5;text-shadow:0 0 100px rgba(204,0,0,0.7)}
+}
+
+/* ── 叙事文本 ── */
+.story-block{margin:20px 0;padding:16px 18px;background:rgba(0,0,0,0.5);border-left:1px solid #1A0000;border-right:1px solid #1A0000}
+.story-block p{color:#553333;font-size:11px;line-height:2.2;margin-bottom:8px;letter-spacing:0.5px}
+.story-block p:last-child{margin-bottom:0}
+.story-block .hl{color:#884444}
+.story-block .dim{color:#331111;font-size:10px}
+.story-block .faint{color:#220000;font-size:9px}
+.story-block .crimson{color:#AA2222}
+.story-block .glitch-text{color:#442222;font-size:10px;animation:glitchFade 4s infinite}
+@keyframes glitchFade{0%,100%{opacity:0.5}50%{opacity:1}}
+.story-block .reverse{unicode-bidi:bidi-override;direction:rtl;color:#220000;font-size:10px;margin-top:6px}
+
+/* ── 云里雾里的引文 ── */
+.oracle-block{margin:24px 0;padding:14px;border:1px solid #0A0000;background:rgba(10,0,0,0.3)}
+.oracle-block .oracle-text{color:#331111;font-size:10px;line-height:2;font-style:italic}
+
+/* ── 开门按钮 ── */
+.open-hint{font-size:13px;color:#331111;margin:24px 0 16px;letter-spacing:6px;cursor:pointer;transition:all 0.3s;display:inline-block;padding:10px 40px;border:1px solid #1A0000}
+.open-hint:hover{color:#884444;border-color:#442222;text-shadow:0 0 12px rgba(139,0,0,0.2)}
+.open-hint:active{color:#CC0000;border-color:#660000}
+
+/* ── 底部谜语 ── */
+.riddle-area{color:#220000;font-size:9px;margin:20px 0;padding:10px;border-top:1px solid #0A0000;line-height:2.2}
+.riddle-area .knock-area{margin-top:8px}
+.riddle-area .knock-area .knock{animation:knockFlash 2s infinite;display:inline-block;color:#1A0000}
+@keyframes knockFlash{0%,100%{opacity:0.3}50%{opacity:1;color:#440000}}
+
+/* ── 走廊背景 ── */
+.corridor{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,#0A0000 0%,#050000 30%,#000 65%);z-index:-1}
+.corridor::after{content:'';position:fixed;top:0;left:50%;width:2px;height:100%;background:linear-gradient(180deg,transparent,rgba(100,0,0,0.08),transparent);transform:translateX(-50%);z-index:-1;animation:corridorLine 6s infinite}
+@keyframes corridorLine{0%,100%{opacity:0.2}50%{opacity:0.6}}
+
+/* ── 浮动文字 ── */
+.words{position:fixed;bottom:12%;left:50%;transform:translateX(-50%);color:#1A0000;font-size:10px;white-space:nowrap;z-index:1;animation:scrollText 30s linear infinite;opacity:0.3;pointer-events:none}
+@keyframes scrollText{
+  0%{transform:translateX(-50%) translateY(0);opacity:0.3}
+  50%{opacity:0.6}
+  100%{transform:translateX(-50%) translateY(-80%);opacity:0.3}
+}
+.words-bottom{position:fixed;top:15%;left:50%;transform:translateX(-50%);color:#0A0000;font-size:8px;white-space:nowrap;z-index:1;animation:scrollTextReverse 40s linear infinite;opacity:0.15;pointer-events:none}
+@keyframes scrollTextReverse{
+  0%{transform:translateX(-50%) translateY(-80%);opacity:0.15}
+  100%{transform:translateX(-50%) translateY(0);opacity:0.15}
+}
+.side-words-left{position:fixed;left:10px;top:50%;transform:translateY(-50%);color:#080000;font-size:7px;writing-mode:vertical-rl;z-index:1;letter-spacing:6px;animation:sideFade 8s infinite;pointer-events:none}
+@keyframes sideFade{0%,100%{opacity:0.2}50%{opacity:0.5}}
+.side-words-right{position:fixed;right:10px;top:50%;transform:translateY(-50%);color:#080000;font-size:7px;writing-mode:vertical-rl;z-index:1;letter-spacing:6px;animation:sideFade 8s infinite reverse;pointer-events:none}
+
+/* ── 底部 ── */
+.footer{position:fixed;bottom:10px;width:100%;text-align:center;font-size:9px;color:#1A0000;z-index:2}
+.footer .door-char{display:inline-block;animation:footerDoor 3s infinite}
+@keyframes footerDoor{0%,100%,50%{opacity:0.3}25%{opacity:0.8}}
+.flash-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999;opacity:0;pointer-events:none;transition:opacity 0.05s}
+.knock-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,rgba(50,0,0,0.1),transparent 50%);z-index:5;pointer-events:none;opacity:0;transition:opacity 0.5s}
+.hidden-data{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px)}
+
+/* ── 内容淡入 ── */
+.container{animation:fadeIn 0.6s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.scanlines{opacity:0.5;animation:scanPulse 4s ease-in-out infinite}
+@keyframes scanPulse{0%,100%{opacity:0.3}50%{opacity:0.6}}
+
+/* ── 搜索栏 ── */
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+/* ── 弹窗系统 ── */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;transition:color 0.2s;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer;transition:all 0.2s}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+@media(max-width:640px){
+  .door-frame{font-size:80px}
+  .side-words-left,.side-words-right{display:none}
+  .words{font-size:8px}
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="corridor"></div>
+<div class="knock-overlay" id="knockOverlay"></div>
+<div class="flash-overlay" id="flashOverlay"></div>
+<div class="side-words-left">门门门门门门门门门门门门门门门</div>
+<div class="side-words-right">开开开开开开开开开开开开开开开</div>
+<div class="words">那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门那扇门</div>
+<div class="words-bottom">ドアドアドアドアドアドアドアドアドアドアドアドア</div>
+
+<div class="topbar">
+<div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+<div class="nav"><a href="../forum.html">首页</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+
+<div class="door-frame" id="doorEmoji">🚪</div>
+
+<!-- 叙事块1：门的存在 -->
+<div class="story-block">
+<p>你站在一扇门前。</p>
+<p>不。更正——你一直站在一扇门前。</p>
+<p class="dim">这扇门在你打开 <b class="hl">dream.html</b> 的时候就在了。<br>
+在你点开 <b class="hl">echo.html</b> 的时候就在了。<br>
+在你盯着 <b class="hl">browser.html</b> 里的倒计时发呆的时候就在了。</p>
+<p class="glitch-text">它不是突然出现的。它只是突然被你看到了。</p>
+<p class="faint">因为以前的你，还没有准备好承认它的存在。</p>
+</div>
+
+<!-- 叙事块2：门的本质 -->
+<div class="story-block" style="border-left-color:#220000">
+<p class="dim">你以为是你在找这扇门。</p>
+<p class="faint">但其实是门在找你。</p>
+<p class="crimson" style="font-size:12px">它在每一个论坛页面里都留下了痕迹。</p>
+<p class="dim">在每一条帖子的间隙里。在每一次页面刷新的瞬间里。<br>
+在那些你以为是"系统错误"的乱码里。<br>
+在那些你以为是自己看错了的闪烁里。</p>
+<p class="faint">门不是被建造的。门是被发现的。<br>
+就像46号房间不是被建造的——它一直就在那里。</p>
+<p class="glitch-text" style="font-size:11px">你只是终于走到了正确的走廊。</p>
+</div>
+
+<!-- 预言块 -->
+<div class="oracle-block">
+<div class="oracle-text">
+◈ 门后有光。光里有声音。声音在问同一个问题。<br>
+◈ 门不是出口。门是入口。它通往同一个房间。<br>
+◈ 你已经在房间里了。你一直在房间里。<br>
+◈ 房间号是46。但你数过吗？<br>
+◈ 回声茶馆有46,046个帖子。4,604个会员。46人在线。<br>
+◈ 这些数字从来不会变。你注意到过吗？<br>
+<span class="faint">◈ 你从来没有注意过。因为你不该注意。</span>
+</div>
+</div>
+
+<!-- 叙事块3：开门之后 -->
+<div class="story-block" style="border-left-color:#330000">
+<p class="crimson">门后面有什么？</p>
+<p>没有人知道。<br>
+因为进去的人都没有回来过。<br>
+包括那些声称"只推开一条缝"的人。<br>
+包括那些说"我只看看"的人。</p>
+<p class="dim">包括你——如果你决定开门的话。</p>
+<p class="faint" style="margin-top:10px">但你已经决定了。否则你不会站在这里。</p>
+<p class="reverse">？吧来出不回就远永你，了开一这门</p>
+</div>
+
+<!-- 开门按钮 -->
+<div class="open-hint" id="openHint">[ 开 门 ]</div>
+
+<!-- 叙事块4：封条与低语 -->
+<div class="story-block" style="border:none;background:transparent;padding:4px">
+<p class="faint" style="font-size:9px;text-align:center">
+门上贴着46层封条。每一层都被之前的人撕开过。<br>
+封条上写着同一句话：<span class="crimson">不要打开。</span><br>
+每一任都打开了。他们是<span class="hl">V47</span>。你是下一个。<br>
+门后面没有46号房间——<span class="glitch-text">门后面是回声茶馆。</span>
+</p>
+</div>
+
+<!-- 谜语区 -->
+<div class="riddle-area">
+<span class="reverse">？吗正反看看试试——面后的门到看能你可</span>
+<div class="knock-area">
+<span class="knock">咚</span> &nbsp; <span class="knock">咚</span> &nbsp; <span class="knock">咚</span> &nbsp;
+<span style="color:#1A0000;font-size:9px">有人在敲门。从门里。不是从门外。</span>
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+<span class="door-char">🚪</span> &nbsp; 这扇门 &nbsp; <span class="door-char">🚪</span>
+</div>
+
+<div class="hidden-data">
+不要开门。无论你听到什么。无论你看到什么。门不是出口。门是入口。它通往同一个房间。你已经在房间里了。
+V46的笔记：我开了门。我就在门后。我还在。我永远在。
+如果你正在读这段话——你已经开过门了。你不记得了吗？
+门的那一边，一切都是颠倒的。连文字都是。连记忆都是。
+连你——都是。
+</div>
+
+<script>
+(function(){
+  console.log('%c◈ 你终于找到了这扇门。', 'color:#CC0000;font-size:13px;font-weight:bold');
+  console.log('%c◈ 它一直在等你。在每一页等你。', 'color:#660000;font-size:11px');
+
+  // 开门事件
+  var openHint = document.getElementById('openHint');
+  var doorOpened = false;
+
+  openHint.addEventListener('click', function(){
+    if(doorOpened) return;
+    doorOpened = true;
+
+    openHint.textContent = '[ 门 正 在 打 开 … ]';
+    openHint.style.color = '#884444';
+    openHint.style.borderColor = '#442222';
+    openHint.style.cursor = 'default';
+
+    // 第一次闪烁
+    var flash = document.getElementById('flashOverlay');
+    flash.style.opacity = '0.6';
+    setTimeout(function(){ flash.style.opacity = '0'; }, 80);
+
+    console.warn('%c◈ 你把手放在了门把手上。它是温的。', 'color:#CC0000;font-size:12px');
+    console.warn('%c◈ 门把手不应该有温度。除非有人从另一边握着。', 'color:#880000;font-size:11px');
+
+    setTimeout(function(){
+      openHint.textContent = '[ 你 推 开 了 门 ]';
+      openHint.style.color = '#AA4444';
+      openHint.style.borderColor = '#663333';
+
+      // 第二次闪烁
+      flash.style.opacity = '0.8';
+      setTimeout(function(){ flash.style.opacity = '0'; }, 100);
+
+      console.error('%c◈ 门开了。你看到了门后的东西。', 'color:#CC0000;font-size:14px;font-weight:bold');
+      console.error('%c◈ 门后是一个你熟悉的地方——但它不是原来的那个。', 'color:#880000;font-size:11px');
+
+      setTimeout(function(){
+        openHint.textContent = '[ 镜 中 论 坛 ]';
+        openHint.style.color = '#CC0000';
+        openHint.style.borderColor = '#880000';
+
+        // 第三次闪烁 + 跳转
+        flash.style.opacity = '0.9';
+        setTimeout(function(){
+          flash.style.opacity = '0';
+          // 导航到镜中论坛
+          window.location.href = 'blank-mirror.html';
+        }, 200);
+      }, 2000);
+    }, 1500);
+  });
+
+  // 键盘触发
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      openHint.click();
+    }
+  });
+
+  // 门抖动
+  var doorEmoji = document.getElementById('doorEmoji');
+  setInterval(function(){
+    if(Math.random() < 0.08){
+      doorEmoji.style.transform = 'scale(1.15)';
+      doorEmoji.style.opacity = '0.4';
+      setTimeout(function(){
+        doorEmoji.style.transform = '';
+        doorEmoji.style.opacity = '';
+      }, 300);
+    }
+  }, 2000);
+
+  // 敲门声
+  var knockOverlay = document.getElementById('knockOverlay');
+  setInterval(function(){
+    if(Math.random() < 0.1){
+      knockOverlay.style.opacity = '1';
+      setTimeout(function(){ knockOverlay.style.opacity = '0'; }, 400);
+      var sounds = ['咚。', '咚咚。', '咚——', '……咚。', '咚。咚。咚。', '——咚。'];
+      console.log('◈ ' + sounds[Math.floor(Math.random() * sounds.length)]);
+    }
+  }, 5000);
+
+  // 闪白
+  setInterval(function(){
+    if(Math.random() < 0.03){
+      flash.style.opacity = '0.5';
+      setTimeout(function(){ flash.style.opacity = '0'; }, 60);
+    }
+  }, 3000);
+
+  // 控制台循环信息
+  var conMsgs = [
+    '◈ 门不是物理的。门是概念的。',
+    '◈ 46号房间的每一任都看到了这扇门。每一任都开了。',
+    '◈ 门不在墙上。门在你身后。你感觉到了吗？',
+    '◈ 走廊在延伸。你身后的路越来越长。你不能回头了。',
+    '◈ 你伸出手。你碰到了门把手。它是——温暖的。',
+    '◈ 门缝里透出光。是红色的。像屏幕的光。像论坛的光。',
+    '◈ 门上有一行小字："你本不必走到这里。但你选择了。"',
+    '◈ V46的笔记："我开门不是因为我想知道门后有什么。而是因为门后有什么东西想让我知道。"',
+    '◈ 回声不是声音的重复。回声是你在重复自己。每一次开这个论坛，你都在走向同一扇门。',
+  ];
+  var ci = 0;
+  setInterval(function(){
+    console.log(conMsgs[ci % conMsgs.length]);
+    ci++;
+  }, 7000);
+
+  // 滚动触发
+  var scrollCount = 0;
+  window.addEventListener('scroll', function(){
+    scrollCount++;
+    if(scrollCount === 4){
+      console.warn('◈ 你在找什么？门就在你面前。');
+    }
+    if(scrollCount === 8){
+      console.error('◈ 你不需要往下翻。你需要的是开门。');
+    }
+  });
+
+  // 离开页面
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+      console.log('◈ 你暂时离开了。门不会。');
+    }
+  });
+
+  // 反转文字闪烁
+  setInterval(function(){
+    var rts = document.querySelectorAll('.reverse');
+    rts.forEach(function(el){
+      if(Math.random() < 0.12){
+        el.style.opacity = '0.4';
+        setTimeout(function(){ el.style.opacity = '1'; }, 100);
+      }
+    });
+  }, 4000);
+
+  console.log('◈ 系统日志：门状态——开启中。开启者——你。时间——所有时间。');
+  console.log('%c◈ 试试按下 Enter 键。', 'color:#333;font-size:10px');
+})();
+</script>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈</span><span class="modal-close-btn" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button class="modal-btn" onclick="closeModal()">确定</button></div></div></div>
+<script>function showModal(t){document.getElementById("modal-text").innerHTML=t;document.getElementById("modal-overlay").classList.add("show")}function closeModal(){document.getElementById("modal-overlay").classList.remove("show")}document.getElementById("modal-overlay").addEventListener("click",function(e){if(e.target===this)closeModal()});</script>
+</body>
+</html>

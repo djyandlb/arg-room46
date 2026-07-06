@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chrome最近更新后变得特别卡 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 5px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 6px; align-items: center; justify-content: flex-start; }
+.search-bar input { width: 220px; padding: 4px 8px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 4px 14px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="#">技术角落</a> › Chrome 最近更新后变得特别卡
+  </div>
+
+  <div class="thread-card">
+    <div class="post">
+      <div class="avatar" style="background:#D0D8E8;">技</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">技术宅阿明</span>
+          <span>#1 · 2008-10-16 22:08</span>
+        </div>
+        <div class="body">
+          <p>好吧我先说说我的配置：Windows XP SP3，Intel Core 2 Duo E6300，2GB DDR2 内存。不算好但也不算太差吧？之前用 Chrome 一直挺顺畅的，就是最近更新到 0.3.154.9 版本之后开始卡得不行。</p>
+          <p>具体症状：</p>
+          <p>1. 开了五六个标签页之后，Chrome 的内存占用直接飙到 1GB 以上。我刚才试了一下，只开了 Gmail、Google Reader、两个百度知道页面和这个论坛——就六个页面——任务管理器里 chrome.exe 进程的内存占用加起来有 1.2GB。我总共才 2GB 内存啊，一个浏览器吃掉一半多，剩下那点内存连开个 Word 都卡。</p>
+
+          <div class="img-ph">📷 [img/chrome-memory-taskmanager.jpg] — Windows XP 任务管理器截图，Chrome 相关进程共占 1,248MB 内存，页面文件使用量 1.8GB，CPU 使用率 65%，列表中有多个 chrome.exe 条目，经典的 XP 蓝灰界面风格</div>
+
+          <p>2. 滚动卡顿。不只是那些 JS 很多的页面卡，就连纯粹的文字页面，滚轮往下翻的时候也能感觉到明显的掉帧，一卡一卡的。我一开始还以为是鼠标的问题，换了个鼠标也一样。</p>
+          <p>3. 切换标签页延迟。以前点一下标签页就秒切过去了，现在点完之后有时候要等一两秒才会跳转，中间浏览器窗口会白一下。尤其是从视频网站切回来的时候，整个窗口直接白屏，过三四秒才恢复。</p>
+          <p>4. 打开新标签页白屏。按 Ctrl+T 打开新标签页，要白屏大概四五秒才能显示出来。那个"最近关闭的标签页"列表有时候是空白的，要等很久才渲染出来。</p>
+          <p>我已经试过的方法：</p>
+          <p>- 清除浏览器缓存和历史记录——无效。<br>
+          - 进 chrome://settings 重置所有设置——无效。<br>
+          - 卸载重装 Chrome——无效，装完还是一样卡。<br>
+          - 把所有扩展都禁用了——我本来就只装了 AdBlock 和 谷歌笔记本，全禁了没变化。<br>
+          - 用 CCleaner 清理了系统垃圾和注册表——无效。<br>
+          - 扫描了病毒和恶意软件——没扫出东西。</p>
+          <p>现在我在怀疑是不是 Chrome 新版的内存管理机制有问题。我记得之前的版本没这么吃内存。0.2 系列的时候我开七八个页面也就占用三四百兆，现在翻了三倍。查了一些国外论坛，有人说新版本的 V8 引擎更新导致内存泄漏，也有人说是因为 Chrome 改用了新的沙箱机制所以开销变大了。但我不确定。</p>
+          <p>有碰到同样情况的朋友吗？你们都怎么解决的？还是说只能换浏览器了？</p>
+        </div>
+        <div class="sig">—— 技术宅阿明 · 代码改变世界 ——</div>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="avatar" style="background:#E0E8F0;">蓝</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">蓝色大海</span>
+          <span>#2 · 2008-10-17 08:42</span>
+        </div>
+        <div class="body">
+          <p>同遇到这个问题。我是 9 月份更新完 Chrome 之后开始卡的，情况和楼主几乎一模一样。开五六个页面就卡得不行，内存占用一眼望去全是 chrome.exe。切换标签页白屏、滚动卡顿——全中。</p>
+          <p>我折腾了两周，最后放弃了，换了 Firefox 3.0.3。说实话换之前我也不太情愿，毕竟 Chrome 刚出来的时候吹得那么好，极简界面加 V8 引擎，当时觉得这就是浏览器的未来形态。但是用起来卡就是卡，再好的理念也顶不住实际体验。</p>
+          <p>换了 Firefox 之后，同样开 Gmail + Google Reader + 三四个普通网页，内存占用稳定在 250MB 左右，滚动流畅，切换标签页秒切。Firefox 3 的酸味引擎确实比 2 代强太多了，而且 Firefox 的扩展生态比 Chrome 成熟得多——Chrome 扩展也就那几十个，Firefox 那边什么 Firebug、Web Developer Toolbar、NoScript，叫得上名字的开发工具全都有。</p>
+          <p>当然 Firefox 也不是完美的——启动速度比 Chrome 慢一点，界面也不如 Chrome 清爽。但稳定性和内存管理真的是目前最好。我建议楼主如果实在找不到解决办法，可以先投奔 Firefox 观望一下，等 Chrome 后面几个版本修了内存问题再回来。反正书签可以同步，不冲突。</p>
+          <p>对了，还有个小技巧：如果你只是要暂时给 Chrome 降内存，可以去 chrome://plugins 禁用一些不常用的插件，比如 Java 和 Adobe Reader 的插件，这些插件会被自动加载到每一个标签页，很占资源。我禁用了之后大概能减少 200MB 左右的占用，但仍然是杯水车薪。</p>
+        </div>
+        <div class="sig">—— 蓝色大海 · 自由撰稿人 ——</div>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="avatar" style="background:#D8E0E8;">程</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">程序员小张</span>
+          <span>#3 · 2008-10-17 10:15</span>
+        </div>
+        <div class="body">
+          <p>我大概分析了一下，Chrome 新版变卡的原因可能有好几个方面叠加。</p>
+          <p><b>第一，V8 引擎的更新。</b> 0.3.x 版本的 V8 引入了新的编译器优化，按理说 JS 执行速度应该更快，但是优化有时候是以内存为代价的。V8 为每个页面分配的虚拟机实例现在会在启动时预先申请更多的内存池，而且有些优化路径的实现有内存泄漏的 Bug。我在 Chromium 的 Issue Tracker 上看到有人报告过这方面的问题，比如在大量 DOM 操作之后 V8 不会及时释放不再使用的对象。</p>
+          <p><b>第二，沙箱机制的资源开销。</b> Chrome 的沙箱设计是每个标签页一个独立进程，好处是一个页面崩溃不会影响其他页面，坏处就是每个进程都有自己的内存开销。0.3 版本之后沙箱加入了更多的安全隔离策略，新增了一些对 Windows 作业对象和访问令牌的操作，这些在内存和句柄层面都有额外消耗。你在任务管理器里看到的每个 chrome.exe 进程，有一套完整的 Windows 内核对象副本——句柄表、线程堆栈、进程环境块——这些叠加起来很可观。</p>
+          <p><b>第三，扩展的兼容性问题。</b> 我注意到楼主装了 AdBlock Plus for Chrome。这个扩展在 Chrome 0.3.x 版本上有已知的性能问题——它的过滤规则引擎在新的 V8 版本上触发了某些低效率的路径，尤其是在页面加载的初始阶段，AdBlock 会遍历所有 HTTP 请求的 URL 去匹配规则列表，每个请求会产生大量的正则匹配操作。Chrome 的每个标签页有自己的进程，所以这个开销会在每个标签页上单独发生一次。建议楼主先把 AdBlock 禁用了观察一下，如果还是卡再用其他扩展排查。最好是把所有扩展全禁了，开一个干净的 Chrome 跑一整天看看。</p>
+          <p><b>第四，硬盘 I/O 的影响。</b> 这个是很多人忽略的。Chrome 0.3.x 的磁盘缓存机制做了改动，现在会在后台更频繁地读写缓存数据库。如果用的是老式机械硬盘，IO 压力大的时候（比如你同时打开多个页面，每个页面都在读写自己的缓存文件），确实会感觉到卡顿。这个在 SSD 上不明显，但机械盘用户可能体会比较深。</p>
+          <p>楼主可以试试在 chrome://flags 里把 "GPU 加速渲染" 关掉，这个功能在 XP 上兼容性不太好，有可能会造成滚动卡顿。另外也可以试试在快捷方式的目标后面加上 --disable-javascript-harmony-shipping 参数来禁用一些实验性的 JS 特性，有时候能减少额外开销。</p>
+          <p>不过说到底，这些只是延寿手段，治标不治本。Chrome 团队现在还在快速迭代阶段，内存管理确实不是他们当前版本的重点。如果不急的话可以等等 0.4 或者 1.0 正式版——到时候大版本重构应该会解决这些问题。如果急的话就先换 Firefox 吧，不丢人。</p>
+        </div>
+        <div class="sig">—— 程序员小张 · 在改 Bug 的路上 ——</div>
+      </div>
+    </div>
+
+    <div class="reply-form">
+      <textarea placeholder="写下你的回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;"></textarea>
+      <button class="btn" onclick="replyCheck()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+function replyCheck() {
+  var u = localStorage.getItem('echo_login_user');
+  if (u) {
+    showModal('✅', '<b>回复已发送</b><br><br>✅ 你的回复已成功提交。<br>管理员审核后将会显示。');
+  } else {
+    showModal('🔒', '<b>请先登录</b><br><br>只有注册用户才能回复。<br><a href="login.html" style="color:#0000CC;">前往登录→</a>');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ SHIFT · 最后的警示</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#888;font:14px/2 "Courier New",monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.container{max-width:560px;padding:30px 24px;text-align:center;animation:fadeIn 2s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.line{opacity:0;margin:18px 0;animation:lineIn 1.5s ease forwards}
+.line:nth-child(1){animation-delay:0.5s}
+.line:nth-child(2){animation-delay:2.5s}
+.line:nth-child(3){animation-delay:4.5s}
+.line:nth-child(4){animation-delay:6.5s}
+.line:nth-child(5){animation-delay:8.5s}
+.line:nth-child(6){animation-delay:10.5s}
+.line:nth-child(7){animation-delay:12.5s}
+.line:nth-child(8){animation-delay:14.5s}
+.line:nth-child(9){animation-delay:16.5s}
+@keyframes lineIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.divider{color:#222;font-size:12px;letter-spacing:4px;margin:20px 0}
+.hl{color:#AA4444}
+.dim{color:#333;font-size:12px}
+.crimson{color:#662222;font-size:13px}
+.key{color:#884444;font-size:14px;font-weight:bold;letter-spacing:2px}
+.footer{margin-top:30px;font-size:10px;color:#1A1A1A;opacity:0;animation:fadeIn 2s 18s forwards}
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="divider">◈ ◈ ◈</div>
+
+<div class="line">你找到了不该找到的东西。</div>
+
+<div class="line dim">这个账号不属于任何已知的注册记录。</div>
+
+<div class="line">它的创建时间比论坛本身更早。</div>
+
+<div class="line"><span class="crimson">1975年11月4日 00:46:00。</span></div>
+
+<div class="line dim">那是 LAMP46 协议第一次被写入的时间。</div>
+
+<div class="divider line">—— —— ——</div>
+
+<div class="line">你已经走得太远了。</div>
+
+<div class="line"><span class="hl">开弓没有回头箭了。</span></div>
+
+<div class="line" style="margin-top:24px;">
+  <span style="color:#553333;">既然你一意孤行，我也不必多说。</span>
+</div>
+
+<div class="line" style="margin-top:16px;">
+  <span class="key">秘钥是 Keep Your Brain Clear</span>
+</div>
+
+<div class="line dim" style="font-size:10px;margin-top:20px;">
+  现在你知道该怎么做了。
+</div>
+
+<div class="footer">
+  <span class="blink">◈</span> LAMP46 · 1975-2009 · 通道已开启 <span class="blink">◈</span>
+</div>
+</div>
+
+<script>
+console.log('%c◈ SHIFT', 'color:#AA4444;font-size:18px;font-weight:bold');
+console.log('%c◈ 你看到了不该看到的东西。', 'color:#553333;font-size:12px');
+console.log('%c◈ 这个页面没有回头路。', 'color:#662222;font-size:11px');
+console.log('%c◈ 秘钥：Keep Your Brain Clear', 'color:#884444;font-size:14px;font-weight:bold');
+console.log('%c◈ 去 gateway 吧。你知道该做什么。', 'color:#553333;font-size:11px');
+</script>
+</body>
+</html>

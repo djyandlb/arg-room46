@@ -1,0 +1,645 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>【版规】回声茶馆发帖指南 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+.reply-form .btn:disabled { background: #E8E8E8; color: #999; border-color: #D0D0D0; cursor: not-allowed; transform: none; }
+
+/* ── 规则列表 ── */
+.rules-list { counter-reset: rule; padding: 0; list-style: none; }
+.rules-list li { counter-increment: rule; padding: 10px 0 10px 36px; border-bottom: 1px solid #E8E8E8; position: relative; font-size: 12px; line-height: 1.7; }
+.rules-list li::before { content: counter(rule) "."; position: absolute; left: 8px; top: 10px; font-weight: bold; color: #0D3050; font-size: 13px; }
+.rules-list li:last-child { border-bottom: none; }
+.rules-list .morse { font-family: monospace; color: #8B7355; font-size: 11px; letter-spacing: 2px; background: #F8F8F0; padding: 2px 6px; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html" style="color:#fff;">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="#">站务管理</a> › 【版规】回声茶馆发帖指南
+  </div>
+
+  <div class="stats-banner">
+    本帖子为 <b>版务公告</b> · 最后更新 2008-06-01 · 已有 <span class="highlight">14</span> 条回复 · <b>不可回复</b>
+  </div>
+
+  <div class="thread-card">
+    <!-- ── 楼主帖（版规正文） ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D0;">园</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">园丁</span>
+          <span style="background:#0D3050;color:#fff;padding:1px 6px;font-size:9px;">管理员</span>
+          <span>#1 · 2004-03-01 12:00</span>
+        </div>
+        <div class="body">
+          <p><b>欢迎来到回声茶馆。</b></p>
+          <p>本论坛创建于 2004 年，旨在为各位提供一个自由交流的空间。为了维护良好的讨论氛围，请所有用户仔细阅读并遵守以下版规。</p>
+
+          <ol class="rules-list">
+            <li>
+              <b>遵守法律法规。</b>禁止发布任何违反中国法律法规的内容，包括但不限于政治敏感、色情低俗、暴力恐怖、赌博诈骗等。一经发现，<b>立即删除并永久封号</b>，不另行通知。
+            </li>
+            <li>
+              <b>禁止刷版与挖坟。</b>请勿在短时间内连续发布大量无意义帖子（刷版），也请勿回复最后回复时间超过 <b>30 天</b> 的陈旧帖子（挖坟）。善用论坛的搜索功能查找已有讨论，避免重复发帖。违规者首次警告，再犯禁言处理。
+            </li>
+            <li>
+              <b>文明讨论。</b>禁止人身攻击、侮辱谩骂、恶意引战。你可以不同意别人的观点，但请<b>尊重别人表达观点的权利</b>。意见不合时请理性辩论，不要上升到个人攻击。违者视情节严重程度给予警告或禁言。
+            </li>
+            <li>
+              <b>禁止广告。</b>禁止发布任何形式的外部广告链接、商业推广、传销信息、以及带有盈利目的的引流行为。包括但不限于在签名档、头像、帖子正文中放置广告内容。
+              <span class="morse">-- .... .. ... / .. ... / -. --- - / .- / ... .. --. -. .- - ..- .-. .</span>
+            </li>
+            <li>
+              <b>违规处理机制。</b>首次违规给予站内信警告，第二次禁言 <b>3 天</b>，第三次永久封号。严重违规（如违法内容、恶意攻击等）直接永久封号，不经过警告流程。被封号用户如有异议可联系管理员申诉。
+            </li>
+          </ol>
+
+          <p style="margin-top:12px;color:#999;font-size:11px;border-top:1px dotted #E0E0E0;padding-top:8px;">
+            本版规自发布之日起生效。最终解释权归回声茶馆管理团队所有。<br>
+            如有疑问请在 FAQ 版面发帖询问。
+          </p>
+        </div>
+        <div class="sig">—— 园丁 · 维护论坛的花匠 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #2 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D8E8F0;">萌</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">萌新小透明</span>
+          <span>#2 · 2008-10-08 19:25</span>
+        </div>
+        <div class="body">
+          <p>好的版主，已读版规！</p>
+          <p>不过弱弱问一句，第四条规定末尾那一串符号是什么呀……看起来不像是普通的标点符号。</p>
+        </div>
+        <div class="sig">—— 萌新小透明 · 今天也在努力学习C语言 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #3 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D0;">园</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">园丁</span>
+          <span>#3 · 2008-10-08 20:10</span>
+        </div>
+        <div class="body">
+          <p>那是 <b>装饰符号</b>，是论坛模板自带的，没有什么特殊含义。不用在意那些。</p>
+          <p>欢迎新人，好好享受论坛吧。</p>
+        </div>
+        <div class="sig">—— 园丁 · 维护论坛的花匠 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #4 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8F0;">解</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">解密大师</span>
+          <span>#4 · 2008-10-08 21:45</span>
+        </div>
+        <div class="body">
+          <p>嗯……第四条末尾那串符号，说实话作为一个对编码有点研究的人，我得说它看起来很像 <b>摩斯电码</b>。</p>
+          <p>-- .... .. ... / .. ... / -. --- - / .- / ... .. --. -. .- - ..- .-. .</p>
+          <p>如果你把每个 "－" 当作 "—"（划），"." 当作 "·"（点），按摩斯电码来解码的话——</p>
+          <p>算了，可能真的是我多想了吧。园丁都说了只是装饰符号了，那就是装饰符号吧。</p>
+          <p>不过如果真有谁闲着没事去解码了，记得告诉我结果（笑）</p>
+        </div>
+        <div class="sig">—— 解密大师 · 解码者 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #5 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">夜</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">夜行客</span>
+          <span>#5 · 2008-10-08 23:02</span>
+        </div>
+        <div class="body">
+          <p>解密大师你话说一半太吊胃口了吧！</p>
+          <p>我刚刚对着摩斯电码表一个一个对照了一下，如果我的翻译没错的话，那段符号的意思是——</p>
+          <p><b>"THIS IS NOT A SIGNATURE"</b>（这不是签名/这不是一个标志）</p>
+          <p>等等……这反而更让人困惑了吧？既然园丁说是装饰符号，那为什么装饰符号会拼出一句完整的英文句子？这说不通啊。</p>
+          <p>我又检查了一遍，确保没有翻译错：</p>
+          <p>--  = M<br>
+          .... = H<br>
+          .. = I<br>
+          ... = S<br>
+          空格 = 词间隔<br>
+          .. = I<br>
+          ... = S<br>
+          空格<br>
+          -. = N<br>
+          --- = O<br>
+          - = T<br>
+          空格<br>
+          .- = A<br>
+          空格<br>
+          ... = S<br>
+          .. = I<br>
+          --. = G<br>
+          -. = N<br>
+          .- = A<br>
+          - = T<br>
+          ..- = U<br>
+          .-. = R<br>
+          . = E</p>
+          <p>——确实是 "THIS IS NOT A SIGNATURE" 没错了。</p>
+          <p>但这到底是什么意思啊？园丁能解释一下吗？</p>
+        </div>
+        <div class="sig">—— 夜行客 · 午夜行动 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #6 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D0;">园</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">园丁</span>
+          <span>#6 · 2008-10-09 08:30</span>
+        </div>
+        <div class="body">
+          <p>……我说了，那是装饰符号。</p>
+          <p>论坛模板自带的，不是我们加的内容。也许以前的管理员在编辑模板的时候不小心把什么文本粘贴进去了吧。总之没有特殊含义，大家不要过分解读。</p>
+          <p>这个帖子是用来发布版规的，请大家围绕版规内容进行讨论。如果对论坛功能有疑问可以去 FAQ 版面提问。</p>
+        </div>
+        <div class="sig">—— 园丁 · 维护论坛的花匠 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #7 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E8F0;">深</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">深海鱼</span>
+          <span>#7 · 2008-10-09 02:30</span>
+        </div>
+        <div class="body">
+          <p>说到奇怪的符号……我搜了一下 <b>46号房间</b> 这个词，结果被重定向到了一个空白页面。那个页面上什么都没有，只是一片空白，然后过了几秒自动跳转回来了。</p>
+          <p>我一开始以为是网络问题，但试了好几次都一样。而且不仅仅是"46号房间"，搜"Room46"也会跳到同样的空白页面。有意思的是，我试了其他数字，比如"45号房间"或者"47号房间"，都是正常的搜索结果，唯独46会触发跳转。</p>
+          <p>有人知道这是怎么回事吗？还是说只有我一个人遇到这个情况？</p>
+        </div>
+        <div class="sig">—— 深海鱼 · 在深水区潜行 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #8 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8F0;">解</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">解密大师</span>
+          <span>#8 · 2008-10-09 09:15</span>
+        </div>
+        <div class="body">
+          <p>深海鱼你说的这个情况……我也遇到了。</p>
+          <p>而且不只是搜索。我试探过直接访问 blank/blank-room.html 这个路径——对，我在浏览器的地址栏里试的——结果一样，跳转到空白页再弹回来。但如果你在跳转之前快速查看页面源码，能看到里面有几行注释。不过我没来得及看清写的是什么就被跳走了。</p>
+          <p>这个论坛的架构挺有意思的。看起来像是普通的 phpBB 论坛，但下面可能藏着一些……额外的页面。不过我也只是猜测，说不定是以前做测试的时候留下的废弃页面，搜索引擎不小心索引到了而已。</p>
+          <p>说到46，我还注意到一件小事：论坛版本号是 2.0.46，论坛的名字里带"回声"——回声在声学里不就是声音反射46毫秒以上才叫回声吗？好吧，可能只是巧合。</p>
+        </div>
+        <div class="sig">—— 解密大师 · 解码者 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #9 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">夜</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">夜行客</span>
+          <span>#9 · 2008-10-09 12:40</span>
+        </div>
+        <div class="body">
+          <p>解密大师你越说我越好奇了……</p>
+          <p>我刚才试了一下，在地址栏直接敲 forum.html 后面加了一些奇怪的参数，有些返回 404，有些跳转到别的页面。论坛的页面数量和版块数量好像不太对得上。首页上能看到的版块只有五六个吧，但我觉得这个论坛应该不止这么点内容。</p>
+          <p>那个摩斯码的事情我也还在想。园丁说是装饰符号，但谁会闲得没事在版规里塞一句 "THIS IS NOT A SIGNATURE" 当装饰啊？而且这句话本身就像是在暗示什么——"这不是一个签名"——那它到底是什么？</p>
+          <p>算了，也许真的是我想多了。最近熬夜熬多了脑子不清醒。</p>
+        </div>
+        <div class="sig">—— 夜行客 · 午夜行动 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #10 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0E0D8;">路</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">路人甲</span>
+          <span>#10 · 2008-10-10 14:22</span>
+        </div>
+        <div class="body">
+          <p>潜水好久上来冒个泡。关于这个46的事情，我记得很早之前——大概是2005年——论坛里有个老帖子提到过"只有46个人能看到的版面"之类的话。当时以为是玩笑没在意，现在想想也许不是空穴来风。</p>
+          <p>不过那个帖子我后来找不到了，可能是被删掉了或者沉到什么角落里去了。论坛经过好几次改版，很多老帖子的链接都失效了。</p>
+        </div>
+        <div class="sig">—— 路人甲 · 资深潜水员 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #11 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D8E8F0;">萌</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">萌新小透明</span>
+          <span>#11 · 2008-10-10 16:50</span>
+        </div>
+        <div class="body">
+          <p>哇这个帖子突然变得好热闹……我只是问了一句那串符号是什么，结果引出了这么多讨论。</p>
+          <p>所以结论是：摩斯码翻译出来是 "THIS IS NOT A SIGNATURE"，然后搜索"46号房间"会被带到空白页，而且论坛可能有隐藏版块？这个论坛到底是什么来头啊……</p>
+          <p>我突然觉得我注册这个论坛可能是今年做的最有趣的一个决定（笑</p>
+        </div>
+        <div class="sig">—— 萌新小透明 · 好奇心爆棚中 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #12 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D0;">园</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">园丁</span>
+          <span>#12 · 2008-10-10 20:00</span>
+        </div>
+        <div class="body">
+          <p>再次强调：<b>这是一个版规帖子</b>。</p>
+          <p>关于摩斯码——我再申明一次——是模板本身的装饰元素，没有隐藏含义。至于搜索跳转的问题，可能是论坛搜索系统的bug。我会在下次维护的时候检查一下。</p>
+          <p>请大家把注意力放在版规内容本身。如果有其他问题，请到合适的版面发帖。此帖锁定，不再接受回复。</p>
+        </div>
+        <div class="sig">—— 园丁 · 维护论坛的花匠 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #13 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E8F0;">深</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">深海鱼</span>
+          <span>#13 · 2008-10-10 22:15</span>
+        </div>
+        <div class="body">
+          <p>好吧，既然园丁说要回归版规本身……</p>
+          <p>那我有一个关于版规的实际问题：第三条规定了文明讨论，禁止人身攻击。那如果有人在帖子里面发表歧视性言论，比如地域歧视或者性别歧视，但没有直接针对某个具体的用户进行人身攻击——这种情况算违规吗？希望能在版规里明确一下。</p>
+          <p>因为我之前在其他论坛看到过很多擦边球式的歧视言论，发帖人不说"你怎么样"，而是说"XX地方的人都是怎么样"，然后下面就开始吵起来。我觉得这种情况也应该算在违规范围内吧？</p>
+          <p>另外关于第四条的广告规定——签名档里放个人博客的链接算广告吗？还是说只要不是商业性质的就不算？这点也建议明确一下。</p>
+        </div>
+        <div class="sig">—— 深海鱼 · 在深水区潜行 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #14 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0E0E0;">蓝</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">蓝色大海</span>
+          <span>#14 · 2008-10-11 09:30</span>
+        </div>
+        <div class="body">
+          <p>深海鱼问的问题我也想知道答案。之前我在另一个论坛就因为签名里放了自己的技术博客链接被当成广告封了，但其实那个博客就是记录学习笔记的，没有任何商业性质。</p>
+          <p>不过这个论坛的氛围一直挺好的，大家都很克制，很少看到吵架或者广告。版规虽然简单但确实有效吧。</p>
+          <p>顺便说一句，虽然园丁说那个摩斯码是装饰，但"THIS IS NOT A SIGNATURE"这句话——如果它不是装饰的话——也许是在告诉我们，版规的署名部分有什么问题？或者更广义地说，这个论坛里有些东西的"署名"可能是不真实的？</p>
+          <p>好了我不继续发散思维了，不然又要被园丁说了（笑）</p>
+        </div>
+        <div class="sig">—— 蓝色大海 · 自由撰稿人 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复框（已锁定） ── -->
+    <div class="reply-form">
+      <textarea placeholder="此帖已锁定，不可回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;" disabled></textarea>
+      <button class="btn" onclick="replyCheck()" disabled style="margin-top:6px;padding:4px 20px;background:#E8E8E8;color:#999;border:2px solid #D0D0D0;font:11px Verdana,sans-serif;cursor:not-allowed;">已锁定</button>
+    </div>
+  </div>
+
+  <!-- ── 版块导航 ── -->
+  <div class="stats-banner" style="margin-top:8px;text-align:left;">
+    📌 置顶：<a href="faq.html" style="color:#0000CC;">论坛帮助 & FAQ</a> · <a href="tech.html" style="color:#0000CC;">技术角落</a> · <a href="food.html" style="color:#0000CC;">美食版</a>
+  </div>
+
+</div>
+
+<!-- ── 右下角广告 ── -->
+<div class="ad-corner" id="ad-corner">
+  <div class="ad-close" onclick="closeAd()">✕</div>
+  <div class="ad-body">
+    <div class="ad-visitor">🔵 论坛访客</div>
+    <div class="ad-user">
+      当前在线：<em id="ad-count">5</em> 人<br>
+      注册用户：<span id="ad-users">园丁, 解密大师, 夜行客, 深海鱼, 蓝色大海</span>
+    </div>
+    <div style="font-size:9px;color:#CCC;border-top:1px solid #F0F0E0;padding-top:6px;margin-top:6px;">
+      — 广告位招租 —
+    </div>
+  </div>
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+function replyCheck() {
+  showModal('🔒', '<b>此帖已锁定</b><br><br>本帖子为版规公告，仅管理员可回复。<br>如有疑问请到 FAQ 版面发帖。');
+  return false;
+}
+function closeAd() {
+  var el = document.getElementById('ad-corner');
+  if (el) el.classList.add('hidden');
+  try { localStorage.setItem('echo_ad_closed', '1'); } catch(e) {}
+}
+try {
+  if (localStorage.getItem('echo_ad_closed') === '1') {
+    var el = document.getElementById('ad-corner');
+    if (el) el.classList.add('hidden');
+  }
+} catch(e) {}
+
+console.log('◈ 那些符号……是摩斯码？园丁说只是装饰。');
+console.log('◈ 论坛有46个版块但你只能看到5个。');
+console.log('◈ "THIS IS NOT A SIGNATURE" ——那它是什么？');
+</script>
+
+</body>
+</html>

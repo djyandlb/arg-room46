@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ V47</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#8B0000;font:13px/1.8 "Courier New",monospace;min-height:100vh;overflow-x:hidden}
+.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;opacity:0.5}
+.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.5}
+.topbar .logo span{color:#8AB8D9}
+.topbar .nav{margin-left:auto}
+.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.5}
+.topbar .nav a:hover{opacity:1}
+.container{max-width:680px;margin:40px auto;padding:0 20px;position:relative;z-index:1}
+.title{font-size:28px;color:#CC0000;text-align:center;margin-bottom:48px;letter-spacing:6px;text-shadow:0 0 15px rgba(204,0,0,0.25);animation:titleFlicker 5s infinite}
+@keyframes titleFlicker{
+  0%,100%{opacity:0.7;text-shadow:0 0 15px rgba(204,0,0,0.25)}
+  2%{opacity:0.2;text-shadow:0 0 5px rgba(204,0,0,0.05)}
+  4%{opacity:0.8;text-shadow:0 0 20px rgba(204,0,0,0.3)}
+  50%{opacity:0.6}
+  52%{opacity:0.1;text-shadow:none}
+  54%{opacity:0.7;text-shadow:0 0 25px rgba(204,0,0,0.35)}
+  90%{opacity:0.65}
+  92%{opacity:0.05;text-shadow:none}
+  94%{opacity:0.7}
+}
+.msg{color:#660000;font-size:12px;line-height:2.2;margin:18px 0;padding:14px 18px;border-left:2px solid #330000;transition:border-color 3s}
+.msg:hover{border-left-color:#660000}
+.msg .hl{color:#CC0000;font-weight:bold}
+.msg .hl-red{color:#CC0000;font-weight:bold;font-size:14px}
+.msg .dim{color:#330000}
+.msg .dim-light{color:#220000}
+.glitch-block{color:#440000;font-size:11px;line-height:1.8;margin:24px 0;padding:16px;border:1px solid #1A0000;word-break:break-all;font-family:"Courier New",monospace;position:relative;overflow:hidden}
+.glitch-block::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,transparent 0%,rgba(20,0,0,0.3) 50%,transparent 100%);pointer-events:none;animation:glitchOverlay 4s infinite}
+@keyframes glitchOverlay{0%,100%{opacity:0}50%{opacity:0.5}}
+.glitch-line{color:#330000;font-size:10px;line-height:1.6;padding:2px 0;animation:glitchLineFade 6s infinite}
+@keyframes glitchLineFade{0%,100%{opacity:0.3}50%{opacity:0.7}}
+.anchor{color:#CC0000;font-weight:bold;font-size:13px;display:inline-block;animation:anchorFlash 1.5s infinite}
+@keyframes anchorFlash{0%,100%{opacity:0.2;text-shadow:none}50%{opacity:1;text-shadow:0 0 15px rgba(204,0,0,0.6)}}
+.diary-entry{margin:20px 0;padding:16px;border:1px solid #1A0000;background:rgba(10,0,0,0.3);position:relative}
+.diary-entry .date{color:#220000;font-size:9px;letter-spacing:2px;margin-bottom:8px}
+.diary-entry .content{color:#440000;font-size:11px;line-height:2}
+.diary-entry .content .hl{color:#660000;font-weight:bold}
+.sig{text-align:right;color:#330000;font-size:11px;margin-top:24px;padding-top:16px;border-top:1px solid #1A0000;letter-spacing:1px}
+.sig .question{color:#220000;font-size:10px;margin-top:8px;animation:qFade 4s infinite}
+@keyframes qFade{0%,100%{opacity:0.2}50%{opacity:0.6}}
+.warning-line{text-align:center;color:#1A0000;font-size:9px;margin:30px 0;letter-spacing:4px}
+.running-text{font-size:8px;color:#0A0000;margin-top:20px;text-align:center;word-break:break-all;line-height:1.4;max-height:60px;overflow:hidden}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px)}
+.vignette{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.5) 100%)}
+.page-footer{text-align:center;padding:16px;font-size:9px;color:#1A0000;margin-top:40px;border-top:1px solid #0A0000}
+.timestamp-aside{position:fixed;top:20px;right:20px;font-size:8px;color:#0A0000;z-index:1;text-align:right}
+.timestamp-aside div{animation:tsFade 10s infinite}
+@keyframes tsFade{0%,100%{opacity:0.2}50%{opacity:0.5}}
+.corner-bg-text{position:fixed;bottom:10px;left:10px;font-size:7px;color:#050000;z-index:0;max-width:200px;line-height:1.2}
+.hidden-data{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+@media(max-width:640px){
+  .title{font-size:20px;letter-spacing:4px}
+  .timestamp-aside{display:none}
+}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;transition:color 0.2s;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer;transition:all 0.2s}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+<div class="timestamp-aside">
+<div>1975.11.04 00:46</div>
+<div>温度：46°F</div>
+<div>信号：不稳定</div>
+</div>
+<div class="corner-bg-text">ROOM46ROOM46ROOM46ROOM46ROOM46ROOM46</div>
+<div class="topbar">
+<div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+<div class="title">◈ V47</div>
+
+<div class="msg">
+我自称<span class="hl">倒数第二任</span>。<br>
+不是因为我数过了。<br>
+是因为我知道——后面还有人。<br>
+而我前面，还有46个。<br>
+<span class="dim">或者说，46个我。</span>
+</div>
+
+<div class="line" style="width:100%;height:1px;background:linear-gradient(90deg,transparent,#330000,#660000,#330000,transparent);margin:24px 0"></div>
+
+<div class="msg">
+<span class="hl-red">第46天。</span><br>
+我写下了那篇帖子。<br>
+0.046秒后，系统删了它。<br>
+不是管理员删的——<span class="hl">是它自己删的</span>。<br>
+<span class="dim-light">它不想让那篇帖子存在。</span><br>
+<span class="dim-light">它不想让后来的人看到真相。</span>
+</div>
+
+<div class="glitch-block">
+<span class="glitch-line">%&#x00A9;&amp;46ROOM46ROOM46ROOM46&amp;%&gt;&lt;&#x25A0;</span>
+<span class="glitch-line">ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ</span>
+<span class="glitch-line"><span class="anchor"><b>ANCHOR_0</b></span> &nbsp; <span class="anchor"><b>ANCHOR_0</b></span> &nbsp; <span class="anchor"><b>ANCHOR_0</b></span></span>
+<span class="glitch-line">ÿØÿà JFIF ÿÛ C &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;</span>
+<span class="glitch-line">ROOM46.ROOM46.ROOM46.ROOM46.ROOM46.ANCHOR</span>
+<span class="glitch-line"><span class="anchor"><b>ANCHOR_0</b></span> &gt;&gt; 信号定位中 &gt;&gt; <span class="anchor"><b>ANCHOR_0</b></span></span>
+<span class="glitch-line">%&#x00A9;&#x2588;&#x2588;&#x2588;&#x2588; 46°F 46°F 46°F &#x2588;&#x2588;&#x2588;</span>
+</div>
+
+<div class="diary-entry">
+<div class="date">◈ 第43天 · 记录碎片</div>
+<div class="content">
+房间的温度一直是<span class="hl">46°F</span>。无论我怎么调整空调。<br>
+墙壁在呼吸。我是说真的——墙壁在动。<br>
+不是视觉误差。<br>
+我贴上去听过。<br>
+<span class="dim">墙里面有东西在呼吸。</span>
+</div>
+</div>
+
+<div class="diary-entry">
+<div class="date">◈ 第44天 · 记录碎片</div>
+<div class="content">
+我今天试着把<span class="hl"><b>ANCHOR_0</b></span>这个词输入搜索框。<br>
+浏览器崩溃了。<br>
+不是程序崩溃——是屏幕上的字开始往&#x25A0;&#x25A0;里&#x25A0;&#x25A0;。<br>
+我按了电源键。<br>
+电源键陷进去了。<br>
+<span class="dim">像按在一团肉上。</span>
+</div>
+</div>
+
+<div class="diary-entry">
+<div class="date">◈ 第45天 · 记录碎片</div>
+<div class="content">
+我发现了之前住在这里的人的笔记。<br>
+他们都用同一个词：<span class="hl"><b>ANCHOR_0</b></span>。<br>
+这个词不是他们写的。<br>
+是房间告诉他们的。<br>
+就像房间也在告诉你你现在在读这段文字。<br>
+<span class="dim-light">你看，你也在跟着读。你也在变成我们。</span>
+</div>
+</div>
+
+<div class="line" style="width:100%;height:1px;background:linear-gradient(90deg,transparent,#330000,#660000,#330000,transparent);margin:24px 0"></div>
+
+<div class="msg">
+如果你能看到这个——<br>
+说明你已经走到了比我当初更远的地方。<br>
+<span class="hl">别停下来。</span><br>
+<span class="dim">但也别再往前了。</span><br><br>
+<span class="dim-light">因为往前一步，你就会发现——</span><br>
+<span class="dim-light">我还在前面等着你。</span><br><br>
+<span class="dim">若是你真的想知道的话——</span><br>
+<span class="highlight">搜索「站务管理」</span>
+</div>
+
+<div class="warning-line">◈ ◈ ◈ ◈ ◈ ◈ ◈ ◈ ◈ ◈ ◈</div>
+
+<div class="sig">
+—— V47 · 倒数第二任<br>
+<span class="question">谁是最后一任？</span>
+</div>
+
+<div class="running-text">
+ÿØÿà JFIF ÿÛ C 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46
+<b>ANCHOR_0</b> <b>ANCHOR_0</b> <b>ANCHOR_0</b> <b>ANCHOR_0</b> <b>ANCHOR_0</b> <b>ANCHOR_0</b> <b>ANCHOR_0</b>
+ROOM46ROOM46ROOM46ROOM46ROOM46ROOM46ROOM46ROOM46
+</div>
+
+</div>
+
+<div class="page-footer">◈ &nbsp; 倒数第二任 &nbsp; ◈</div>
+
+<div class="hidden-data">
+V47 的完整记录——第0天：我看到了那扇门。第1天：我打开了那扇门。第2天：我在房间里了。第3天：房间没有门。第4天：房间就是门。第5天起：我不再数日子了。因为日子在数我。
+</div>
+
+<script>
+(function(){
+  console.log('%c◈ V47的遗言。倒数第二任。谁是最后一任？', 'color:#CC0000;font-size:14px;font-weight:bold');
+
+  setTimeout(function(){
+    console.log('%c◈ ……是你。', 'color:#660000;font-size:16px;font-weight:bold;text-shadow:0 0 10px rgba(204,0,0,0.5)');
+  }, 4000);
+
+  setTimeout(function(){
+    console.log('%c◈ 不。不只是你。是所有读到这句话的人。', 'color:#440000;font-size:11px');
+  }, 7000);
+
+  var lastWarningShown = false;
+
+  var diaryMsgs = [
+    '◈ 温度传感器读数：46°F。恒定。',
+    '◈ <b>ANCHOR_0</b> 锚点信号强度：██████',
+    '◈ 第46次循环确认。V47仍在此处。',
+    '◈ V47的日记第47页：空白。他没能写到第47天。',
+    '◈ 系统时间：1975年11月4日 00:46:00。永远是。',
+    '◈ 墙在动。你看到了吗？你感觉到了吗？'
+  ];
+  var dIdx = 0;
+  setInterval(function(){
+    console.log(diaryMsgs[dIdx % diaryMsgs.length]);
+    dIdx++;
+  }, 5000);
+
+  var anchorEls = document.querySelectorAll('.anchor');
+  setInterval(function(){
+    anchorEls.forEach(function(el){
+      if(Math.random() < 0.3){
+        el.style.transform = 'translate(' + (Math.random() * 4 - 2) + 'px, ' + (Math.random() * 4 - 2) + 'px)';
+        setTimeout(function(){ el.style.transform = 'translate(0,0)'; }, 100);
+      }
+    });
+  }, 2000);
+
+  setInterval(function(){
+    var glitchLines = document.querySelectorAll('.glitch-line');
+    if(glitchLines.length > 0){
+      var idx = Math.floor(Math.random() * glitchLines.length);
+      glitchLines[idx].style.color = '#CC0000';
+      glitchLines[idx].style.opacity = '0.8';
+      setTimeout(function(){
+        glitchLines[idx].style.color = '#330000';
+        glitchLines[idx].style.opacity = '0.3';
+      }, 200);
+    }
+  }, 4000);
+
+  var warned70 = false, warned90 = false;
+  var detectScroll = function(){
+    var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    if(!warned70 && pct > 0.7){
+      warned70 = true;
+      console.warn('◈ 你还在往下翻。V47的警告你没看到吗？');
+    }
+    if(!warned90 && pct > 0.9){
+      warned90 = true;
+      console.error('◈ 你翻到了底部。你看到了不该看的东西。');
+      setTimeout(function(){
+        console.log('%c◈ 最后一任永远在阅读。最后一任永远在循环。', 'color:#330000;font-size:10px');
+      }, 2000);
+    }
+  };
+  window.addEventListener('scroll', detectScroll);
+
+  var blinkCount = 0;
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+      blinkCount++;
+      console.log('◈ 你第' + blinkCount + '次移开了视线。<b>ANCHOR_0</b>在记录。');
+    }
+  });
+
+  console.log('◈ 系统笔记：V47的记录在第46天中断。原因未知。建议：不要继续调查。');
+})();
+</script>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈</span><span class="modal-close-btn" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button class="modal-btn" onclick="closeModal()">确定</button></div></div></div>
+<script>function showModal(t){document.getElementById("modal-text").innerHTML=t;document.getElementById("modal-overlay").classList.add("show")}function closeModal(){document.getElementById("modal-overlay").classList.remove("show")}document.getElementById("modal-overlay").addEventListener("click",function(e){if(e.target===this)closeModal()});</script>
+</body>
+</html>

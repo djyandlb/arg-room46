@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>◈ 残骸</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#555;font:12px/1.8 "Courier New",monospace;min-height:100vh;overflow-x:hidden}.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;opacity:0.35}.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.45}.topbar .logo span{color:#8AB8D9;opacity:0.45}.topbar .nav{margin-left:auto}.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.35}.topbar .nav a:hover{opacity:0.8}.container{max-width:680px;margin:40px auto;padding:0 20px;text-align:center}.title{font-size:22px;color:#333;letter-spacing:8px;margin-bottom:10px}.title .hl{color:#CC0000;font-weight:bold}.subtitle{color:#1A1A1A;font-size:10px;letter-spacing:3px;margin-bottom:30px;text-transform:uppercase}.section-label{color:#222;font-size:9px;letter-spacing:3px;margin:24px 0 10px;text-align:left;text-transform:uppercase;border-bottom:1px solid #111;padding-bottom:6px}.cipher-block{background:#050505;border:1px solid #1A1A1A;padding:20px;margin:16px 0;text-align:left;font-size:10px;line-height:1.8;color:#222;word-break:break-all;font-family:"Courier New",monospace}.cipher-block .line{margin:5px 0;padding:2px 0}.cipher-block .line .tag{color:#1A1A1A;font-size:8px;margin-right:8px;display:inline-block;min-width:60px}.cipher-block .line .base64{color:#333}.cipher-block .line .urlenc{color:#2A2A2A}.cipher-block .line .hex{color:#444}.cipher-block .line .decoded{color:#660000;font-weight:bold}.cipher-block .line .revealed{color:#CC0000;font-weight:bold;text-shadow:0 0 4px rgba(204,0,0,0.15)}.cipher-block .line .garbage{color:#111;letter-spacing:2px}.arrow-row{color:#222;font-size:16px;text-align:center;margin:6px 0;letter-spacing:4px}.decoder-box{background:#050505;border:1px solid #1A1A1A;padding:16px;margin:16px 0;text-align:left;font-size:10px;color:#333}.decoder-box .step{margin:8px 0;padding:6px 10px;border-left:2px solid #111;transition:all 0.5s}.decoder-box .step.done{border-left-color:#660000;color:#444}.decoder-box .step.found{border-left-color:#CC0000;color:#CC0000;font-weight:bold}.decoder-box .step .arrow{color:#440000;margin-right:6px}.fragments{background:#050505;border:1px solid #1A1A1A;padding:16px;margin:16px 0;text-align:left;font-size:10px;color:#222;line-height:1.8}.fragments .f{margin:8px 0;padding:4px 0}.fragments .f .hl{color:#440000;font-weight:bold}.fragments .f .red{color:#CC0000;font-weight:bold}.note{margin:24px 0;padding:16px;color:#1A1A1A;font-size:10px;line-height:1.8;border:1px dashed #111}.note b{color:#440000}.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,#222,transparent);margin:24px 0}.scroll-hint{color:#0A0A0A;font-size:8px;margin:12px 0;letter-spacing:2px}.footer{text-align:center;padding:20px;font-size:8px;color:#111;border-top:1px solid #0A0A0A;margin-top:40px}.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px)}.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center}.modal-overlay.show{display:flex}.modal-box{background:#0A0000;border:2px solid #1A1A1A;width:400px;max-width:90%}.modal-box .modal-titlebar{background:#0A0A0A;color:#555;padding:8px 14px;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1A1A1A}.modal-box .modal-titlebar .modal-close-btn{width:18px;height:18px;background:#111;border:1px solid #222;text-align:center;line-height:16px;cursor:pointer;font-size:10px;color:#444;font-family:"Courier New",monospace}.modal-box .modal-titlebar .modal-close-btn:hover{background:#555;color:#000}.modal-box .modal-body{padding:24px 16px;font-size:12px;color:#555;text-align:center;line-height:1.8}.modal-box .modal-footer{border-top:1px solid #111;padding:10px;text-align:center}.modal-box .modal-footer .modal-btn{padding:6px 28px;background:#111;border:1px solid #222;color:#555;font:11px "Courier New",monospace;cursor:pointer}.modal-box .modal-footer .modal-btn:hover{background:#222}@media(max-width:640px){.title{font-size:18px;letter-spacing:4px}}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── 分割线脉冲 ── */
+.divider { animation: dividerGlow 3s ease-in-out infinite; }
+@keyframes dividerGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+</style><script src="../js/search.js"></script></head><body>
+<div class="scanlines"></div>
+<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div></div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+<div class="title">◈ <span class="hl">残 骸</span></div>
+<div class="subtitle">—— 多层加密数据碎片 ——</div>
+<div class="section-label">◈ 原始数据块 · 来源未知</div>
+<div class="cipher-block">
+<div class="line"><span class="tag">[BASE64]</span><span class="base64">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span></div>
+<div class="arrow-row">▼ 第一层解码</div>
+<div class="line"><span class="tag">[DECODED]</span><span class="decoded">"V47 left you a clue. Search 'V4cXy'."</span></div>
+<div class="arrow-row">▼ ▼</div>
+<div class="line"><span class="tag">[URL-ENC]</span><span class="urlenc">%56%34%37%20%6C%65%66%74%20%79%6F%75%20%61%20%63%6C%75%65</span></div>
+<div class="arrow-row">▼ 第二层解码</div>
+<div class="line"><span class="tag">[DECODED]</span><span class="decoded">"V47 left you a clue."（重复确认）</span></div>
+<div class="arrow-row">▼ ▼ ▼</div>
+<div class="line"><span class="tag">[HEX]</span><span class="hex">46 6f 6f 6d 34 36 20 69 73 20 77 61 74 63 68 69 6e 67</span></div>
+<div class="arrow-row">▼ 最终解码</div>
+<div class="line"><span class="tag">[REVEALED]</span><span class="revealed">"room46 is watching"</span></div>
+<div class="arrow-row">⋯ ⋯ ⋯</div>
+<div class="line"><span class="tag">[GARBAGE]</span><span class="garbage">ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ</span></div>
+<div class="line"><span class="tag">[GARBAGE]</span><span class="garbage">ᚱᛟᛟᛗᚹᛏᛟᚱᛖᛋᛈᛟᚾᛞᚢᛗᛗᛉ</span></div>
+<div class="line"><span class="tag">[CORRUPT]</span><span class="garbage">%&#00A9;&amp;ROOM46&amp;%&gt;&lt;ÿ&amp;ROOM46&amp;%&gt;&lt;ÿ</span></div>
+</div>
+<div class="section-label">◈ 解码过程分析</div>
+<div class="decoder-box" id="decoder-box">
+<div class="step" id="step1"><span class="arrow">▶</span> Step 1: 检测到 Base64 编码模式（特征：大写字母+数字+== 结尾）</div>
+<div class="step" id="step2"><span class="arrow">▶</span> Step 2: Base64 解码 → 得到 V47 留下的线索文字</div>
+<div class="step" id="step3"><span class="arrow">▶</span> Step 3: 检测到 URL 编码（特征：% 后跟两位十六进制）</div>
+<div class="step" id="step4"><span class="arrow">▶</span> Step 4: URL 解码 → 确认 V47 线索</div>
+<div class="step" id="step5"><span class="arrow">▶</span> Step 5: 检测到 Hex 编码（特征：两位十六进制+空格）</div>
+<div class="step" id="step6"><span class="arrow">▶</span> Step 6: Hex 解码 → <span class="found-text">"room46 is watching"</span></div>
+</div>
+<div class="section-label">◈ 残存分析笔记</div>
+<div class="fragments">
+<div class="f">来自 V47 的加密笔记 —— 部分内容已损坏。</div>
+<div class="f">Base64 · URL编码 · Hex · <span class="hl">还有更多层</span> —— 部分数据已无法恢复。</div>
+<div class="f">这些加密不是连续的。是碎片。是 V47 在不同时间留下的。</div>
+<div class="f">有些加密不是为了隐藏信息 —— <span class="hl">是为了隐藏加密者自己。</span></div>
+<div class="f"><span class="red">"room46 is watching"</span> —— 这是你要记住的。</div>
+<div class="f">它不仅仅在看着你。它在记录你。就像它曾经记录过 V47 一样。</div>
+</div>
+<div class="divider"></div>
+<div class="note">
+Outsider —— 局外人。<br>
+残骸 —— 解码到一半的内容。<br>
+有些信息永远无法完全恢复。<br>
+就像有些人永远无法完全消失。<br><br>
+<b>V47 是局外人。</b><br>
+<b>你也是局外人。</b><br>
+<b>所有的局外人最终都会变成残骸。</b>
+</div>
+<div class="divider"></div>
+<div class="cipher-block" style="margin-top:10px;">
+<div class="line"><span class="tag">[未知层]</span><span class="garbage">４６號房間の残骸はここにある</span></div>
+<div class="line"><span class="tag">[未知层]</span><span class="garbage">······ −− ·· ··· ··· ·· −−− ·· −−− ·· ··· ·· −·−· ·· −−− −− ·· ·· −·· ··</span></div>
+<div class="line"><span class="tag">[未知层]</span><span class="garbage">⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮⋮</span></div>
+<div class="line"><span class="tag">[注]</span><span class="decoded">以上数据已损坏。解码器无法识别。</span></div>
+<div class="line"><span class="tag">[注]</span><span class="decoded">就像 V47 一样——部分内容永远遗失了。</span></div>
+</div>
+<div class="scroll-hint">◈ 残骸 · 未完全解码 · 回声档案馆节点 #WRECK-46</div>
+</div>
+<div class="footer">◈ Outsider · 残骸 · 加密的遗言</div>
+<script>
+(function() {
+  'use strict';
+  console.log('◈ 残骸。加密的遗言。不是所有信息都该被解码。');
+  var steps = ['step1','step2','step3','step4','step5','step6'];
+  steps.forEach(function(id, i) {
+    setTimeout(function() {
+      var el = document.getElementById(id);
+      if (el) {
+        el.classList.add('done');
+        if (i === steps.length - 1) {
+          el.classList.add('found');
+          console.log('◈ room46 is watching。解码链确认。');
+        }
+      }
+    }, (i + 1) * 800);
+  });
+  setInterval(function() {
+    var titles = ['◈ 残骸', '◈ 加密碎片', '◈ Outsider', '◈ room46 is watching', '◈ 解码中……'];
+    document.title = titles[Math.floor(Math.random() * titles.length)];
+  }, 5000);
+  setInterval(function() {
+    var msgs = [
+      '◈ V47 的加密笔记——能解码的部分只有这些。',
+      '◈ 有些数据层已经完全损坏。就像 V47 本人。',
+      '◈ "room46 is watching"——你在它的视野里。',
+      '◈ 残骸不会消失。它们只会等待下一个解码者。'
+    ];
+    console.log(msgs[Math.floor(Math.random() * msgs.length)]);
+  }, 6000);
+})();
+</script></body></html>

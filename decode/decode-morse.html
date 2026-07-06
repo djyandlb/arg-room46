@@ -1,0 +1,440 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>信号解码终端 · 摩斯密码 · 回音</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:13px/1.8 "Courier New",monospace;background:#0A0A0A;color:#AAA;min-height:100vh;overflow-x:hidden}
+::selection{background:#00CC00;color:#0A0A0A}
+::-webkit-scrollbar{width:6px;background:#0A0A0A}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#555}
+
+/* 顶部导航 */
+.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;position:sticky;top:0;z-index:1000}
+.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;user-select:none}
+.topbar .logo span{color:#8AB8D9}
+.topbar .nav{margin-left:auto}
+.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;margin:0 8px;transition:color 0.2s}
+.topbar .nav a:hover{color:#fff}
+
+/* 页面布局 */
+.container{max-width:760px;margin:0 auto;padding:24px 20px}
+
+/* 标题 */
+h1{color:#00CC00;font-size:18px;margin-bottom:4px;letter-spacing:2px}
+h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacing:1px}
+
+/* 区块 */
+.section{background:#111;border:1px solid #222;padding:20px;margin-bottom:20px;border-radius:2px;position:relative}
+.section h3{color:#00CC00;font-size:11px;margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;padding-bottom:6px;border-bottom:1px solid #1A1A1A}
+.section .section-corner{position:absolute;top:0;right:0;font-size:8px;color:#1A3A1A;padding:4px 6px;font-family:"Courier New",monospace}
+
+/* 原始信号 */
+.raw-signal{background:#0D0D0D;border:1px solid #2A2A2A;padding:18px;font-size:20px;letter-spacing:4px;color:#666;text-align:center;margin-bottom:16px;word-break:break-all;font-family:"Courier New",monospace;line-height:2.2;position:relative}
+.raw-signal::before{content:"⬡ 信号输入";position:absolute;top:-8px;left:12px;background:#111;padding:0 8px;font-size:8px;color:#444;letter-spacing:1px}
+.raw-signal .dot{color:#8AB8D9}
+.raw-signal .dash{color:#6A9AB9}
+.raw-signal .sep{color:#333}
+
+/* 解码过程 */
+.decode-line{color:#555;font-size:11px;margin:3px 0;padding:4px 6px;font-family:"Courier New",monospace;transition:all 0.15s}
+.decode-line.done{color:#00CC00;background:rgba(0,204,0,0.04)}
+.decode-line.active{color:#CCCC00;background:rgba(204,204,0,0.06);animation:blink 1s infinite}
+.decode-line .step-num{display:inline-block;width:40px;color:#444}
+.decode-line .step-arrow{color:#333;margin:0 6px}
+.decode-line.done .step-num{color:#008800}
+.decode-line.done .step-arrow{color:#006600}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* 解码过程汇总 */
+.decode-summary{background:#0A0A0A;border:1px solid #1A1A1A;padding:12px 14px;margin-top:12px;font-size:10px;color:#444;font-family:"Courier New",monospace;line-height:1.6}
+.decode-summary span{display:inline-block;margin:0 2px}
+.decode-summary .char-done{color:#00CC00}
+.decode-summary .char-wait{color:#2A2A2A}
+.decode-summary .char-active{color:#CCCC00}
+
+/* 结果框 */
+.result-box{background:#0A1A0A;border:2px solid #00CC00;padding:28px 20px;text-align:center;margin:16px 0;position:relative;overflow:hidden}
+.result-box::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,rgba(0,204,0,0.06) 0%,transparent 70%);pointer-events:none}
+.result-box .label{color:#666;font-size:10px;margin-bottom:10px;letter-spacing:3px;text-transform:uppercase}
+.result-box .result{font-size:42px;font-weight:bold;color:#00CC00;letter-spacing:10px;text-shadow:0 0 20px rgba(0,204,0,0.35),0 0 40px rgba(0,204,0,0.15);font-family:"Courier New",monospace}
+.result-box .result-sub{color:#006600;font-size:10px;margin-top:10px;letter-spacing:2px;opacity:0.6}
+.result-box .timer-line{height:2px;background:#1A3A1A;margin-top:16px;border-radius:1px;overflow:hidden}
+.result-box .timer-line .timer-fill{height:100%;width:0%;background:#00CC00;transition:width 0.3s;border-radius:1px}
+
+/* 氛围故事 */
+.atmosphere{background:#0A0A0A;border:1px solid #1A1A1A;padding:20px;margin:16px 0;border-left:3px solid #003300;position:relative}
+.atmosphere p{color:#666;font-size:12px;line-height:2;margin:10px 0;text-indent:2em}
+.atmosphere p .glow-text{color:#00CC00;font-weight:bold;text-shadow:0 0 6px rgba(0,204,0,0.3)}
+.atmosphere p .danger-text{color:#CC0000;font-weight:bold}
+.atmosphere .sig-line{text-align:right;color:#333;font-size:10px;margin-top:14px;border-top:1px solid #1A1A1A;padding-top:10px;letter-spacing:1px}
+.atmosphere .sig-line span{color:#006600}
+
+/* 对照表 */
+.reference-wrapper{background:#0D0D0D;border:1px solid #222;padding:14px;margin:16px 0}
+.reference-wrapper .ref-title{font-size:10px;color:#444;margin-bottom:10px;letter-spacing:1px}
+.reference-table{width:100%;font-size:10px;color:#666;border-collapse:collapse;font-family:"Courier New",monospace}
+.reference-table td{padding:4px 6px;border:1px solid #1A1A1A;text-align:center}
+.reference-table td:first-child{color:#00CC00;font-weight:bold;width:auto;min-width:28px}
+.reference-table td:nth-child(2){color:#8AB8D9;font-size:11px;letter-spacing:1px}
+.reference-table tr:hover td{background:rgba(0,204,0,0.02)}
+.reference-table .ref-category{color:#444;font-size:9px;background:#0A0A0A;text-transform:uppercase;letter-spacing:1px}
+.reference-table .ref-category td{color:#555;border-color:#151515}
+
+/* 教学区 */
+.tutorial-box{background:#0D0D0D;border:1px solid #222;padding:16px;margin:16px 0;font-size:11px;color:#666;line-height:1.9}
+.tutorial-box h4{color:#00CC00;font-size:11px;margin-bottom:8px;margin-top:14px;letter-spacing:1px}
+.tutorial-box h4:first-child{margin-top:0}
+.tutorial-box p{margin:6px 0;text-indent:2em}
+.tutorial-box code{background:#1A1A1A;color:#8AB8D9;padding:1px 6px;font-size:10px;font-family:"Courier New",monospace;border:1px solid #2A2A2A}
+.tutorial-box .tip{background:#0A1A0A;border-left:2px solid #00CC00;padding:8px 12px;margin:8px 0;font-size:10px;color:#888}
+.tutorial-box .tip strong{color:#00CC00}
+.tutorial-box ul{margin:6px 0 6px 20px;list-style:none}
+.tutorial-box ul li{padding:2px 0;position:relative}
+.tutorial-box ul li::before{content:"▸";color:#004400;position:absolute;left:-14px}
+
+/* 解码日志 */
+.decode-log{background:#080808;border:1px solid #1A1A1A;padding:14px;margin:16px 0;font-size:10px;color:#444;font-family:"Courier New",monospace;line-height:1.7;max-height:200px;overflow-y:auto}
+.decode-log .log-line{padding:1px 0}
+.decode-log .log-line .log-time{color:#2A2A2A}
+.decode-log .log-line .log-ok{color:#006600}
+.decode-log .log-line .log-info{color:#555}
+
+/* 导航链接 */
+.nav-links{margin-top:24px;padding:14px 0;border-top:1px solid #222;font-size:11px;display:flex;flex-wrap:wrap;gap:8px}
+.nav-links a{color:#555;text-decoration:none;margin-right:16px;transition:color 0.2s}
+.nav-links a:hover{color:#00CC00}
+.nav-links a.link-warn{color:#883333}
+.nav-links a.link-warn:hover{color:#CC0000}
+
+/* 页脚 */
+.page-footer{text-align:center;padding:16px;font-size:9px;color:#333;border-top:1px solid #1A1A1A;margin-top:24px;line-height:2}
+.page-footer .disclaimer{color:#444;letter-spacing:1px}
+.page-footer .footer-sig{color:#1A1A1A;font-size:8px;margin-top:4px}
+
+/* 模态框 */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal-box{background:#111;border:2px solid #2A2A2A;padding:0;width:400px;max-width:92%;box-shadow:0 0 40px rgba(0,0,0,0.9)}
+.modal-box .modal-titlebar{background:#0D3050;color:#fff;padding:10px 14px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{width:20px;height:20px;background:#2A2A2A;text-align:center;line-height:18px;cursor:pointer;font-size:10px;color:#888;border-radius:2px;transition:all 0.2s}
+.modal-box .modal-titlebar .modal-close-btn:hover{background:#CC0000;color:#fff}
+.modal-box .modal-body{padding:28px 18px;font-size:12px;color:#AAA;text-align:center;line-height:1.9}
+.modal-box .modal-footer{border-top:1px solid #222;padding:10px;text-align:center}
+.modal-box .modal-footer .modal-btn{padding:7px 28px;background:#2A2A2A;border:1px solid #444;color:#AAA;font:11px "Courier New",monospace;cursor:pointer;transition:all 0.2s}
+.modal-box .modal-footer .modal-btn:hover{background:#3A3A3A;color:#fff}
+
+/* 进度指示器 */
+.progress-bar{height:2px;background:#1A1A1A;margin-bottom:16px;border-radius:1px;overflow:hidden}
+.progress-bar .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#003300,#00CC00);transition:width 0.5s;border-radius:1px}
+
+/* 响应式 */
+@media(max-width:640px){
+.container{padding:16px 12px}
+.result-box .result{font-size:28px;letter-spacing:6px}
+.raw-signal{font-size:16px;letter-spacing:2px}
+.section{padding:14px}
+}
+@media(max-width:400px){
+.result-box .result{font-size:22px;letter-spacing:4px}
+.raw-signal{font-size:13px;letter-spacing:1px}
+}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+
+.search-bar{background:#0D0D0D;padding:8px 16px;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #333;background:#0A0A0A;font:10px monospace;color:#AAA;outline:none}
+.search-bar input:focus{border-color:#00CC00}
+.search-bar button{padding:4px 14px;background:#222;border:1px solid #444;color:#AAA;font:10px monospace;cursor:pointer}
+.search-bar button:hover{background:#333;color:#00CC00}
+
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div></div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+
+<div class="container">
+
+<!-- 标题区 -->
+<h1>◈ 信号解码终端 v2.3</h1>
+<h2>信道：#ECHO-7 · 信号类型：摩斯脉冲 · 置信度：99.7%</h2>
+
+<!-- 进度条 -->
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+<!-- 原始信号 -->
+<div class="section">
+<h3>📡 原始信号捕获</h3>
+<div class="raw-signal" id="raw-signal-display">
+.-- .- - -.-. .... .. -. --.
+</div>
+<div style="text-align:center;font-size:9px;color:#333;letter-spacing:2px;margin-bottom:4px">
+▸ 信号长度 8 字符 · 采样率 44.1kHz · 信噪比 23dB ▸
+</div>
+</div>
+
+<!-- 解码过程 -->
+<div class="section">
+<h3>⚙️ 逐字符解码</h3>
+<div id="decode-steps"></div>
+
+<!-- 解码文字汇总 -->
+<div class="decode-summary" id="decode-summary">
+<span style="color:#333">解码序列：</span>
+<span class="char-wait" id="cs-0">.</span>
+<span class="char-wait" id="cs-1">.</span>
+<span class="char-wait" id="cs-2">.</span>
+<span class="char-wait" id="cs-3">.</span>
+<span class="char-wait" id="cs-4">.</span>
+<span class="char-wait" id="cs-5">.</span>
+<span class="char-wait" id="cs-6">.</span>
+<span class="char-wait" id="cs-7">.</span>
+</div>
+</div>
+
+<!-- 解码结果 -->
+<div class="section" id="result-section" style="display:none;">
+<h3>✅ 解码完成 · 信号锁定</h3>
+<div class="result-box">
+<div class="label">◈ 信号内容解码结果 ◈</div>
+<div class="result">WATCHING</div>
+<div class="result-sub">[ 解码置信度：100% · 校验和：0x47AE ]</div>
+<div class="timer-line"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+</div>
+
+<!-- 氛围故事 -->
+<div class="atmosphere">
+<p>它在看着你。从你打开这个页面之前。</p>
+<p>你检查过自己的网络摄像头吗？那个指示灯——它亮过吗？你不记得了，对吧。你不记得很多事情了。</p>
+<p>这段摩斯码来自论坛的帖子 <span class="glow-text">#回声</span>。你发誓自己没有写过它。但你无法解释为什么你的账号会在凌晨 3:47 发布那条帖子——那时候你明明在睡觉。</p>
+<p>去看看论坛成员们的 <span class="danger-text">个人主页</span>——也许他们留下了更多痕迹。</p>
+<p>或者……也许你才是那个留下痕迹的人。只是你忘了。</p>
+<div class="sig-line"><span>◈</span> 信号源追踪中 · 最后活动：03:47:21 UTC <span>◈</span></div>
+</div>
+</div>
+
+<!-- 解码日志 -->
+<div class="section" id="log-section" style="display:none;">
+<h3>📋 解码日志</h3>
+<div class="decode-log" id="decode-log"></div>
+</div>
+
+<!-- 摩斯密码对照表 -->
+<div class="section">
+<h3>📖 摩斯密码国际标准对照表</h3>
+<div class="reference-wrapper">
+<div class="ref-title">▸ ITU-R M.1677-1 国际摩斯码标准 · 字母区</div>
+<table class="reference-table">
+<tr><td>A</td><td>.-</td><td>B</td><td>-...</td><td>C</td><td>-.-.</td><td>D</td><td>-..</td></tr>
+<tr><td>E</td><td>.</td><td>F</td><td>..-.</td><td>G</td><td>--.</td><td>H</td><td>....</td></tr>
+<tr><td>I</td><td>..</td><td>J</td><td>.---</td><td>K</td><td>-.-</td><td>L</td><td>.-..</td></tr>
+<tr><td>M</td><td>--</td><td>N</td><td>-.</td><td>O</td><td>---</td><td>P</td><td>.--.</td></tr>
+<tr><td>Q</td><td>--.-</td><td>R</td><td>.-.</td><td>S</td><td>...</td><td>T</td><td>-</td></tr>
+<tr><td>U</td><td>..-</td><td>V</td><td>...-</td><td>W</td><td>.--</td><td>X</td><td>-..-</td></tr>
+<tr><td>Y</td><td>-.--</td><td>Z</td><td>--..</td><td></td><td></td><td></td><td></td></tr>
+</table>
+</div>
+
+<div class="reference-wrapper">
+<div class="ref-title">▸ 数字区</div>
+<table class="reference-table">
+<tr><td>0</td><td>-----</td><td>1</td><td>.----</td><td>2</td><td>..---</td><td>3</td><td>...--</td></tr>
+<tr><td>4</td><td>....-</td><td>5</td><td>.....</td><td>6</td><td>-....</td><td>7</td><td>--...</td></tr>
+<tr><td>8</td><td>---..</td><td>9</td><td>----.</td><td></td><td></td><td></td><td></td></tr>
+</table>
+</div>
+
+<div class="reference-wrapper">
+<div class="ref-title">▸ 常见标点</div>
+<table class="reference-table">
+<tr><td>.</td><td>.-.-.-</td><td>,</td><td>--..--</td><td>?</td><td>..--..</td><td>/</td><td>-..-.</td></tr>
+<tr><td>(</td><td>-.--.</td><td>)</td><td>-.--.-</td><td>&amp;</td><td>.-...</td><td>:</td><td>---...</td></tr>
+</table>
+</div>
+</div>
+
+<!-- 摩斯密码教学 -->
+<div class="section">
+<h3>🔍 摩斯密码识别指南</h3>
+<div class="tutorial-box">
+<h4>什么是摩斯密码？</h4>
+<p>摩斯密码（Morse Code）是一种通过不同的信号排列顺序来传递信息的编码方式。它由美国人萨缪尔·摩斯在1830年代发明，最初用于电报通信。摩斯码的核心元素只有两个：点（.）和划（-），点的长度为一个时间单位，划的长度为三个时间单位。</p>
+
+<h4>如何识别摩斯密码？</h4>
+<p>在论坛帖子或网页中，摩斯密码通常以点和划的形式出现，字符之间用空格分隔，单词之间用斜杠（/）分隔。如果你看到类似 <code>.- .-.. .-- .- -.-- ...</code> 这样由点和划组成的序列，那很可能就是摩斯码。在回声茶馆的帖子中，它可能隐藏在任何位置——正文、签名档、甚至HTML注释里。</p>
+
+<h4>快速解码技巧</h4>
+<div class="tip"><strong>技巧一：</strong> 记住高频字母的摩斯码——E是「.」、T是「-」、A是「.-」、N是「-.」，这四个字母占了英语文本的大约40%。</div>
+<div class="tip"><strong>技巧二：</strong> 摩斯码中字母之间的空格是一个划的长度（3个单位），单词之间的空格是7个单位。在文本表示中，字符间用一个空格分隔。</div>
+<div class="tip"><strong>技巧三：</strong> 遇到不确定的符号，对照完整对照表逐字符检查。如果解码结果看起来像是无意义的字母组合，检查是否遗漏了空格或符号位置错误。</div>
+
+<h4>回声茶馆中的摩斯码</h4>
+<p>本解码终端捕获到的信号 <code>.-- .- - -.-. .... .. -. --.</code> 解码为 <code>WATCHING</code>。这个信号来源于论坛中的一个可疑帖子。类似的信号可能隐藏在论坛的更多角落——帖子内容、用户签名、甚至CSS文件中。保持警觉，继续搜索。</p>
+
+<div class="tip"><strong>提示：</strong> 在网页中查看源码（Ctrl+U 或右键→查看页面源码），在HTML注释中可能隐藏着更多线索。回声茶馆的搭建者似乎喜欢在注释中留下信息。</div>
+</div>
+</div>
+
+<!-- 导航链接 -->
+<div class="nav-links">
+<a href="../forum.html">◈ 返回回声茶馆</a>
+<a href="../forum.html" class="link-warn">🔍 搜索"WATCHING"</a>
+<a href="../forum.html" class="link-warn">🔍 搜索"回音"</a>
+<a href="../surface/browser.html">🌐 浏览器终端</a>
+<a href="decode-base64.html">▤ Base64 解码器</a>
+</div>
+
+</div>
+
+<!-- 页脚 -->
+<div class="page-footer">
+<div class="disclaimer">⚠ ARG 解谜游戏 · 回声茶馆 · 信号解码终端 v2.3</div>
+<div class="footer-sig">「你在看屏幕的时候，屏幕也在看你。」—— 终端日志 2024</div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal-box">
+<div class="modal-titlebar">
+<span>◈ 终端消息</span>
+<span class="modal-close-btn" onclick="closeModal()">✕</span>
+</div>
+<div class="modal-body"><div id="modal-text">消息</div></div>
+<div class="modal-footer"><button class="modal-btn" onclick="closeModal()">确 定</button></div>
+</div>
+</div>
+
+<script>
+// 摩斯码解码表 — ITU-R M.1677-1 标准
+var MORSE_MAP = {
+  '.-':'A', '-...':'B', '-.-.':'C', '-..':'D', '.':'E', '..-.':'F', '--.':'G',
+  '....':'H', '..':'I', '.---':'J', '-.-':'K', '.-..':'L', '--':'M', '-.':'N',
+  '---':'O', '.--.':'P', '--.-':'Q', '.-.':'R', '...':'S', '-':'T',
+  '..-':'U', '...-':'V', '.--':'W', '-..-':'X', '-.--':'Y', '--..':'Z',
+  '-----':'0', '.----':'1', '..---':'2', '...--':'3', '....-':'4',
+  '.....':'5', '-....':'6', '--...':'7', '---..':'8', '----.':'9'
+};
+
+// 原始信号
+var rawSignal = ".-- .- - -.-. .... .. -. --.";
+var codes = rawSignal.split(' ');
+var expectedResult = "WATCHING";
+
+// DOM 元素
+var stepsEl = document.getElementById('decode-steps');
+var progressFill = document.getElementById('progress-fill');
+var logEl = document.getElementById('decode-log');
+
+// 生成解码步骤
+var stepLines = [];
+codes.forEach(function(c, i) {
+  var ch = MORSE_MAP[c] || '?';
+  var line = document.createElement('div');
+  line.className = 'decode-line';
+  line.innerHTML = '<span class="step-num">' + 'Step&nbsp;' + (i+1) + '</span>'
+    + '<span class="step-arrow">→</span>'
+    + '<span class="step-code">' + c + '</span>'
+    + '<span class="step-arrow">→</span>'
+    + '<span class="step-char">[&nbsp;' + ch + '&nbsp;]</span>';
+  stepsEl.appendChild(line);
+  stepLines.push(line);
+});
+
+// 解码动画
+var idx = 0;
+var timer = setInterval(function() {
+  if (idx >= codes.length) {
+    clearInterval(timer);
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('log-section').style.display = 'block';
+
+    // 进度条100%
+    progressFill.style.width = '100%';
+
+    // 输出解码日志
+    var logLines = [
+      '[03:47:12] ◈ 信号捕获开始 · 检测到摩斯脉冲模式',
+      '[03:47:14] ◈ 原始信号接收完成 · 8 个字符编码',
+      '[03:47:16] ◈ 解码算法启动 · 匹配 ITU-R 标准对照表',
+      '[03:47:19] ◈ 逐字符解码完成 · 结果校验通过',
+      '[03:47:21] ◈ 解码结果：WATCHING · 置信度 100%',
+      '[03:47:21] ⚠ 警告：信号源无法追溯 · 可能来自内部网络',
+      '[03:47:22] ◈ 日志写入完毕。'
+    ];
+    logLines.forEach(function(l) {
+      var logLine = document.createElement('div');
+      logLine.className = 'log-line';
+      if (l.indexOf('⚠') > -1) {
+        logLine.innerHTML = '<span class="log-time">' + l.slice(0,10) + '</span> ' + l.slice(10);
+      } else {
+        logLine.innerHTML = '<span class="log-time">' + l.slice(0,10) + '</span> ' + l.slice(10);
+      }
+      logEl.appendChild(logLine);
+    });
+
+    // 控制台输出
+    console.log('◈ 摩斯解码完成。信号源：echo.html 帖子 #1。解码结果：WATCHING。');
+    console.log('◈ 解码耗时：' + (idx * 300) + 'ms · 字符数：8 · 匹配率：100%');
+    return;
+  }
+
+  // 进度更新
+  var pct = Math.round(((idx + 1) / codes.length) * 100);
+  progressFill.style.width = pct + '%';
+
+  // 字符汇总更新
+  var csEl = document.getElementById('cs-' + idx);
+  if (csEl) {
+    csEl.className = 'char-done';
+    csEl.textContent = expectedResult[idx];
+  }
+
+  // 步骤动画
+  stepLines[idx].className = 'decode-line active';
+  setTimeout(function() {
+    stepLines[idx].className = 'decode-line done';
+    idx++;
+  }, 250);
+}, 350);
+
+// 模态框函数
+function showModal(t) {
+  document.getElementById('modal-text').innerHTML = t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// 页面加载完成后显示提示
+document.addEventListener('DOMContentLoaded', function() {
+  // 延迟显示一个小提示
+  setTimeout(function() {
+    console.log('%c◈ 回声茶馆终端 · 版本 2.3', 'color: #00CC00; font-size: 14px; font-weight: bold');
+    console.log('%c◈ 提示：查看页面源码可能发现更多线索', 'color: #666; font-size: 11px');
+  }, 500);
+});
+</script>
+
+</body></html>

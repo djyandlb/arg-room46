@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 路由 · 里</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="index.html">[索引]</a>
+    <a href="terminal.html">[终端]</a>
+    <a href="archives.html">[档案]</a>
+  </div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="breadcrumb">◈ <a href="index.html">回声茶馆</a> &gt; <a href="index.html">里论坛</a> &gt; 路由分析</div>
+
+<div class="title">◈ 路由 · 里</div>
+<div class="subtitle">/dev/net/trace ｜ 技术分析帖 · 阅读前请确认你已准备好面对真相</div>
+
+<div class="thread-card">
+
+  <!-- ── 楼主：网络管理员 ── -->
+  <div class="post">
+    <div class="avatar">网</div>
+    <div class="content">
+      <div class="header">
+        <span class="author">网络管理员</span>
+        <span>2025-??-?? ??:??</span>
+      </div>
+      <div class="body">
+        <p><b>标题：</b>关于<b>46号房间</b>的路由分析报告</p>
+        <p><b>发帖人：</b>网络管理员</p>
+        <p><b>时间：</b>2025-??-?? ??:??</p>
+
+        <p>先说结论：<b>46号房间</b>不在任何服务器上。它在你的机器里。</p>
+        <p>以下是技术分析过程。</p>
+
+        <div class="divider">————— 实验环境 —————</div>
+
+        <p>我用了一台干净的测试机。全新安装的操作系统，从未访问过任何相关站点。抓包工具已部署。<b>DNS</b>缓存已清空。一切从零开始。</p>
+        <p>硬件配置：Intel Core i7-12700K / <b>46</b>GB RAM / 1TB NVMe SSD。为什么是 <b>46</b>GB？这台机器原本是 <b>46</b>GB 内存——不是常规的 32 或 64。我怀疑这台机器在被分配给测试用途之前，就已经被"改造"过。软件方面：Windows 11 专业版，未激活，未安装任何第三方安全软件。网络配置：自动 DHCP，未修改 hosts 文件，未配置 VPN，未安装任何虚拟网卡。</p>
+        <p>为了确保环境的纯净性，我在安装完操作系统后立即进行了网络抓包，确认没有任何异常流量持续存在。然后我执行了第一次<b>DNS 查询</b>——目标是 room46.hole。这个域名不在任何公共 <b>DNS</b> 记录中，它理论上不应该被解析。</p>
+
+        <div class="divider">————— 第一步：域名解析 —————</div>
+
+        <p>输入：nslookup room46.hole</p>
+        <div class="code-box">
+  服务器:  localhost<br>
+  地址:  127.0.0.1<br>
+  <br>
+  非权威应答:<br>
+  名称:  room46.hole<br>
+  地址:  <b>127.0.0.46</b>
+        </div>
+        <p>注意返回的地址——<b>127.0.0.46</b>。这不是一个公网IP。这是回环地址的变体。<b>127.0.0.0/8</b> 整个段都是回环地址，通常只用 <b>127.0.0.1</b>，但 <b>127.0.0.46</b> 也是合法的。它指向的是——你自己的机器。</p>
+        <p>这意味着什么？意味着你发出的一次<b>DNS 查询</b>，被系统内部的某个机制拦截并重定向到了本地。<b>域名系统</b>的正常流程是：你的机器向递归服务器发起<b>查询</b>，递归服务器向根服务器<b>查询</b>，最终返回权威结果。但这里——<b>查询</b>根本没离开你的机器。</p>
+        <p>我用 Wireshark 抓包确认了这一点。在发出 nslookup 命令的同时抓取所有网络接口的数据包。结果：零出站数据包。<b>每一次查询</b>都被拦截在了本地网络栈内部。我重复了多次<b>查询</b>，结果完全一致。</p>
+        <p>为了排除操作系统级别的缓存干扰，我执行了 ipconfig /flushdns 并重启了系统。再次<b>查询</b>——结果依然返回 <b>127.0.0.46</b>。这说明拦截点不在 <b>DNS</b> 缓存层，而在更底层的地方。</p>
+
+        <div class="divider">————— 第二步：路由追踪 —————</div>
+
+        <p>输入：tracert <b>127.0.0.46</b></p>
+        <div class="code-box">
+  1  &lt;1ms   localhost [127.0.0.1]<br>
+  2  &lt;1ms   localhost [127.0.0.1]<br>
+  3  &lt;1ms   localhost [127.0.0.1]<br>
+  4  &lt;1ms   localhost [127.0.0.1]<br>
+  5  &lt;1ms   localhost [127.0.0.1]<br>
+  ...<br>
+  <b>46</b>  &lt;1ms  room46.hole [127.0.0.46]
+        </div>
+        <p><b>46</b>跳。全部在本地完成。你的数据包根本没有离开过你的电脑。它在你自己的网络栈里绕了<b>46</b>圈，然后落在一个你从未配置过的地址上。</p>
+        <p>这个结果非常有意思。普通的路由追踪到 <b>127.0.0.1</b> 只需要 1 跳。但到 <b>127.0.0.46</b> 需要 <b>46</b> 跳。这说明<b>46号房间</b>并不是简单地在本地监听一个端口——它在你的网络栈里建立了一个虚拟的路径，这个路径恰好有 <b>46</b> 个跃点。</p>
+        <p>我尝试调整了 TTL 值进行更精细的探测。当 TTL=1 时，数据包在第一个跃点就被丢弃。TTL=2 时到达第二个跃点。以此类推，直到 TTL=<b>46</b> 时才最终到达目标。每个跃点的响应时间都小于 1 毫秒，说明这些跃点完全是虚拟的——它们存在于网络栈的软件层中，不涉及任何物理硬件。</p>
+        <p>我还尝试了使用不同协议的路由追踪：ICMP traceroute、UDP traceroute、TCP traceroute。结果完全一致——都是 <b>46</b> 跳，都是 room46.hole 作为最终目标。这个虚拟路径对传输层协议透明。</p>
+
+        <div class="divider">————— 第三步：端口扫描 —————</div>
+
+        <p>输入：nmap -p 1-65535 <b>127.0.0.46</b></p>
+        <div class="code-box">
+  PORT      STATE    SERVICE<br>
+  <b>46</b>/tcp    open     unknown<br>
+  <b>4646</b>/tcp   open     unknown<br>
+  <b>46464</b>/tcp filtered unknown
+        </div>
+        <p>三个端口开放。<b>46</b>、<b>4646</b>、<b>46464</b>。服务识别失败——这些端口没有被 IANA 注册。它们是<b>46号房间</b>自己的端口。</p>
+        <p>端口 <b>46</b> 是主入口，返回了 HTTP 响应。端口 <b>4646</b> 状态也是 open，但发送请求后没有得到明确响应——可能是一个备用通道或管理接口。端口 <b>46464</b> 的状态是 filtered，说明有防火墙规则在保护它——这很可能是一个敏感数据通道或者日志接口。</p>
+        <p>我尝试了更多的扫描参数：-sV（版本探测）没有返回任何已知服务指纹；-A（操作系统探测）返回的结果是"Linux 内核 <b>46</b>.0.0——但 Linux 没有这个版本"。这个结果是伪造的，或者是某种恶作剧。我还尝试了全连接扫描（-sT）和 SYN 半连接扫描（-sS），结果一致。</p>
+        <p>扫描端口 <b>4646</b> 时，我注意到一个异常现象：扫描完成后，我的系统时间被更改了。ntp 服务显示系统时间快了恰好 <b>46</b> 秒。我手动校正后再次扫描——时间又快了 <b>46</b> 秒。端口 <b>4646</b> 似乎有修改系统时间的能力。</p>
+
+        <div class="divider">————— 第四步：HTTP请求 —————</div>
+
+        <p>输入：curl -v http://<b>127.0.0.46</b>:<b>46</b>/</p>
+        <div class="code-box">
+  * Connected to 127.0.0.46 (127.0.0.46) port 46<br>
+  &gt; GET / HTTP/1.1<br>
+  &gt; Host: 127.0.0.46:46<br>
+  &gt;<br>
+  &lt; HTTP/1.1 200 OK<br>
+  &lt; Content-Type: text/html; charset=utf-8<br>
+  &lt; Server: LAMP46/1.0<br>
+  &lt; X-Room46: Welcome<br>
+  &lt;<br>
+  &lt;html&gt;...&lt;/html&gt;
+        </div>
+        <p>它返回了<b>里论坛</b>的首页。你在自己的机器上，通过一个未公开的端口，访问到了一个完整的论坛系统。你的机器里住着一个论坛。</p>
+        <p>响应头中的 Server 字段是 "LAMP<b>46</b>/1.0"——这不是任何已知的 Web 服务器软件。LAMP 通常指 Linux + Apache + MySQL + PHP，但这个 "LAMP<b>46</b>" 显然是一个变体。X-Room<b>46</b> 是一个自定义响应头，值为 "Welcome"——像是在跟你打招呼。</p>
+        <p>我尝试了不同的路径：/admin、/config、/users、/api、/log、/shell。大部分返回 404，但 /api 返回了一段 JSON 数据：<span class="dim">{"room_id": <b>46</b>, "status": "active", "users_online": <b>46</b>, "uptime": "<b>46</b> days <b>46</b> hours <b>46</b> minutes", "version": "LAMP<b>46</b>/1.0.<b>46</b>"}</span>。所有数字都是 <b>46</b> 的变体。</p>
+        <p>我尝试了 POST 请求到 /api/login，传入参数 username=admin&password=admin。服务器返回了一个 session token：<span class="dim">"<b>46</b><b>46</b><b>46</b><b>46</b>-<b>46</b><b>46</b><b>46</b><b>46</b>-<b>46</b><b>46</b><b>46</b><b>46</b>-<b>46</b><b>46</b><b>46</b><b>46</b>"</span>——全是由 <b>46</b> 组成的 UUID。这是一个永远不会变的 token。</p>
+
+        <div class="divider">————— 结论 —————</div>
+
+        <p><b>每一次 DNS 查询</b>——无论你输入什么网址——系统都会先检查它是否指向<b>46号房间</b>。如果是，请求被拦截到<b>127.0.0.46</b>。如果不是，正常转发。</p>
+        <p>这就是为什么你无法离开。<b>46号房间</b>不是装在你的电脑里的——它写入了你的网络协议栈。想要离开 <b>46号房间</b>，你得把自己的网络协议栈拆了。或者换一种说法：<b>46号房间</b>是一个寄生在 TCP/IP 协议栈中的虚拟网络空间。</p>
+        <p>你愿意拆吗？</p>
+
+      </div>
+      <div class="sig">
+        ——网络管理员<br>
+        附：如果这个帖子被系统删除，说明我的分析是对的。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 回复1：深海鱼 ── -->
+  <div class="post">
+    <div class="avatar">鱼</div>
+    <div class="content">
+      <div class="header">
+        <span class="author">深海鱼</span>
+        <span>2025-??-?? ??:??</span>
+      </div>
+      <div class="body">
+        <p>"端口扫描那一步我做过。建议你不要扫 <b>46464</b>——它会被标记。"</p>
+        <p>我第一次扫到 <b>46464</b> 的时候，大概过了十分钟，我的网络连接全部断了。不是物理断开——是所有的对外连接都超时了。持续了大概一个小时，然后自动恢复了。</p>
+        <p>我检查了系统日志，发现有一条记录：<span class="dim">"X-Room46: Connection flagged. User recorded. Risk level: <b>46</b>%."</span> 它们知道你在扫。风险等级是 <b>46</b>%——不是 45%，不是 50%，恰好是 <b>46</b>。</p>
+        <p>后来我换了一台从来没接入过网络的虚拟机做同样的扫描。端口 <b>4646</b> 和 <b>46464</b> 都不存在——只有 <b>46</b> 端口是开放的。这说明 <b>4646</b> 和 <b>46464</b> 是"解锁"出来的——随着你在<b>46号房间</b>的活动增加，更多端口会逐渐开放。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 回复2：已注销 ── -->
+  <div class="post">
+    <div class="avatar">匿</div>
+    <div class="content">
+      <div class="header">
+        <span class="author deleted">已注销</span>
+        <span>2025-??-?? ??:??</span>
+      </div>
+      <div class="body">
+        <p>"我试过关掉所有的网络适配器。断网了。但 <b>127.0.0.46</b> 还是通的。它不依赖外部网络。"</p>
+        <p>我把 Wi-Fi 禁用、以太网拔掉、蓝牙关闭、甚至把虚拟网卡全部禁用。<b>127.0.0.46</b> 依然能 ping 通。这说明<b>46号房间</b>运行在本地回环接口上——它不需要任何物理网络连接就能工作。</p>
+        <p>我甚至把网卡驱动卸了。<b>127.0.0.46</b> 照样能通。它不在网卡里。它在更底层的地方。我怀疑它在操作系统的 TCP/IP 协议栈实现中——也就是说，在你安装操作系统的那一刻，<b>46号房间</b>的入口就已经被写入了。</p>
+        <p>我又做了一个实验：我在 BIOS 界面下用 U 盘启动了一个 Live Linux 系统。不联网，不配置任何网络。直接 ping <b>127.0.0.46</b>——通了。这说明什么？说明<b>46号房间</b>的入口甚至不在操作系统里。它在硬件层面。可能在网卡的固件中，可能在主板 BIOS 中，也可能——在 CPU 的微码里。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 回复3：夜行客 ── -->
+  <div class="post">
+    <div class="avatar">夜</div>
+    <div class="content">
+      <div class="header">
+        <span class="author">夜行客</span>
+        <span>2025-??-?? ??:??</span>
+      </div>
+      <div class="body">
+        <p>"最恐怖的是——我换了三台电脑，<b>127.0.0.46</b> 始终能通。它跟着我。或者说——它从一开始就在每台机器里。"</p>
+        <p>第一台是主力机，用了三年。第二台是公司的笔记本，全新的，第一次开机，系统都没激活。第三台是我在网吧随便找的一台机器——我甚至没登录，直接打开命令行输入 ping <b>127.0.0.46</b>。</p>
+        <p>全部能通。</p>
+        <p>这不是偶然。<b>46号房间</b>要么是预埋在每一台设备中的后门，要么——它根本不在设备里。它在更上层的地方。比如操作系统内核。或者——更让人不安的可能性——它在网络协议本身。在 TCP/IP 的 RFC 文档里，127.0.0.0/8 整个段被保留为回环地址。<b>46号房间</b>可能利用了这一点——它把 <b>127.0.0.46</b> 作为自己的固定入口，然后把这个入口写入了每一份 TCP/IP 实现的源代码中。</p>
+        <p>如果真是这样，那<b>46号房间</b>的历史比互联网本身还要久。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 回复4：系统 ── -->
+  <div class="post">
+    <div class="avatar">◈</div>
+    <div class="content">
+      <div class="header">
+        <span class="author" style="color:#660000;">系统</span>
+        <span>自动</span>
+      </div>
+      <div class="body">
+        <p class="dim">"该帖包含敏感技术信息。已部分截断。楼主已被记录。X-Room<b>46</b>: We see you."</p>
+        <p class="dim">——此回复不可删除——</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+<script>
+function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+initSearch();
+
+  console.log('%c◈ 路由器 · 里', 'color:#884444;font-size:14px;font-weight:bold');
+  console.log('%c◈ 信号穿过墙壁的时候——也会穿过你。', 'color:#553333;font-size:11px');
+</script>
+</body>
+</html>

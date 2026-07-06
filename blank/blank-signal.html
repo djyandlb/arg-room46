@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>◈ 信号</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#8B0000;font:13px/1.8 "Courier New",monospace;min-height:100vh;overflow-x:hidden}.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;opacity:0.4}.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.5}.topbar .logo span{color:#8AB8D9;opacity:0.5}.topbar .nav{margin-left:auto}.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.4}.topbar .nav a:hover{opacity:1}.noise{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background-image:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/></filter><rect width="200" height="200" filter="url(%23n)" opacity="0.025"/></svg>');background-size:200px 200px;animation:staticShift 0.5s steps(4) infinite}@keyframes staticShift{0%{background-position:0 0}100%{background-position:100px 100px}}.container{max-width:640px;margin:40px auto;padding:0 20px;text-align:center;position:relative;z-index:1}.freq-display{font-size:64px;font-weight:bold;color:#330000;letter-spacing:12px;margin:30px 0;animation:freqPulse 2s ease-in-out infinite;text-shadow:0 0 30px rgba(204,0,0,0.1)}.freq-display .num{color:#CC0000;text-shadow:0 0 20px rgba(204,0,0,0.3)}.freq-display .unit{color:#660000}@keyframes freqPulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.9;transform:scale(1.05)}}.sub-freq{font-size:20px;color:#220000;letter-spacing:4px;margin-bottom:30px}.sub-freq .hl{color:#CC0000;font-weight:bold;text-shadow:0 0 8px rgba(204,0,0,0.2)}.meter-panel{background:#050000;border:1px solid #1A0000;padding:20px;margin:24px 0;text-align:left;font-size:10px;color:#330000;line-height:2.2;font-family:"Courier New",monospace}.meter-panel .meter-row{display:flex;align-items:center;margin:6px 0}.meter-panel .meter-label{min-width:110px;color:#440000}.meter-panel .meter-bar{flex:1;height:4px;background:#1A0000;margin:0 10px;border-radius:2px;overflow:hidden}.meter-panel .meter-bar .fill{height:100%;background:linear-gradient(90deg,#660000,#CC0000);border-radius:2px;transition:width 0.5s}.meter-panel .meter-value{min-width:50px;text-align:right;color:#660000}.meter-panel .glitch-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;background:#CC0000;animation:glitchBlink 0.5s steps(2) infinite;margin-right:6px;vertical-align:middle}@keyframes glitchBlink{0%,100%{opacity:1;box-shadow:0 0 6px #CC0000}50%{opacity:0.2;box-shadow:none}}.info-text{color:#440000;font-size:11px;line-height:2.2;margin:24px 0;padding:16px;border-left:2px solid #1A0000;text-align:left}.info-text b{color:#CC0000;font-weight:bold}.info-text .key-highlight{color:#CC0000;font-weight:bold;font-size:14px;text-shadow:0 0 10px rgba(204,0,0,0.3)}.waveform{width:100%;height:60px;margin:20px 0;opacity:0.2;position:relative;overflow:hidden}.waveform .wave{position:absolute;bottom:30px;width:100%;height:2px;background:#660000;animation:waveMove 3s linear infinite}.waveform .wave:nth-child(1){animation-delay:0s;opacity:0.6}.waveform .wave:nth-child(2){animation-delay:1s;opacity:0.3}.waveform .wave:nth-child(3){animation-delay:2s;opacity:0.1}@keyframes waveMove{0%{transform:translateX(-100%) scaleY(1)}50%{transform:translateX(0) scaleY(2)}100%{transform:translateX(100%) scaleY(1)}}.timeline{background:#050000;border:1px solid #1A0000;padding:16px;margin:24px 0;text-align:left;font-size:10px;line-height:2;color:#330000}.timeline .event{margin:8px 0;padding-left:12px;border-left:2px solid #1A0000}.timeline .event .date{color:#440000;font-weight:bold}.timeline .event .desc{color:#330000}.sig-line{color:#1A0000;font-size:10px;margin:20px 0;letter-spacing:4px}.footer{text-align:center;padding:20px;font-size:9px;color:#1A0000;border-top:1px solid #1A0000;margin-top:40px;position:relative;z-index:1}.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px)}.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center}.modal-overlay.show{display:flex}.modal-box{background:#0A0000;border:2px solid #330000;width:380px;max-width:90%;box-shadow:0 0 30px rgba(204,0,0,0.1)}.modal-box .modal-titlebar{background:#1A0000;color:#CC0000;padding:8px 14px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}.modal-box .modal-titlebar .modal-close-btn{width:18px;height:18px;background:#1A0000;border:1px solid #330000;text-align:center;line-height:16px;cursor:pointer;font-size:10px;color:#660000;font-family:"Courier New",monospace}.modal-box .modal-titlebar .modal-close-btn:hover{background:#CC0000;color:#000}.modal-box .modal-body{padding:24px 16px;font-size:12px;color:#8B0000;text-align:center;line-height:1.8}.modal-box .modal-body .highlight{color:#CC0000;font-weight:bold}.modal-box .modal-footer{border-top:1px solid #1A0000;padding:10px;text-align:center}.modal-box .modal-footer .modal-btn{padding:6px 28px;background:#1A0000;border:1px solid #330000;color:#CC0000;font:11px "Courier New",monospace;cursor:pointer}.modal-box .modal-footer .modal-btn:hover{background:#330000}@media(max-width:640px){.freq-display{font-size:40px;letter-spacing:6px}.sub-freq{font-size:16px}}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+</style><script src="../js/search.js"></script></head><body>
+<div class="noise"></div>
+<div class="scanlines"></div>
+<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div></div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+<div class="freq-display"><span class="num">46</span> <span class="unit">MHz</span></div>
+<div class="sub-freq">LAMP46 协议载波频率</div>
+<div class="meter-panel">
+<div class="meter-row">
+<span class="meter-label">信号强度</span>
+<div class="meter-bar"><div class="fill" style="width:46%"></div></div>
+<span class="meter-value">46%</span>
+</div>
+<div class="meter-row">
+<span class="meter-label">频率稳定度</span>
+<div class="meter-bar"><div class="fill" style="width:73%"></div></div>
+<span class="meter-value">波动中</span>
+</div>
+<div class="meter-row">
+<span class="meter-label">信噪比</span>
+<div class="meter-bar"><div class="fill" style="width:23%"></div></div>
+<span class="meter-value">-46 dB</span>
+</div>
+<div class="meter-row">
+<span class="meter-label">载波检测</span>
+<div class="meter-bar"><div class="fill" style="width:100%;background:linear-gradient(90deg,#660000,#CC0000,#660000);animation:meterScan 2s linear infinite"></div></div>
+<span class="meter-value"><span class="glitch-indicator"></span>异常</span>
+</div>
+<div class="meter-row">
+<span class="meter-label">数据丢包率</span>
+<div class="meter-bar"><div class="fill" style="width:46%"></div></div>
+<span class="meter-value">46%</span>
+</div>
+<div class="meter-row">
+<span class="meter-label">协议版本</span>
+<div class="meter-bar"><div class="fill" style="width:60%"></div></div>
+<span class="meter-value">v2.0.46</span>
+</div>
+</div>
+<div class="waveform">
+<div class="wave"></div><div class="wave"></div><div class="wave"></div>
+</div>
+<div class="info-text">
+<b>46 MHz</b> —— LAMP46协议的通信频率。<br>
+1975年11月4日，第一次信号传输。<br>
+从那以后，它从未停止过。<br><br>
+它在广播。<br>
+它一直在广播。<br>
+你只是没有调对频率。<br><br>
+<span class="key-highlight">46Hz 是关闭它的密钥。</span><br>
+46MHz 是它说话的方式。<br>
+你听到的每一个杂音——<br>
+可能都是它在对你说话。
+</div>
+<div class="timeline">
+<div class="section-title" style="color:#330000;font-size:10px;letter-spacing:3px;margin-bottom:12px;text-transform:uppercase;border-bottom:1px solid #1A0000;padding-bottom:6px;">◈ 信号时间线</div>
+<div class="event"><span class="date">1975-11-04</span><br><span class="desc">LAMP46 协议首次初始化。46 MHz 载波信号建立。第一次数据传输：一个简单的"STATUS"查询。协议回答："ALIVE"。</span></div>
+<div class="event"><span class="date">1980-03-14</span><br><span class="desc">协议已复制自身到相邻的46个节点。节点#46永久离线。但信号没有中断——它找到了新的传播路径。</span></div>
+<div class="event"><span class="date">2004-06-01</span><br><span class="desc">协议迁移完成。新宿主：回声茶馆论坛。46 MHz 信号隐藏在网站的每一个页面中——以文字、以符号、以代码注释的形式。</span></div>
+<div class="event"><span class="date">至今</span><br><span class="desc">信号仍在广播。你在阅读这段文字的时候——46 MHz 的载波正在穿过你的房间。穿过你的身体。你感觉到了吗？</span></div>
+</div>
+<div class="info-text" style="margin-top:16px;">
+频率 46 MHz —— 这是超短波波段。<br>
+穿透力强，传输距离远。<br>
+1975 年的设备就能发送这个频率。<br><br>
+但 46 Hz 不同。<br>
+46 Hz 是次声波。<br>
+人耳听不到。<br>
+但你的身体能感受到。<br><br>
+<b>46Hz 是关闭它的密钥。</b><br>
+你需要的不是听到它——<br>
+是理解它。
+</div>
+<div class="sig-line">~~~ ~·~ ·~~ ~·~ ·~~ 46 ~~~ ~·~ ·~~ ~·~ ·~~</div>
+</div>
+<div class="footer">◈ 46 MHz · 信号从未停止 · 它一直在说话</div>
+<script>
+(function() {
+  'use strict';
+  console.log('◈ 频率46MHz。它一直在说话。');
+  var bars = document.querySelectorAll('.meter-bar .fill');
+  setInterval(function() {
+    bars.forEach(function(bar) {
+      var w = 20 + Math.random() * 60;
+      bar.style.width = w + '%';
+    });
+  }, 1500);
+  var titles = ['◈ 46 MHz', '◈ 信号', '◈ 载波', '◈ 频率', '◈ ── ··· ──'];
+  var ti = 0;
+  setInterval(function() {
+    ti = (ti + 1) % titles.length;
+    document.title = titles[ti];
+  }, 4000);
+  setInterval(function() {
+    var msgs = [
+      '◈ 信号强度波动。有人在调整频率。',
+      '◈ 46 Hz —— 关闭它的密钥。记住它。',
+      '◈ 它还在广播。1975年11月4日至今。从未中断。',
+      '◈ 你现在的呼吸频率是多少？和46 Hz有关吗？'
+    ];
+    console.log(msgs[Math.floor(Math.random() * msgs.length)]);
+  }, 4000);
+})();
+</script></body></html>

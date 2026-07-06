@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 回声茶馆 · 里 · Echo Teahouse Mirror</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='index.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="index.html">首页</a>
+    <a href="rules.html">版规</a>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>◈ 检索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 统计横幅 ── -->
+<div class="stats-banner">
+  帖子总数<b>46,046</b> &nbsp; 会员总数<b>4,604</b> &nbsp; 在线<b>46人</b> &nbsp; 上次访问：<b>1975-11-04</b> &nbsp; <span style="color:#884444;">锚点状态：<b>已连接</b></span>
+</div>
+
+<div class="container">
+
+<!-- ===== 闲聊区（里） ===== -->
+<div class="panel">
+<div class="panel-header"><span>◈ 闲聊区</span><span class="count">今日 23 帖</span></div>
+
+<div class="post-row" onclick="window.location.href='rules.html'">
+  <div class="icon pin">📌</div>
+  <div class="main">
+    <div class="title"><span class="badge pin">置顶</span>【版规】回声茶馆发帖指南 · 里</div>
+    <div class="meta">园丁 · 2004-06-01</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
+  <div class="last">2008-01-01<br><span class="author">好家伙</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='newbie.html'">
+  <div class="icon normal">👋</div>
+  <div class="main">
+    <div class="title">萌新报道——你也是被回音引来的？</div>
+    <div class="meta">萌新小透明 · 2004-06-03</div>
+  </div>
+  <div class="stat"><div class="num">31</div><div class="label">回复</div></div>
+  <div class="last">2004-06-05<br><span class="author">深海鱼</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='echo.html'">
+  <div class="icon anomaly">◈</div>
+  <div class="main">
+    <div class="title"><span style="color:#CC4444;">回音</span>——它在回答你。你确定要听吗？</div>
+    <div class="meta">失眠患者_23 · 2005-03-21</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回音</div></div>
+  <div class="last">∞<br><span class="author">◈</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='dream.html'">
+  <div class="icon anomaly">◈</div>
+  <div class="main">
+    <div class="title">第<b>46</b>天——你已经分不清梦和现实了</div>
+    <div class="meta">深海鱼 · 2007-07-04</div>
+  </div>
+  <div class="stat"><div class="num">142</div><div class="label">回复</div></div>
+  <div class="last">2007-07-04<br><span class="author">失眠患者_23</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='food.html'">
+  <div class="icon normal">🍳</div>
+  <div class="main">
+    <div class="title">遗忘炖肉——食谱与配方</div>
+    <div class="meta">小厨娘 · 2005-06-12</div>
+  </div>
+  <div class="stat"><div class="num">27</div><div class="label">回复</div></div>
+  <div class="last">2005-06-13<br><span class="author">咸鱼一条</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='movie.html'">
+  <div class="icon normal">🎬</div>
+  <div class="main">
+    <div class="title">来推荐点冷门电影吧——那种看完会做噩梦的</div>
+    <div class="meta">熬夜选手 · 2005-09-15</div>
+  </div>
+  <div class="stat"><div class="num">56</div><div class="label">回复</div></div>
+  <div class="last">2005-09-16<br><span class="author">影迷甲</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='travel.html'">
+  <div class="icon normal">📷</div>
+  <div class="main">
+    <div class="title">大理洱海——水底有什么东西在发光</div>
+    <div class="meta">步履不停 · 2006-04-20</div>
+  </div>
+  <div class="stat"><div class="num">22</div><div class="label">回复</div></div>
+  <div class="last">2006-04-22<br><span class="author">旅行者</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='diary.html'">
+  <div class="icon anomaly">!</div>
+  <div class="main">
+    <div class="title">流浪猫——那里从来没有猫。你喂的是一团影子。</div>
+    <div class="meta">普通上班族 · 2006-11-02</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
+  <div class="last">2006-11-02<br><span class="author">没有人</span></div>
+</div>
+</div>
+
+<!-- ===== 技术角落（里） ===== -->
+<div class="panel">
+<div class="panel-header"><span>◈ 技术角落</span><span class="count">今日 16 帖</span></div>
+
+<div class="post-row" onclick="window.location.href='browser.html'">
+  <div class="icon normal">💻</div>
+  <div class="main">
+    <div class="title">Chrome最近更新后——开始推荐一些你从未搜索过的东西</div>
+    <div class="meta">技术宅阿明 · 2008-03-21</div>
+  </div>
+  <div class="stat"><div class="num">41</div><div class="label">回复</div></div>
+  <div class="last">2008-03-22<br><span class="author">程序员小张</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='browser.html'">
+  <div class="icon anomaly">◈</div>
+  <div class="main">
+    <div class="title"><span style="color:#CC4444;">浏览器总自动打开陌生页面——标题是一个菱形符号</span></div>
+    <div class="meta">夜行客 · 2006-10-31</div>
+  </div>
+  <div class="stat"><div class="num">89</div><div class="label">回复</div></div>
+  <div class="last">2006-10-31<br><span class="author">匿名用户</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='router.html'">
+  <div class="icon normal">💻</div>
+  <div class="main">
+    <div class="title">路由器——信号穿过墙壁的时候，也会穿过你</div>
+    <div class="meta">网管小哥 · 2007-12-01</div>
+  </div>
+  <div class="stat"><div class="num">33</div><div class="label">回复</div></div>
+  <div class="last">2007-12-03<br><span class="author">程序员小张</span></div>
+</div>
+</div>
+
+<!-- ===== 生活笔记（里） ===== -->
+<div class="panel">
+<div class="panel-header"><span>◈ 生活笔记</span><span class="count">今日 9 帖</span></div>
+
+<div class="post-row" onclick="window.location.href='garden.html'">
+  <div class="icon anomaly">◈</div>
+  <div class="main">
+    <div class="title">苏州园林——那些影子比游客多</div>
+    <div class="meta">快门工 · 2007-08-12</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">照片</div></div>
+  <div class="last">∞<br><span class="author">快门工</span></div>
+</div>
+
+<div class="post-row" onclick="window.location.href='moonlight.html'">
+  <div class="icon anomaly">◈</div>
+  <div class="main">
+    <div class="title">月亮——它的背面比你想的更近</div>
+    <div class="meta">夜猫子 · 2008-01-04</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">月相</div></div>
+  <div class="last">∞<br><span class="author">夜猫子</span></div>
+</div>
+</div>
+
+<!-- ===== 归档区（里） ===== -->
+<div class="panel" style="opacity:0.65;">
+<div class="panel-header"><span>◈ 归档区</span><span class="count">最后活跃 2009</span></div>
+
+<div class="post-row" style="cursor:default;">
+  <div class="icon lock">🔒</div>
+  <div class="main">
+    <div class="title" style="color:#663333;">2004-2009 年度归档（已锁定）</div>
+    <div class="meta" style="color:#553333;">系统 · 已归档</div>
+  </div>
+  <div class="stat"><div class="num" style="color:#442222;">—</div></div>
+  <div class="last" style="color:#442222;">已锁定</div>
+</div>
+
+<div class="post-row" onclick="showAdminMsg()">
+  <div class="icon lock">🔒</div>
+  <div class="main">
+    <div class="title" style="color:#663333;">站务管理</div>
+    <div class="meta" style="color:#553333;">· 共 46 帖</div>
+  </div>
+  <div class="stat"><div class="num" style="color:#442222;">—</div></div>
+  <div class="last" style="color:#442222;">点击进入</div>
+</div>
+</div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="footer">
+  ◈ 回声茶馆 · 里 · 镜像协议 v2.0.46 · 原型 1975-11-04
+</div>
+
+<!-- ── 弹窗 ── -->
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal-box">
+  <div class="modal-titlebar">
+    <span id="modalTitle">◈ 提示</span>
+    <span class="close" onclick="closeModal()">✕</span>
+  </div>
+  <div class="modal-body" id="modalBody">
+    <div style="font-size:18px;margin-bottom:6px;">◈</div>
+    <div id="modalText">消息</div>
+  </div>
+  <div class="modal-footer"><button onclick="closeModal()">确定</button></div>
+</div>
+</div>
+
+<script>
+function showModal(t, c){
+  document.getElementById('modalTitle').textContent = t || '◈ 提示';
+  document.getElementById('modalText').innerHTML = c || '';
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function showAdminMsg(){
+  showModal('◈ 管理终端', '权限验证失败。<br><br>你不是管理员。<br><span class="dim">——或者你不记得自己是了。</span>');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+});
+
+initSearch();
+
+console.log('◈ 回声茶馆 · 里 · 已加载');
+console.log('◈ 提示：这里不是表论坛。这里是一切开始的地方。');
+console.log('◈ 你看到的每一行字——都在看着你。');
+</script>
+</body>
+</html>

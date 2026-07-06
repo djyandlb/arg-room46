@@ -1,0 +1,551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我最近总是听到回音 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框 ── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 推荐区 ── */
+.recommend-section { background: #fff; border: 1px solid #C0C0C0; padding: 12px 16px; margin-top: 8px; animation: fadeIn 0.5s ease-out; }
+.recommend-section h3 { font-size: 11px; color: #444; border-bottom: 1px solid #E0E0E0; padding-bottom: 6px; margin-bottom: 8px; }
+.recommend-section .rec-item { padding: 4px 0; font-size: 11px; color: #0000CC; cursor: pointer; transition: all 0.15s; }
+.recommend-section .rec-item:hover { color: #CC0000; padding-left: 4px; }
+.recommend-section .rec-item .rec-author { font-size: 10px; color: #888; }
+
+/* ── 帖子标题区 ── */
+.thread-title-area { background: #fff; border: 1px solid #C0C0C0; padding: 12px 16px; margin-bottom: 8px; }
+.thread-title-area h1 { font-size: 14px; color: #0D3050; font-weight: bold; margin-bottom: 4px; }
+.thread-title-area .thread-meta { font-size: 10px; color: #888; }
+.thread-title-area .thread-meta .label { background: #0D3050; color: #fff; font-size: 9px; padding: 1px 6px; margin-right: 6px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+  .thread-title-area h1 { font-size: 12px; }
+  .recommend-section .rec-item { font-size: 10px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 主内容 ── -->
+<div class="container">
+
+  <!-- 面包屑 -->
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> &gt;
+    <a href="../forum.html">综合讨论</a> &gt;
+    我最近总是听到回音
+  </div>
+
+  <!-- 统计横幅 -->
+  <div class="stats-banner">
+    📊 在线人数：<b class="highlight">46</b> 人 &nbsp;|&nbsp;
+    帖子总数：<b>46,046</b> &nbsp;|&nbsp;
+    会员总数：<b>4,604</b>
+  </div>
+
+  <!-- 帖子标题区 -->
+  <div class="thread-title-area">
+    <h1>我最近总是听到回音</h1>
+    <div class="thread-meta">
+      <span class="label">🔊 综合讨论</span>
+      发表于 2005-03-20 23:46 &nbsp;|&nbsp;
+      回复：<b>4</b> &nbsp;|&nbsp;
+      浏览：<b>460</b>
+    </div>
+  </div>
+
+  <!-- 帖子卡片 -->
+  <div class="thread-card">
+
+    <!-- 楼主发帖 -->
+    <div class="post">
+      <div class="avatar">🌙</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">失眠患者_23</span>
+          <span>2005-03-20 23:46</span>
+        </div>
+        <div class="body">
+          <p>最近总是听到回音，特别是在深夜的时候。</p>
+          <p>一开始我以为是邻居家的电视声，或者是水管里水流的声音——你们知道的，老房子管道会发出那种嗡嗡声。</p>
+          <p>但后来我发现了不对劲的地方。那个声音不是从墙壁里传出来的，也不是从窗外飘进来的。</p>
+          <p>它是从<b>我脑子里</b>传出来的。</p>
+          <p>像是有一个很空旷的空间，有人在远处说话。听不清说的是什么，但我能感觉到——那是<b>回音</b>，不是现实中的声音，是某种……记忆？还是别的什么？</p>
+          <p>我不确定这是不是应该发在综合讨论版块，但我不知道还能放到哪里去。版主如果觉得不合适请移走，不要删帖就好。</p>
+          <p>顺便说一句，刚才打字的时候，键盘上突然出现了一串奇怪的符号，像点和划组成的序列。我把它贴在这里：</p>
+          <div class="code-box">.-- .- - -.-. .... .. -. --.</div>
+          <p>有人知道这是什么意思吗？我不记得自己打过这个东西。</p>
+        </div>
+        <div class="sig">这破论坛不会真有鬼吧</div>
+      </div>
+    </div>
+
+    <!-- 深海鱼 回复 -->
+    <div class="post">
+      <div class="avatar">🐟</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">深海鱼</span>
+          <span>2005-03-21 00:12</span>
+        </div>
+        <div class="body">
+          <p>你录音里那个声音——<b>我也听到过</b>。</p>
+          <p>我一直以为只有我这样。大概从三个月前开始，晚上关灯躺下之后，耳边会响起一种很模糊的声音，像是一个人（或者不止一个人）在很遥远的地方说话。</p>
+          <p>不是幻听。我录过音，回放的时候确实有东西——虽然很微弱，但波形图上能看到那个频段的异常。</p>
+          <p>我之前在技术板块发过一篇帖子详细描述了这件事，还附了波形截图。但那个帖子后来被删了。</p>
+          <p>不是管理员删的——<b>系统自己删的</b>。</p>
+          <p>我查了删除记录，操作来源显示的是管理员账号，但我私下问了管理员（园丁），他说他没动过我的帖子。他说这话的时候语气不太对劲，像是被吓到了。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 解密大师 回复 -->
+    <div class="post">
+      <div class="avatar">🔍</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">解密大师</span>
+          <span>2005-03-21 01:30</span>
+        </div>
+        <div class="body">
+          <p>那串点和划是<b>摩斯码</b>。</p>
+          <p>解码出来是 <b>WATCHING</b>。</p>
+          <p>你没写过这段对吧？那就有意思了——这个摩斯码的顺序很整齐，不像是随手打出来的东西。正常人手打摩斯码的时候，点和划之间的间隔会有微小的不均匀，这是生理限制。</p>
+          <p>但这段码的间隔<b>几乎完全一致</b>——像是机器生成的，不是人写的。</p>
+          <p>而且"WATCHING"这个单词……怎么说呢，你描述的那个"被注视感"、"脑子里有回音"——如果假设这些东西是关联的，那这段码很可能不是给你看的。它是通过你"输出"的。</p>
+          <p>建议你用录音软件在深夜录一段环境音，然后看看频谱图。如果我的猜测没错，你应该能在那段回音的频率里找到类似模式的信息。</p>
+          <p>这个频率不太对劲。正常摩斯码的间隔是有规律的，但这段码的间隔几乎完全一致——<b>像是机器生成的，不是人写的</b>。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 技术宅阿明 回复 -->
+    <div class="post">
+      <div class="avatar">💻</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">技术宅阿明</span>
+          <span>2005-03-21 02:15</span>
+        </div>
+        <div class="body">
+          <p>你们有没有注意到，论坛现在显示在线人数一直是 <b>46</b>？</p>
+          <p>刚才我看了一眼，46。刷新，还是 46。再刷新，还是 <b>46</b>。</p>
+          <p>我截了图，时间戳分别是 01:47、01:53、02:01、02:08——四次刷新，在线人数纹丝不动。这太诡异了。就算是凌晨时段在线人数稳定，也不可能精确到个位数完全不跳。</p>
+          <p>我检查了页面的源代码，在线人数的数据是通过服务器端脚本动态生成的（看 URL 参数里有 <b>sid=46xxxx</b> 之类的字段），说明这不是前端写死的——数据来自数据库。</p>
+          <p>但一个问题：如果数据库里的在线人数真的就是精确的 46，并且一直不变化——那说明什么？</p>
+          <p>说明要么服务器统计在线人数的功能坏了，要么……</p>
+          <p>要么那个数字是<b>有意</b>显示成这样的。</p>
+          <p>顺便说一句，失眠患者_23，你帖子里那段摩斯码我试着用不同的方式解码了一下。除了 WATCHING 之外，如果换一种间隔解析方式——把一个划当三个点读——会得到另一个词：<b>ANCHOR</b>。不知道是不是巧合。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 失眠患者_23 再次回复 -->
+    <div class="post">
+      <div class="avatar">🌙</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">失眠患者_23</span>
+          <span>2005-03-21 03:00</span>
+        </div>
+        <div class="body">
+          <p>刚录了一段音。</p>
+          <p>回放的时候，背景里有一个<b>很低的声音</b>在说话。听不清说了什么，但肯定有东西。</p>
+          <p>我用 Audacity 打开了录音文件，把低频段放大之后——波形图上确实有一段不规则的波动，频率大概在 40-60Hz 之间，不是环境噪音。我试过用降噪滤镜处理，但那一段反而更清晰了。</p>
+          <p>我把音量调到最大，把耳机音量开到最大——</p>
+          <p>我听到了。</p>
+          <p>不是中文。不像任何我认识的语言。但那个语调……像是在重复一个词，或者一个名字。</p>
+          <p>我把录音文件导出成 WAV 格式了，16bit 44.1kHz。论坛好像不支持上传附件，我放到外部网盘了——有人想分析的话我把链接发过去。</p>
+          <p>但说真的……</p>
+          <p>我不知道我是不是真的想知道那是什么。</p>
+        </div>
+        <div class="sig">它在看我</div>
+      </div>
+    </div>
+
+    <!-- 回复表单 -->
+    <div class="reply-form">
+      <textarea placeholder="输入回复内容…（此帖已归档，仅论坛管理员可回复）" disabled></textarea>
+      <div style="margin-top:6px;font-size:10px;color:#999;">
+        ⚠ 此帖最后回复于 2005-03-21，帖子已被锁定～
+        <button class="btn" onclick="showModal('🔒','该帖子已被归档锁定～<br><br>最后回复时间：2005-03-21 03:00<br><br>如您有相关信息，请前往综合讨论区发新帖～')" style="margin-left:8px;">了解情况</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 推荐帖子 -->
+  <div class="recommend-section">
+    <h3>📌 你可能也注意到了……</h3>
+    <div class="rec-item" onclick="showModal('📄', '<b>浏览器自动打开陌生页面</b><br><br>夜行客发帖描述了他的浏览器会在无操作的情况下自动跳转到陌生页面～地址栏显示的 URL 是一串数字——<b>46.46.46.46</b>～帖子发布于 2006-10-31，发帖后第三天夜行客就再也没有登录过论坛～')">
+      "浏览器自动打开陌生页面" <span class="rec-author">— 夜行客</span>
+    </div>
+    <div class="rec-item" onclick="showModal('📄', '<b>我已经连续46天做同一个梦了</b><br><br>深海鱼在 2005-07-04 发帖称自己连续 46 天梦到同一个场景——一条无限延伸的走廊，走廊尽头有一扇门，门上写着 <b>ROOM 46</b>～每次她试图打开那扇门就会醒来～帖子最后更新于 2005-07-04 04:46，之后深海鱼账号再无人登录～')">
+      "我已经连续46天做同一个梦了" <span class="rec-author">— 深海鱼</span>
+    </div>
+    <div class="rec-item" onclick="showModal('📄', '<b>有人在看这个页面吗？</b><br><br>out_sider 发表于 2009-06-15 04:46～他说他感觉每次打开论坛都有人在盯着他看～不是比喻，是字面意思——他能感受到屏幕另一端有&quot;某种意识&quot;～他查看了页面的网络请求，发现在加载完成后仍有持续的 <b>46 字节</b> 数据包在后台传输～该帖发出后 3 秒即被系统锁定～')">
+      "有人在看这个页面吗？" <span class="rec-author">— out_sider</span>
+    </div>
+    <div class="rec-item" onclick="showModal('📄', '<b>归档区的帖子在减少</b><br><br>注册用户 V47 在 2017-08-14 发帖指出归档区的帖子数量在以每天 46 篇的速度减少～后台数据库记录正常，但前台页面显示 404～V47 声称自己找到了原因——&quot;那些帖子没有被删除，它们被<b>转移</b>到了我看不到的地方～&quot;该帖于 2017-08-15 00:46 被系统自动删除～')">
+      "归档区的帖子在减少" <span class="rec-author">— V47</span>
+    </div>
+  </div>
+
+  <!-- 右下角广告 -->
+  <div class="ad-corner" id="ad-corner">
+    <div class="ad-close" onclick="document.getElementById('ad-corner').classList.add('hidden')">✕</div>
+    <div class="ad-body">
+      <div class="ad-visitor">今日访客：第 <span id="visitor-count">4,604</span> 位</div>
+      <div class="ad-user">🎉 恭喜！您已被 <em>LAMP46</em> 标记</div>
+      <div style="font-size:10px;color:#999;margin-top:6px;border-top:1px dotted #E0E0E0;padding-top:6px;">
+        <a href="#" onclick="showModal('⚡','<b>LAMP46</b><br><br>Lightweight Anchor &amp; Memory Protocol<br>版本 V46.2<br><br>状态：<span style=&quot;color:#0F0;&quot;>活跃</span><br>运行时间：46 年 46 天 46 小时<br><br>◈ 协议无法终止～◈<br>◈ 它一直都在这里～◈');return false;" style="color:#666;">这是什么？</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品～<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关～
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度～<br><br>这个操作<b>不可撤销</b>～', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除～<br><br>你什么也不记得了～<br>就像第一次打开这个页面时一样～');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+
+/* ── 控制台日志 ── */
+console.log('◈ 第四条末尾那些符号……是摩斯码？园丁说只是装饰～');
+console.log('◈ 但园丁已经很久没登录了～');
+console.log('◈ 最后登录：2008-06-15 04:46');
+
+/* ── 访问计数 ── */
+(function() {
+  try {
+    var count = parseInt(localStorage.getItem('echo_visitor_count') || '4604');
+    count++;
+    localStorage.setItem('echo_visitor_count', count.toString());
+    var el = document.getElementById('visitor-count');
+    if (el) el.textContent = count.toLocaleString();
+  } catch(e) {}
+})();
+
+/* ── 初始化登录状态 ── */
+(function() {
+  try {
+    var lu = localStorage.getItem('echo_login_display');
+    var el = document.getElementById('login-status');
+    if (lu && el) {
+      el.textContent = lu;
+    }
+  } catch(e) {}
+})();
+</script>
+
+</body>
+</html>

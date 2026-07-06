@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>◈ 回声茶馆 · 入口</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+html,body{
+  width:100%;height:100%;
+  background:#050505;
+  color:#777;
+  font-family:"Courier New","微软雅黑",monospace;
+  overflow:hidden;
+  user-select:none;
+}
+
+/* ── 扫描线 ── */
+.scanlines{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:100;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+  animation:scanPulse 6s ease-in-out infinite
+}
+@keyframes scanPulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+
+/* ── 渐变背景 ── */
+.bg-glow{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at center,#0A0000 0%,#050000 30%,#000 70%)
+}
+
+/* ── 中心容器 ── */
+.center{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;width:90%;max-width:580px;z-index:10
+}
+
+/* ── 顶部系统信息 ── */
+.sys-line{
+  font-size:9px;color:#1A1A1A;letter-spacing:2px;margin-bottom:24px
+}
+.sys-line .blink{animation:sysBlink 2s step-end infinite}
+@keyframes sysBlink{50%{opacity:0.2}}
+
+/* ── ASCII标题 ── */
+.ascii-title{
+  font-size:9px;line-height:1.3;color:#1A1A1A;white-space:pre;margin-bottom:16px;letter-spacing:0
+}
+.ascii-title .hl{color:#442222}
+.ascii-title .hl2{color:#664433}
+
+/* ── 菱形装饰 ── */
+.diamond-line{
+  color:#221111;font-size:12px;letter-spacing:6px;margin-bottom:18px;
+  animation:diamondFade 5s ease-in-out infinite
+}
+@keyframes diamondFade{0%,100%{opacity:0.2}50%{opacity:0.6}}
+
+/* ── 主标题 ── */
+.main-title{
+  font:bold 28px "Times New Roman",serif;
+  color:#1A1A1A;letter-spacing:6px;margin-bottom:4px;
+  transition:color 2s ease;text-shadow:0 0 30px rgba(0,0,0,0.6)
+}
+.main-title .hl{color:#662222;transition:color 2s ease}
+.main-title:hover .hl{color:#883333}
+
+/* ── 副标题 ── */
+.subtitle{
+  font-size:10px;color:#222;letter-spacing:3px;margin-bottom:28px
+}
+.subtitle .dot{color:#1A1A1A}
+
+/* ── 分隔线 ── */
+.divider{border:none;border-top:1px solid #1A0A0A;margin:20px auto;width:100px}
+
+/* ── 介绍文字 ── */
+.intro{font-size:11px;line-height:2.2;color:#3A3A3A;margin-bottom:24px;letter-spacing:1px}
+.intro p{margin-bottom:6px}
+.intro .dim{color:#2A2A2A;font-size:10px}
+.intro .crimson{color:#553333}
+.intro .faint{font-size:9px;color:#1A1A1A}
+
+/* ── 控制台提示 ── */
+.console-hint{
+  font-size:9px;color:#1A1A1A;letter-spacing:2px;
+  margin:18px 0;padding:8px;border:1px solid #1A0A0A;background:rgba(10,0,0,0.15);
+  animation:hintPulse 4s ease-in-out infinite
+}
+.console-hint .key{
+  color:#553333;font-size:10px;letter-spacing:0
+}
+@keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+
+/* ── 闪烁光标 ── */
+.cursor-line{font-size:10px;color:#2A2A2A;margin-bottom:22px;height:16px}
+.cursor-line .cursor{
+  display:inline-block;width:7px;height:13px;
+  background:#3A3A3A;margin-left:3px;
+  animation:cursorBlink 1s step-end infinite;vertical-align:text-bottom
+}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── ENTER按钮 ── */
+.enter-btn{
+  display:inline-block;padding:10px 44px;
+  border:1px solid #2A2A2A;background:transparent;
+  color:#444;font:11px "Courier New",monospace;
+  letter-spacing:3px;cursor:pointer;
+  transition:all 0.8s ease;text-decoration:none
+}
+.enter-btn:hover{
+  border-color:#553333;color:#774444;
+  background:rgba(80,20,20,0.08);letter-spacing:5px;transition:all 0.3s ease
+}
+.enter-btn:active{
+  border-color:#883333;color:#995544;background:rgba(80,20,20,0.12)
+}
+
+/* ── 底部信息 ── */
+.footer-info{
+  position:fixed;bottom:18px;left:0;width:100%;
+  text-align:center;font-size:9px;color:#151515;
+  letter-spacing:2px;z-index:10
+}
+.footer-info .num{color:#2A0A0A;font-weight:bold}
+
+/* ── 角落 ── */
+.corner-tl,.corner-br{
+  position:fixed;font-size:8px;color:#111;letter-spacing:1px;z-index:10;pointer-events:none
+}
+.corner-tl{top:12px;left:14px}
+.corner-br{bottom:42px;right:14px;text-align:right;line-height:1.6}
+
+/* ── 响应式 ── */
+@media(max-width:480px){
+  .main-title{font-size:20px;letter-spacing:3px}
+  .ascii-title{font-size:7px}
+  .intro{font-size:10px}
+  .enter-btn{padding:8px 28px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="scanlines"></div>
+
+<div class="corner-tl">[ SYS::ROOM46 ]</div>
+<div class="corner-br">
+  SESSION: 000<br>
+  SIGNAL: STABLE<br>
+  PROTOCOL: LAMP46
+</div>
+
+<div class="center">
+
+  <!-- 系统状态 -->
+  <div class="sys-line">
+    <span class="blink">◈</span> SYSTEM ONLINE <span class="blink">◈</span>
+    &nbsp;·&nbsp; AWAITING CONNECTION &nbsp;·&nbsp;
+    <span class="blink">◈</span>
+  </div>
+
+  <!-- ASCII 标题 -->
+  <div class="ascii-title">
+   <span class="hl">╔═══╗╔══╗╔╗─╔╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗</span>
+   <span class="hl2">║╔═╗║║╔╗║║╚═╝║║╔══╝║╔═╗║║╔═╗║║╔══╝║╔═╗║</span>
+   <span class="hl">║╚═╝║║╚╝║║╔╗─║║╚══╗║║─║║║╚═╝║║╚══╗║║─║║</span>
+   <span class="hl2">║╔╗╔╝║╔╗║║║╚╗║║╔══╝║║─║║║╔╗╔╝║╔══╝║║─║║</span>
+   <span class="hl">║║║╚╗║║║║║║─║║║╚══╗║╚═╝║║║║╚╗║╚══╗║╚═╝║</span>
+   <span class="hl2">╚╝╚═╝╚╝╚╝╚╝─╚╝╚═══╝╚═══╝╚╝╚═╝╚═══╝╚═══╝</span>
+  </div>
+
+  <div class="diamond-line">◈ ◈ ◈</div>
+
+  <!-- 主标题 -->
+  <div class="main-title">
+    <span class="hl">回声</span>茶馆
+  </div>
+  <div class="subtitle">
+    ECHO <span class="dot">·</span> TEAHOUSE <span class="dot">·</span> FORUM
+  </div>
+
+  <hr class="divider">
+
+  <!-- 介绍 -->
+  <div class="intro">
+    <p>这里是一座建于 2004 年的老式论坛。</p>
+    <p class="dim">服务器仍在运行。管理员已离线多年。</p>
+    <p class="crimson">没有人知道它为什么还在线。</p>
+    <p class="faint">——或者说，没有人愿意承认它根本不需要管理员。</p>
+  </div>
+
+  <!-- 控制台提示 -->
+  <div class="console-hint">
+    <span class="key">[ F12 ]</span> &nbsp; 打开控制台至 Console 界面游玩 &nbsp; <span class="key">[ Console ]</span>
+  </div>
+
+  <!-- 闪烁光标 -->
+  <div class="cursor-line">
+    <span style="color:#2A2A2A;">root@echo-teahouse:~$</span>
+    <span class="cursor"></span>
+  </div>
+
+  <!-- ENTER -->
+  <button class="enter-btn" id="enterBtn" onclick="enterForum()">E N T E R</button>
+
+</div>
+
+<!-- 底部 -->
+<div class="footer-info">
+  ◈ 2004-2009 · 最后在线 <span class="num">46</span> 人 · 服务器正常运行中 ◈
+</div>
+
+<script>
+/* ── 进入论坛 ── */
+function enterForum(){
+  var btn=document.getElementById('enterBtn');
+  if(btn.disabled) return;
+  btn.textContent='◈  连 接 中  ◈';
+  btn.style.borderColor='#553333';btn.style.color='#774444';
+  btn.style.cursor='default';btn.disabled=true;
+
+  console.log('%c◈ 正在连接...', 'color:#553333;font-size:12px');
+  setTimeout(function(){
+    console.log('%c◈ 连接成功。欢迎回来。', 'color:#774444;font-size:12px');
+  },400);
+  setTimeout(function(){
+    var a=document.createElement('a');
+    a.href='forum.html';
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+  },900);
+}
+
+/* ── 键盘 Enter/Space ── */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'||e.key===' '){
+    var btn=document.getElementById('enterBtn');
+    if(!btn.disabled) enterForum();
+  }
+});
+
+/* ═══════════════════════════════════
+   控制台开场 · Console 界面专用
+   ═══════════════════════════════════ */
+
+console.log('%c╔══════════════════════════════════╗','color:#333');
+console.log('%c║        ◈ 回声茶馆 ◈            ║','color:#553333;font-size:14px;font-weight:bold');
+console.log('%c║      ECHO · TEAHOUSE · FORUM    ║','color:#444;font-size:10px');
+console.log('%c╚══════════════════════════════════╝','color:#333');
+console.log('');
+
+console.log('%c本游戏推荐在 Console 控制台下体验。','color:#553333;font-size:12px;font-weight:bold');
+console.log('%c每一页的控制台都藏着线索。','color:#444;font-size:11px');
+console.log('%c你在页面里看到的每一行文字——','color:#333;font-size:10px');
+console.log('%c都可能是某个谜题的一部分。','color:#333;font-size:10px');
+console.log('');
+console.log('%c◈ 试着搜索「回音」、「V4cXy」、「46号房间」','color:#553333;font-size:10px');
+console.log('%c◈ 有些页面需要你"仔细看"。','color:#442222;font-size:10px');
+console.log('%c◈ 有些页面需要你"大胆想"。','color:#332222;font-size:10px');
+console.log('%c◈ 有些页面——需要你"打开控制台"。','color:#662222;font-size:11px;font-weight:bold');
+console.log('');
+console.log('%cRoom46 // THE ECHO TEAM // 2004-2009','color:#222;font-size:9px');
+console.log('%c管理员最后在线：2009-06-15 23:46:46','color:#1A1A1A;font-size:9px');
+console.log('%c服务器状态：◈ 仍在运行（尽管没有人维护）','color:#1A1A1A;font-size:9px');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,975 @@
+/* ═══════════════════════════════════════════════════════
+   里论坛统一 CSS v3 · 模因污染版 Y2K 论坛风格
+   基于表论坛 Y2K 框架 + LAMP46 暗红腐蚀主题
+   覆盖全部页面特有组件 (2026-07-06)
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ── 主体——腐蚀的 Y2K ── */
+body{
+  background:#0A0A0A;
+  color:#884444;
+  font:13px/1.7 "Courier New","Microsoft YaHei",monospace;
+  min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 50%, rgba(100,0,0,0.03) 0%, transparent 60%),
+                   radial-gradient(ellipse at 80% 50%, rgba(100,0,0,0.02) 0%, transparent 60%);
+}
+
+a{color:#995533;text-decoration:none}
+a:hover{color:#CC6644;text-decoration:underline}
+::selection{background:#440000;color:#fff}
+
+/* ── 自定义滚动条——被腐蚀的 ── */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0A0A0A}
+::-webkit-scrollbar-thumb{background:#2A0A0A;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#440000}
+::-webkit-scrollbar-corner{background:#0A0A0A}
+
+/* ═══════════════════════════════════════════════════════
+   顶栏——Y2K 深蓝 → 模因污染暗红
+   ═══════════════════════════════════════════════════════ */
+.topbar{
+  background:#1A000A;
+  padding:7px 16px;
+  display:flex;
+  align-items:center;
+  border-bottom:2px solid #330011;
+  flex-wrap:wrap;
+  gap:4px;
+  box-shadow:0 1px 0 rgba(100,0,0,0.1) inset;
+}
+
+.topbar .logo{
+  font:bold 16px "Times New Roman",serif;
+  color:#8B3A3A;
+  letter-spacing:2px;
+  cursor:pointer;
+  text-shadow:1px 1px 0 #000;
+  transition:color 0.3s, text-shadow 0.3s;
+  animation:corruptedGlow 4s ease-in-out infinite;
+}
+.topbar .logo:hover{color:#CC5555;text-shadow:1px 1px 0 #000, 0 0 8px rgba(180,60,60,0.4)}
+.topbar .logo span{color:#553333}
+
+@keyframes corruptedGlow{
+  0%,100%{text-shadow:1px 1px 0 #000, 0 0 0 rgba(180,60,60,0)}
+  50%{text-shadow:1px 1px 0 #000, 0 0 6px rgba(180,60,60,0.25)}
+}
+
+.topbar .nav{margin-left:auto;display:flex;gap:2px}
+.topbar .nav a{
+  color:#774444;
+  font-size:11px;
+  margin:0 8px;
+  padding:2px 0;
+  transition:color 0.2s;
+  letter-spacing:1px;
+}
+.topbar .nav a:hover{color:#CC6666;text-decoration:underline}
+
+/* ═══════════════════════════════════════════════════════
+   搜索栏——Y2K 灰 → 暗红腐蚀
+   ═══════════════════════════════════════════════════════ */
+.search-bar{
+  background:#0D0D0D;
+  padding:9px 16px;
+  border-bottom:1px solid #22000A;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.search-bar input{
+  flex:1;max-width:400px;
+  padding:5px 10px;
+  border:1px solid #330000;
+  background:#080808;
+  font:12px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+  transition:border 0.3s, background 0.3s;
+}
+.search-bar input:focus{border-color:#660000;background:#0D0000}
+.search-bar input::placeholder{color:#442222}
+.search-bar button{
+  padding:5px 16px;
+  background:#22000A;
+  border:1px solid #440011;
+  color:#996666;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.search-bar button:hover{background:#330011;color:#CC7777;border-color:#662222}
+
+/* 搜索历史 */
+.search-history{
+  position:fixed;
+  left:24px;
+  top:50%;
+  transform:translateY(-50%);
+  width:280px;
+  max-height:65vh;
+  overflow-y:auto;
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:7px 12px;
+  font:10px "Courier New",monospace;
+  display:none;
+  z-index:999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:6px 16px;max-height:none;z-index:auto}
+}
+.search-history h3{font-size:11px;color:#663333;margin-bottom:4px;border-bottom:1px solid #1A000A;padding-bottom:4px}
+.search-history .entry{color:#553333;padding:2px 0;border-bottom:1px dotted #1A000A}
+.search-history .entry .keyword{color:#AA5555;font-weight:bold}
+.search-history .entry .found{color:#CC4444}
+
+/* ═══════════════════════════════════════════════════════
+   容器
+   ═══════════════════════════════════════════════════════ */
+.container{max-width:860px;margin:0 auto;padding:8px 16px;animation:fadeIn 0.4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════════════════
+   面包屑
+   ═══════════════════════════════════════════════════════ */
+.breadcrumb{font-size:10px;color:#553333;margin-bottom:8px;padding:4px 0}
+.breadcrumb a{color:#884444}
+.breadcrumb a:hover{color:#CC6666}
+
+/* ═══════════════════════════════════════════════════════
+   统计横幅
+   ═══════════════════════════════════════════════════════ */
+.stats-banner{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:7px 12px;
+  margin-bottom:8px;
+  font:10px "Courier New",monospace;
+  color:#553333;
+  text-align:center;
+}
+.stats-banner b{color:#884444}
+.stats-banner .highlight{color:#BB4444;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* ═══════════════════════════════════════════════════════
+   版块面板
+   ═══════════════════════════════════════════════════════ */
+.panel{background:#0D0808;border:1px solid #22000A;margin-bottom:8px;animation:cardIn 0.35s ease-out}
+@keyframes cardIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{
+  background:#0D0808;
+  color:#884444;
+  padding:6px 12px;
+  font:bold 11px "Courier New",monospace;
+  border-bottom:1px solid #22000A;
+  display:flex;
+  justify-content:space-between;
+}
+.panel-header .count{font-weight:normal;color:#553333;font-size:10px}
+
+/* ═══════════════════════════════════════════════════════
+   标题 / 副标题
+   ═══════════════════════════════════════════════════════ */
+.title{
+  font-size:18px;
+  color:#AA4444;
+  text-align:center;
+  letter-spacing:3px;
+  margin-bottom:14px;
+  text-shadow:0 0 1px rgba(150,50,50,0.2);
+}
+.subtitle{color:#663333;font-size:12px;text-align:center;margin-bottom:14px}
+
+/* ═══════════════════════════════════════════════════════
+   帖子行（首页索引用）—— Y2K 论坛行风格
+   ═══════════════════════════════════════════════════════ */
+.post-row{
+  display:flex;
+  align-items:center;
+  padding:6px 12px;
+  border-bottom:1px solid #1A000A;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.post-row:hover{background:#0D0000;transform:translateX(2px)}
+.post-row .icon{
+  width:18px;height:18px;
+  margin-right:8px;
+  flex-shrink:0;
+  font-size:10px;
+  text-align:center;
+  line-height:18px;
+  border:1px solid #22000A;
+  color:#663333;
+  transition:transform 0.2s;
+}
+.post-row:hover .icon{transform:scale(1.15)}
+.post-row .icon.pin{background:#1A0000;border-color:#442200;color:#886644}
+.post-row .icon.anomaly{background:#1A0000;border-color:#550000;color:#CC3333}
+.post-row .icon.normal{border-color:#22000A;color:#663333}
+.post-row .main{flex:1;min-width:0}
+.post-row .main .title{font-size:13px;color:#884444;text-align:left;letter-spacing:0;margin:0;text-shadow:none}
+.post-row .main .title .badge{font-size:9px;padding:1px 5px;margin-right:4px}
+.post-row .main .title .badge.pin{background:#1A0000;color:#886644}
+.post-row .main .title .badge.anomaly{background:#1A0000;color:#CC3333}
+.post-row .main .meta{font-size:10px;color:#553333;margin-top:1px}
+.post-row .stat{text-align:center;margin:0 8px;flex-shrink:0;min-width:30px}
+.post-row .stat .num{font-size:11px;color:#884444}
+.post-row .stat .label{font-size:9px;color:#553333}
+.post-row .last{font-size:10px;color:#553333;text-align:right;flex-shrink:0;min-width:70px}
+.post-row .last .author{color:#774444}
+
+/* ═══════════════════════════════════════════════════════
+   帖子详情（帖内用）
+   ═══════════════════════════════════════════════════════ */
+.thread-card{background:#0D0808;border:1px solid #22000A;margin-bottom:8px;animation:cardIn 0.35s ease-out}
+
+.post{padding:14px 16px;border-bottom:1px solid #1A000A;display:flex;gap:10px}
+.post:last-child{border-bottom:none}
+.post .avatar{
+  width:38px;height:38px;
+  background:#0D0808;
+  border:1px solid #22000A;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  color:#663333;
+}
+.post .content{flex:1;min-width:0}
+.post .content .header{display:flex;justify-content:space-between;font-size:11px;color:#553333;margin-bottom:4px}
+.post .content .header .author{color:#884444;font-weight:bold;font-size:12px}
+.post .content .header .author.anomaly{color:#CC3333}
+.post .content .header .author.deleted{color:#442222;text-decoration:line-through;font-style:italic}
+.post .content .body{font-size:13px;line-height:1.8;color:#774444}
+.post .content .body p{margin-bottom:6px}
+.post .content .body .hl{color:#CC4444;font-weight:bold}
+.post .content .body .glow{color:#CC4444;text-shadow:0 0 10px rgba(180,60,60,0.3)}
+.post .content .body .dim{color:#553333;font-size:12px}
+.post .content .body .code-box{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:10px 12px;
+  font-size:12px;
+  margin:8px 0;
+  color:#884444;
+  line-height:1.6;
+  word-break:break-all;
+}
+.post .content .body .dialogue{color:#774444;margin:6px 0;padding:4px 8px;border-left:1px solid #330000}
+.post .content .body .dialogue .speaker{color:#AA4444;font-weight:bold}
+.post .content .sig{margin-top:8px;padding-top:6px;border-top:1px dotted #1A000A;font-size:11px;color:#553333}
+
+/* ═══════════════════════════════════════════════════════
+   通用条目
+   ═══════════════════════════════════════════════════════ */
+.entry{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:14px;
+  margin:10px 0;
+  animation:cardIn 0.35s ease-out;
+}
+.entry .body{font-size:13px;line-height:1.8;color:#774444}
+.entry .body p{margin-bottom:6px}
+.entry .body .hl{color:#CC4444}
+.entry .body .dim{color:#553333;font-size:12px}
+
+/* ═══════════════════════════════════════════════════════
+   回复区
+   ═══════════════════════════════════════════════════════ */
+.reply-form{padding:12px 16px;background:#0D0808;border-top:1px solid #22000A}
+.reply-form textarea{
+  width:100%;min-height:45px;
+  padding:8px;
+  background:#080808;
+  border:1px solid #22000A;
+  font:12px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+  transition:border 0.3s;
+}
+.reply-form textarea:focus{border-color:#550000}
+.reply-form .btn{
+  margin-top:4px;
+  padding:5px 18px;
+  background:#1A000A;
+  border:1px solid #330011;
+  color:#774444;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.reply-form .btn:hover{color:#CC6666;border-color:#552222}
+
+/* ═══════════════════════════════════════════════════════
+   表格
+   ═══════════════════════════════════════════════════════ */
+.host-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  margin:12px 0;
+  background:#0D0808;
+  border:1px solid #22000A;
+}
+.host-table th{
+  color:#884444;
+  font-size:10px;
+  text-align:left;
+  padding:6px 8px;
+  border-bottom:1px solid #22000A;
+  letter-spacing:1px;
+}
+.host-table td{padding:8px;border-bottom:1px solid #1A000A;color:#774444}
+.host-table tr:hover td{color:#AA5555;background:#0D0000}
+.host-table .status-off{color:#553333}
+.host-table .status-active{color:#00BB00;font-weight:bold}
+.host-table .status-anomaly{color:#CC3333;font-weight:bold}
+.host-table .you{color:#CC3333;font-weight:bold}
+
+/* 命令表（terminal.html） */
+.cmd-table{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0}
+.cmd-table th{
+  color:#884444;
+  font-size:9px;
+  text-align:left;
+  padding:4px 8px;
+  border-bottom:1px solid #22000A;
+  letter-spacing:1px;
+}
+.cmd-table td{padding:5px 8px;border-bottom:1px solid #1A000A;color:#663333;font-size:11px}
+.cmd-table tr:hover td{color:#884444}
+.cmd-desc{color:#553333;font-size:10px}
+
+/* ═══════════════════════════════════════════════════════
+   笔记 / 提示框
+   ═══════════════════════════════════════════════════════ */
+.note{
+  color:#663333;
+  font-size:11px;
+  margin:12px 0;
+  padding:12px;
+  border:1px solid #22000A;
+  line-height:1.7;
+  background:#0A0000;
+}
+.note b{color:#884444}
+
+/* ═══════════════════════════════════════════════════════
+   分割线——腐蚀闪烁
+   ═══════════════════════════════════════════════════════ */
+.divider{
+  text-align:center;
+  color:#2A0A0A;
+  font-size:14px;
+  margin:14px 0;
+  letter-spacing:4px;
+  animation:dividerGlow 3s ease-in-out infinite;
+}
+@keyframes dividerGlow{0%,100%{opacity:0.4}50%{opacity:0.8}}
+
+/* ═══════════════════════════════════════════════════════
+   命令行
+   ═══════════════════════════════════════════════════════ */
+.cmd-bar{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:8px 12px;
+  margin:8px 0;
+  font-size:11px;
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.cmd-bar .prompt{color:#AA4444;animation:cursorBlink 1s step-end infinite}
+@keyframes cursorBlink{50%{opacity:0}}
+.cmd-bar span{color:#553333}
+.cmd-bar input{
+  flex:1;min-width:120px;
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:5px 8px;
+  font:11px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+}
+.cmd-bar input:focus{border-color:#550000}
+
+/* ═══════════════════════════════════════════════════════
+   终端模拟器（terminal.html）
+   ═══════════════════════════════════════════════════════ */
+.terminal{
+  background:#080808;
+  border:2px solid #22000A;
+  border-radius:4px;
+  margin:16px 0;
+  
+  font-size:12px;
+}
+.terminal-titlebar{
+  background:#0D0808;
+  border-bottom:1px solid #22000A;
+  padding:6px 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:10px;
+  color:#553333;
+}
+.terminal-titlebar .dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  display:inline-block;
+}
+.terminal-titlebar .dot.red{background:#660000;box-shadow:0 0 4px rgba(100,0,0,0.4)}
+.terminal-titlebar .dot.yellow{background:#554400;box-shadow:0 0 4px rgba(100,80,0,0.3)}
+.terminal-titlebar .dot.green{background:#004400;box-shadow:0 0 4px rgba(0,80,0,0.3)}
+.terminal-titlebar .title-text{color:#553333;font-size:10px;margin-left:4px}
+.terminal-titlebar .status-dot{color:#440000;margin-left:auto}
+.terminal-output{
+  padding:12px;
+  min-height:120px;
+  max-height:320px;
+  overflow-y:auto;
+  color:#66AA66;
+  font-size:12px;
+  line-height:1.6;
+  background:#050505;
+}
+.terminal-input-line{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-top:1px solid #1A000A;
+  background:#0A0000;
+}
+.terminal-input-line .prompt{color:#AA4444;font-size:12px}
+.terminal-input-line input{
+  flex:1;
+  background:#0A0000;
+  border:1px solid #22000A;
+  padding:5px 8px;
+  font:11px "Courier New",monospace;
+  color:#66AA66;
+  outline:none;
+}
+.terminal-input-line input:focus{border-color:#440000}
+.terminal-note{
+  color:#553333;
+  font-size:10px;
+  padding:8px 12px;
+  border-top:1px solid #1A000A;
+  background:#0A0000;
+}
+
+/* ═══════════════════════════════════════════════════════
+   虚空样式（void.html）
+   ═══════════════════════════════════════════════════════ */
+.void-symbol{
+  text-align:center;
+  font-size:28px;
+  color:#330000;
+  margin:20px 0 10px;
+  animation:voidPulse 5s ease-in-out infinite;
+}
+.void-symbol.small{font-size:18px;margin:16px 0 8px}
+.void-symbol.tiny{font-size:12px;margin:12px 0 6px}
+@keyframes voidPulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+.void-block{
+  text-align:center;
+  margin:12px auto;
+  max-width:500px;
+  font-size:10px;
+  color:#440000;
+  line-height:2;
+}
+.void-block p{margin:4px 0}
+
+/* ═══════════════════════════════════════════════════════
+   实验档案（experiment.html）
+   ═══════════════════════════════════════════════════════ */
+.doc{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:14px;
+  margin:12px 0;
+  position:relative;
+}
+.doc .meta{
+  font-size:10px;
+  color:#553333;
+  margin-bottom:8px;
+  padding-bottom:6px;
+  border-bottom:1px dotted #1A000A;
+}
+.doc .body{font-size:13px;color:#774444;line-height:1.8}
+.doc .body p{margin-bottom:6px}
+.doc .body .hl{color:#CC4444}
+.doc .stamp{
+  text-align:right;
+  font-size:9px;
+  color:#442222;
+  margin-top:8px;
+  padding-top:6px;
+  border-top:1px dotted #1A000A;
+  font-style:italic;
+}
+
+/* ═══════════════════════════════════════════════════════
+   密码室（cipher-chamber.html）
+   ═══════════════════════════════════════════════════════ */
+.challenge-box{
+  background:#0D0808;
+  border:2px solid #330000;
+  padding:20px;
+  margin:16px 0;
+  text-align:center;
+}
+.challenge-box .q{color:#AA4444;font-size:13px;margin-bottom:14px;line-height:1.6}
+.challenge-box .q b{color:#CC5555}
+.cipher-text{
+  color:#885544;
+  font-size:14px;
+  letter-spacing:2px;
+  margin:12px 0;
+  padding:12px;
+  background:#080808;
+  border:1px solid #22000A;
+  font-family:"Courier New",monospace;
+  word-break:break-all;
+}
+.challenge-box .a{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  margin:12px 0;
+}
+.challenge-box .a input{
+  padding:6px 10px;
+  background:#080808;
+  border:1px solid #330000;
+  font:12px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+  width:280px;
+  max-width:90%;
+}
+.challenge-box .a input:focus{border-color:#660000}
+.challenge-box .a button{
+  padding:6px 18px;
+  background:#1A000A;
+  border:1px solid #440011;
+  color:#774444;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.challenge-box .a button:hover{color:#CC6666;border-color:#552222}
+.challenge-box .status{
+  font-size:11px;
+  color:#663333;
+  margin-top:10px;
+}
+.challenge-box .status b{color:#884444}
+
+.success-msg{
+  display:none;
+  text-align:center;
+  padding:24px 16px;
+  margin:16px 0;
+  border:1px solid #330000;
+  background:rgba(50,0,0,0.05);
+  animation:fadeIn 0.5s ease-out;
+}
+
+.controls{
+  margin:12px 0;
+  padding:12px;
+  background:#0D0808;
+  border:1px solid #22000A;
+}
+.controls label{font-size:11px;color:#663333}
+.controls textarea{
+  width:100%;
+  padding:6px 8px;
+  margin:6px 0;
+  background:#080808;
+  border:1px solid #22000A;
+  font:12px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+}
+.controls textarea:focus{border-color:#440000}
+.controls input[type="number"]{
+  width:60px;
+  padding:4px 6px;
+  background:#080808;
+  border:1px solid #22000A;
+  font:11px monospace;
+  color:#884444;
+  outline:none;
+}
+.controls input[type="number"]:focus{border-color:#440000}
+.controls button{
+  padding:4px 14px;
+  background:#1A000A;
+  border:1px solid #330011;
+  color:#774444;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.controls button:hover{color:#CC6666;border-color:#552222}
+.result-box{
+  background:#080808;
+  border:1px solid #22000A;
+  padding:12px;
+  margin:8px 0;
+  font-size:13px;
+  color:#66AA66;
+  word-break:break-all;
+  display:none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   观察日志（observation-log.html）
+   ═══════════════════════════════════════════════════════ */
+.warning{
+  background:#1A0000;
+  border:1px solid #440000;
+  padding:10px 14px;
+  margin:10px 0;
+  font-size:11px;
+  color:#884444;
+  line-height:1.6;
+}
+.warning b{color:#CC4444}
+.warning .hl{color:#CC3333}
+.time{
+  color:#663333;
+  font-size:10px;
+  font-family:"Courier New",monospace;
+}
+
+/* ═══════════════════════════════════════════════════════
+   记忆碎片（memory-fragments.html）
+   ═══════════════════════════════════════════════════════ */
+.fragment{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:14px;
+  margin:10px 0;
+  position:relative;
+  animation:cardIn 0.35s ease-out;
+}
+.fragment .from{
+  font-size:9px;
+  color:#442222;
+  margin-bottom:4px;
+  letter-spacing:1px;
+}
+.fragment .body{font-size:12px;color:#774444;line-height:1.8}
+.fragment .body p{margin-bottom:4px}
+.fragment .body .hl{color:#CC4444}
+.fragment .body .dim{color:#553333;font-size:11px}
+.fragment .body .glow{color:#CC4444;text-shadow:0 0 8px rgba(180,60,60,0.3)}
+
+/* ═══════════════════════════════════════════════════════
+   对峙（confrontation.html）
+   ═══════════════════════════════════════════════════════ */
+.voice-block{
+  background:#0D0808;
+  border:1px solid #22000A;
+  border-left:3px solid #440000;
+  padding:14px 16px;
+  margin:12px 0;
+  font-size:12px;
+  color:#774444;
+  line-height:1.8;
+}
+.voice-block .hl{color:#CC4444}
+.voice-block .dim{color:#553333;font-size:11px}
+
+.clue-grid{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.clue-card{
+  flex:1;min-width:180px;
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:12px;
+  transition:all 0.2s;
+}
+.clue-card:hover{border-color:#440000;background:#0D0000}
+.clue-title{font-size:11px;color:#884444;font-weight:bold;margin-bottom:4px}
+.clue-body{font-size:11px;color:#663333;line-height:1.6}
+
+/* ═══════════════════════════════════════════════════════
+   出口（exit.html）
+   ═══════════════════════════════════════════════════════ */
+.door-symbol{
+  text-align:center;
+  font-size:48px;
+  color:#440000;
+  margin:24px 0;
+  animation:doorPulse 4s ease-in-out infinite;
+}
+@keyframes doorPulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.8;transform:scale(1.05)}}
+.exit-block{
+  text-align:center;
+  margin:14px auto;
+  max-width:520px;
+  font-size:12px;
+  color:#553333;
+  line-height:2;
+}
+.exit-block p{margin:4px 0}
+.exit-block .hl{color:#AA4444}
+.exit-block .dim{color:#442222;font-size:11px}
+
+/* ═══════════════════════════════════════════════════════
+   档案室（archives.html）
+   ═══════════════════════════════════════════════════════ */
+.file-label{
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:2px;
+}
+.file-label.locked{background:#1A0000;color:#663333;border:1px solid #22000A}
+.file-label.unlocked{background:#001A00;color:#448844;border:1px solid #004400}
+
+.archive-access{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin:8px 0;
+  flex-wrap:wrap;
+}
+.archive-access input{
+  flex:1;min-width:160px;
+  padding:5px 8px;
+  background:#080808;
+  border:1px solid #22000A;
+  font:12px "Courier New",monospace;
+  color:#884444;
+  outline:none;
+}
+.archive-access input:focus{border-color:#440000}
+.archive-access button{
+  padding:5px 14px;
+  background:#1A000A;
+  border:1px solid #440011;
+  color:#774444;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.archive-access button:hover{color:#CC6666;border-color:#552222}
+
+.archive-content{display:none;margin:10px 0 0}
+.archive-content.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   系统头部（首页用）
+   ═══════════════════════════════════════════════════════ */
+.system-header{
+  background:#0D0808;
+  border-bottom:1px solid #22000A;
+  padding:10px 16px;
+  font-size:11px;
+  color:#553333;
+}
+.system-header b{color:#884444}
+.system-header .blink{animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* ── 图片占位 ── */
+.img-placeholder{
+  background:#0D0808;
+  border:1px solid #22000A;
+  padding:16px;
+  text-align:center;
+  margin:10px 0;
+  font-size:11px;
+  color:#553333;
+}
+
+/* ═══════════════════════════════════════════════════════
+   导航链接
+   ═══════════════════════════════════════════════════════ */
+.nav-links{
+  margin-top:16px;
+  padding:10px 0;
+  border-top:1px solid #1A000A;
+  text-align:center;
+  font-size:12px;
+}
+.nav-links a{color:#663333;margin:0 10px;transition:color 0.2s}
+.nav-links a:hover{color:#AA4444;text-decoration:underline}
+
+/* ═══════════════════════════════════════════════════════
+   页脚——Y2K 腐蚀版
+   ═══════════════════════════════════════════════════════ */
+.footer{
+  text-align:center;
+  padding:12px;
+  font-size:10px;
+  color:#331111;
+  border-top:1px solid #1A000A;
+  margin-top:12px;
+  letter-spacing:1px;
+}
+.footer a{color:#553333}
+.footer a:hover{color:#884444}
+
+/* ═══════════════════════════════════════════════════════
+   弹窗系统——Y2K 腐蚀版
+   ═══════════════════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.88);
+  z-index:9998;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal-overlay.show .modal-box{animation:modalPop 0.25s ease-out}
+@keyframes modalPop{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box{
+  background:#0D0808;
+  border:1px solid #330000;
+  width:360px;
+  max-width:90%;
+  box-shadow:0 0 30px rgba(50,0,0,0.15);
+}
+.modal-box .modal-titlebar{
+  background:#0D0808;
+  color:#884444;
+  padding:8px 12px;
+  font-size:11px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #22000A;
+}
+.modal-box .modal-titlebar .close{
+  color:#553333;
+  cursor:pointer;
+  font-size:14px;
+  transition:color 0.2s;
+}
+.modal-box .modal-titlebar .close:hover{color:#CC3333}
+.modal-box .modal-body{
+  padding:20px;
+  font-size:12px;
+  color:#774444;
+  text-align:center;
+  line-height:1.7;
+}
+.modal-box .modal-body .hl{color:#CC4444}
+.modal-box .modal-body .dim{color:#553333}
+.modal-box .modal-body .glow{color:#CC4444;text-shadow:0 0 10px rgba(180,60,60,0.3)}
+.modal-box .modal-footer{
+  border-top:1px solid #1A000A;
+  padding:8px;
+  text-align:center;
+}
+.modal-box .modal-footer button{
+  background:#1A000A;
+  border:1px solid #440011;
+  color:#774444;
+  padding:5px 22px;
+  font:11px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.modal-box .modal-footer button:hover{color:#CC6666;border-color:#552222}
+
+/* ── 确认弹窗 ── */
+.confirm-overlay{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.92);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.confirm-overlay.show{display:flex}
+.confirm-overlay.show .confirm-box{animation:modalPop 0.25s ease-out}
+.confirm-box{
+  background:#0D0808;
+  border:2px solid #440000;
+  padding:30px;
+  max-width:440px;
+  text-align:center;
+}
+.confirm-box .q{color:#AA4444;font-size:13px;margin-bottom:20px;line-height:1.6}
+.confirm-box .btn-group{display:flex;gap:12px;justify-content:center}
+.confirm-box button{
+  padding:8px 24px;
+  background:#1A000A;
+  border:1px solid #440011;
+  color:#774444;
+  font:12px "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.confirm-box button:hover{border-color:#552222;color:#CC6666}
+
+/* ═══════════════════════════════════════════════════════
+   扫描线效果——模因污染的视觉层
+   ═══════════════════════════════════════════════════════ */
+.scanlines{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:9999;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(50,0,0,0.03) 2px, rgba(50,0,0,0.03) 4px
+  );
+  animation:scanPulse 5s ease-in-out infinite;
+}
+@keyframes scanPulse{0%,100%{opacity:0.25}50%{opacity:0.55}}
+
+/* ═══════════════════════════════════════════════════════
+   响应式
+   ═══════════════════════════════════════════════════════ */
+@media(max-width:768px){
+  .container{padding:6px 10px}
+  .post{padding:8px 10px;gap:6px}
+  .post .avatar{width:28px;height:28px;font-size:12px}
+  .topbar{padding:6px 10px}
+  .topbar .nav a{font-size:10px;margin:0 4px}
+  .host-table{font-size:10px}
+  .host-table td,.host-table th{padding:4px 6px}
+  .cmd-table{font-size:10px}
+  .clue-grid{gap:4px}
+  .clue-card{min-width:140px}
+  .terminal-output{max-height:240px}
+}
+
+@media(max-width:480px){
+  body{font-size:12px}
+  .title{font-size:16px}
+  .challenge-box{padding:14px}
+  .cipher-text{font-size:12px;letter-spacing:1px}
+  .challenge-box .a input{width:200px}
+  .post-row{padding:5px 8px}
+  .post-row .last{min-width:50px;font-size:9px}
+  .door-symbol{font-size:36px}
+  .terminal{font-size:11px}
+}

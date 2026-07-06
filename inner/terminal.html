@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ LAMP46 终端</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="index.html">[索引]</a>
+    <a href="terminal.html">[终端]</a>
+    <a href="archives.html">[档案]</a>
+  </div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+  <!-- 面包屑 -->
+  <div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; 终端</div>
+
+  <!-- 主标题 -->
+  <div class="title">◈ LAMP46 终端</div>
+  <div class="subtitle">系统终端模拟器 v2.46 · 键入 <b>HELP</b> 查看命令列表</div>
+
+  <!-- 终端模拟器 -->
+  <div class="terminal">
+    <div class="terminal-titlebar">
+      <span><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="title-text">◈ 终端会话</span></span>
+      <span><span class="status-dot"></span> 运行中</span>
+    </div>
+    <div class="terminal-output" id="terminal-output"></div>
+    <div class="terminal-input-line">
+      <span class="prompt">&gt;</span>
+      <input type="text" id="cmd-input" placeholder="输入命令…" autofocus spellcheck="false" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- 命令参考 -->
+  <div class="panel">
+    <div class="panel-header">◈ 命令参考 <span class="count">10 条命令</span></div>
+    <table class="cmd-table">
+      <tr><td><b>STATUS</b></td><td class="cmd-desc">显示系统状态 <small>— CPU、内存、网络、锚点信号</small></td></tr>
+      <tr><td><b>LOGS</b></td><td class="cmd-desc">查看最近系统日志 <small>— 最近 5 条记录</small></td></tr>
+      <tr><td><b>ANCHOR</b></td><td class="cmd-desc">查看锚点状态与参数 <small>— 频率、信号、锁定状态</small></td></tr>
+      <tr><td><b>HOSTS</b></td><td class="cmd-desc">列出当前活动宿主 <small>— 在线宿主列表</small></td></tr>
+      <tr><td><b>DATE</b></td><td class="cmd-desc">显示当前系统日期和时间</td></tr>
+      <tr><td><b>WHOAMI</b></td><td class="cmd-desc">显示当前用户信息 <small>— 从本地存储读取</small></td></tr>
+      <tr><td><b>CLEAR</b></td><td class="cmd-desc">清除终端屏幕</td></tr>
+      <tr><td><b>EXIT</b></td><td class="cmd-desc">退出终端，返回论坛首页</td></tr>
+      <tr><td><b>46</b></td><td class="cmd-desc">??? <small>— 彩蛋</small></td></tr>
+      <tr><td><b>HELP</b></td><td class="cmd-desc">显示此命令列表</td></tr>
+    </table>
+  </div>
+
+  <!-- 终端备注 -->
+  <div class="terminal-note">
+    <b>◈ 提示：</b>终端会话中的所有操作均为本地模拟，不影响实际系统。
+    命令历史保存在当前会话中，刷新页面后清空。
+    部分命令输出内容为静态演示数据，仅供叙事参考。
+  </div>
+
+</div>
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+<script>
+function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+initSearch();
+
+/* ── 终端引擎 ── */
+(function(){
+  var output = document.getElementById('terminal-output');
+  var input = document.getElementById('cmd-input');
+  var cmdHistory = [];
+  var historyIdx = -1;
+
+  function line(text, cls) {
+    var d = document.createElement('div');
+    d.className = 'line' + (cls ? ' ' + cls : '');
+    d.textContent = text;
+    output.appendChild(d);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function lineHTML(html, cls) {
+    var d = document.createElement('div');
+    d.className = 'line' + (cls ? ' ' + cls : '');
+    d.innerHTML = html;
+    output.appendChild(d);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function sep() {
+    line('─── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ───', 'sep');
+  }
+
+  /* ── 启动信息 ── */
+  (function boot() {
+    var msgs = [
+      ['◈ LAMP46 系统终端模拟器 v2.46', 'system'],
+      ['◈ 运行于 回声音箱 节点 46', 'system'],
+      ['◈ 系统初始化序列启动…', 'system'],
+      ['', ''],
+      ['  [OK] 加载内核模块… 完成', 'ok'],
+      ['  [OK] 初始化终端子系统… 完成', 'ok'],
+      ['  [OK] 挂载匿名文件系统… 完成', 'ok'],
+      ['  [OK] 启动网络服务… 完成', 'ok'],
+      ['  [OK] 建立锚点连接… 完成', 'ok'],
+      ['  [WARN] 信号波动异常 -46dBm，建议检查锚点状态', 'warn'],
+      ['  [OK] 回声发生器同步… 完成', 'ok'],
+      ['  [OK] 守护进程注册… 完成', 'ok'],
+      ['  [OK] 启动定时任务调度器… 完成', 'ok'],
+      ['', ''],
+      ['◈ 系统就绪。', 'info'],
+      ['◈ 超过 192 小时无故障运行', 'info'],
+      ['◈ 键入 <b>HELP</b> 查看完整命令列表。', 'info']
+    ];
+    for (var i = 0; i < msgs.length; i++) {
+      if (msgs[i][0].indexOf('<') !== -1) {
+        lineHTML(msgs[i][0], msgs[i][1]);
+      } else {
+        line(msgs[i][0], msgs[i][1]);
+      }
+    }
+  })();
+
+  /* ── 输入处理 ── */
+  input.addEventListener('keydown', function(e){
+    var cmd = input.value.trim();
+
+    if (e.key === 'Enter') {
+      if (!cmd) return;
+      line('> ' + cmd, 'prompt-line');
+      cmdHistory.push(cmd);
+      historyIdx = cmdHistory.length;
+      exec(cmd.toUpperCase());
+      input.value = '';
+      return;
+    }
+
+    if (e.key === 'ArrowUp') {
+      if (cmdHistory.length === 0) return;
+      if (historyIdx > 0) {
+        historyIdx--;
+        input.value = cmdHistory[historyIdx];
+      }
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      if (historyIdx < cmdHistory.length - 1) {
+        historyIdx++;
+        input.value = cmdHistory[historyIdx];
+      } else {
+        historyIdx = cmdHistory.length;
+        input.value = '';
+      }
+      e.preventDefault();
+      return;
+    }
+  });
+
+  /* ── 命令派发 ── */
+  function exec(c) {
+    switch(c) {
+      case 'STATUS':  cmdStatus();  break;
+      case 'LOGS':    cmdLogs();    break;
+      case 'ANCHOR':  cmdAnchor();  break;
+      case 'HOSTS':   cmdHosts();   break;
+      case 'DATE':    cmdDate();    break;
+      case 'WHOAMI':  cmdWhoami();  break;
+      case 'CLEAR':   cmdClear();   break;
+      case 'EXIT':    cmdExit();    break;
+      case '46':      cmd46();      break;
+      case 'HELP':    cmdHelp();    break;
+      default:
+        line('未知命令: ' + c + '。输入 HELP 查看可用命令。', 'error');
+    }
+  }
+
+  /* ── 命令实现 ── */
+
+  function cmdHelp() {
+    line('');
+    line('◈ 可用命令', 'hl');
+    sep();
+    line('  STATUS  - 显示系统状态', 'info');
+    line('  LOGS    - 查看最近系统日志', 'info');
+    line('  ANCHOR  - 查看锚点状态与参数', 'info');
+    line('  HOSTS   - 列出当前活动宿主', 'info');
+    line('  DATE    - 显示当前日期和时间', 'info');
+    line('  WHOAMI  - 显示当前用户信息', 'info');
+    line('  CLEAR   - 清除终端屏幕', 'info');
+    line('  EXIT    - 退出终端，返回论坛首页', 'info');
+    line('  46      - ???（彩蛋）', 'info');
+    line('  HELP    - 显示此帮助信息', 'info');
+    line('');
+  }
+
+  function cmdStatus() {
+    line('');
+    lineHTML('◈ <b>系统状态</b>', 'hl');
+    sep();
+    lineHTML('  CPU 负载          : <b>23.7%</b>  (4 核 / 8 线程)', 'data');
+    lineHTML('  内存使用          : <b>347 MB</b> / 1024 MB', 'data');
+    lineHTML('  正常运行时间      : <b>3 天 14 小时 22 分</b>', 'data');
+    lineHTML('  网络连接数        : <b>12</b> (活跃: 8 / 等待: 4)', 'data');
+    lineHTML('  锚点信号强度      : <b>-46 dBm</b>', 'data');
+    lineHTML('  节点温度          : <b>42.3</b> °C', 'data');
+    lineHTML('  活动进程数        : <b>89</b>', 'data');
+    lineHTML('  磁盘使用          : <b>2.4 GB</b> / 8.0 GB', 'data');
+    lineHTML('  网络吞吐量        : <b>1.2 Mbps</b> 下行 / 0.4 Mbps 上行', 'data');
+    line('');
+    line('系统状态: 运行中 | 负载: 中等', 'info');
+  }
+
+  function cmdLogs() {
+    line('');
+    lineHTML('◈ <b>最近系统日志</b>', 'hl');
+    sep();
+    line('  [2026-07-06 03:14:22] 锚点信号波动，频率偏移 +0.02Hz', 'data');
+    line('  [2026-07-05 22:41:08] 宿主 #03 连接超时，已重新建立连接', 'data');
+    line('  [2026-07-05 18:10:55] 匿名数据包接收，来源: 未知', 'data');
+    line('  [2026-07-05 12:33:47] 系统自检完成，所有模块正常运行', 'data');
+    line('  [2026-07-05 06:00:12] 回声发生器启动，设定频率 46Hz', 'data');
+    line('');
+    line('共 5 条记录 | 最新记录: 3 小时前', 'system');
+  }
+
+  function cmdAnchor() {
+    line('');
+    lineHTML('◈ <b>锚点状态</b>', 'hl');
+    sep();
+    lineHTML('  锚点 ID         : <b>ANC-46</b>', 'data');
+    lineHTML('  部署位置        : <b>回声原点 · 地下三阶</b>', 'data');
+    lineHTML('  运行频率        : <b>46.002 Hz</b> (基准: 46.000 Hz)', 'data');
+    lineHTML('  信号强度        : <b>-46 dBm</b> (中等)', 'data');
+    lineHTML('  锁定状态        : <b>已锁定</b>', 'data');
+    lineHTML('  连接质量        : <b>78.3%</b>', 'data');
+    lineHTML('  最后同步时间    : <b>2 分钟前</b>', 'data');
+    lineHTML('  累计异常记录    : <b>3</b> 次波动', 'data');
+    lineHTML('  固件版本        : <b>v2.1.46</b>', 'data');
+    line('');
+    line('建议: 定期检查锚点信号稳定性。', 'warn');
+  }
+
+  function cmdHosts() {
+    line('');
+    lineHTML('◈ <b>当前活动宿主</b>', 'hl');
+    sep();
+    lineHTML('  宿主 #01  : <b>匿名终端</b>          · 在线     (延迟 12ms)', 'data');
+    lineHTML('  宿主 #03  : <b>回声节点 · Beta</b>   · 在线     (延迟 24ms)', 'data');
+    lineHTML('  宿主 #07  : <b>回声节点 · Gamma</b>  · <b style="color:#CC0000">异常</b>   (延迟 0ms · 无响应)', 'data');
+    lineHTML('  宿主 #12  : <b>外部接入 · 未知</b>   · 未知     (信号波动)', 'data');
+    line('');
+    lineHTML('总计 <b>4</b> 个宿主 | <b>1</b> 个异常 | <b>2</b> 个在线', 'info');
+  }
+
+  function cmdDate() {
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('zh-CN', {
+      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+    });
+    var timeStr = now.toLocaleTimeString('zh-CN', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    var bootTime = new Date(now.getTime() - 3*86400000 - 14*3600000 - 22*60000);
+    var bootStr = bootTime.toLocaleDateString('zh-CN', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+    line('');
+    lineHTML('◈ <b>系统时间</b>', 'hl');
+    sep();
+    lineHTML('  当前日期 : <b>' + dateStr + '</b>', 'data');
+    lineHTML('  当前时间 : <b>' + timeStr + '</b>', 'data');
+    lineHTML('  时区     : <b>UTC+8</b> (中国标准时间)', 'data');
+    lineHTML('  系统启动 : <b>' + bootStr + '</b>', 'data');
+    line('');
+  }
+
+  function cmdWhoami() {
+    var username = localStorage.getItem('lamp46_username') || '访客';
+    var sid = 'SID-' + Math.random().toString(16).substring(2, 6).toUpperCase()
+            + '-' + Math.random().toString(16).substring(2, 6).toUpperCase();
+    var now = new Date();
+    var connTime = now.toLocaleTimeString('zh-CN', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    line('');
+    lineHTML('◈ <b>当前用户</b>', 'hl');
+    sep();
+    lineHTML('  用户标识   : <b>' + username + '</b>', 'data');
+    lineHTML('  接入方式   : <b>WEB 终端 v2.46</b>', 'data');
+    lineHTML('  会话 ID    : <b>' + sid + '</b>', 'data');
+    lineHTML('  客户端 IP  : <b>127.0.0.1</b> (本地回环)', 'data');
+    lineHTML('  权限等级   : <b>标准用户</b>', 'data');
+    lineHTML('  连接时间   : <b>' + connTime + '</b>', 'data');
+    line('');
+    if (username === '访客') {
+      line('提示: 在论坛设置用户名后，此处将显示你的标识。', 'system');
+    }
+  }
+
+  function cmdClear() {
+    output.innerHTML = '';
+    var count = cmdHistory.length;
+    cmdHistory = [];
+    historyIdx = -1;
+    line('终端已清除。已清除 ' + count + ' 条命令历史。', 'system');
+    line('键入 HELP 查看命令列表。', 'info');
+  }
+
+  function cmdExit() {
+    line('');
+    line('正在退出终端…', 'warn');
+    line('断开连接。', 'info');
+    setTimeout(function(){
+      window.location.href = '../forum.html';
+    }, 800);
+  }
+
+  function cmd46() {
+    line('');
+    lineHTML('◈ <b>你听到了吗？</b>', 'easter-egg');
+    sep();
+    line('  46Hz 的呼唤……', 'easter-egg');
+    line('  从那个世界传来的声音', 'easter-egg');
+    line('', '');
+    line('  你感觉到了吗？', 'easter-egg');
+    line('  那种在胸口共振的频率——', 'easter-egg');
+    line('  不是所有人都能听到的', 'easter-egg');
+    line('', '');
+    line('  但你既然在这里……', 'easter-egg');
+    line('  说明你已经是"回声"的一部分了', 'easter-egg');
+    line('', '');
+    line('  你还能回头吗？', 'easter-egg');
+    line('  还是说，你已经不想回头了？', 'easter-egg');
+    line('', '');
+    line('      ——— 信号在回响 ———', 'hl');
+    line('      ——— 频率永不停歇 ———', 'hl');
+    line('');
+  }
+
+  /* ── 焦点控制 ── */
+  input.focus();
+  document.addEventListener('click', function(){
+    input.focus();
+  });
+
+})();
+
+  console.log('%c◈ LAMP46 终端', 'color:#66AA66;font-size:14px;font-weight:bold');
+  console.log('%c◈ 输入 help 查看命令。但你已经知道了。', 'color:#553333;font-size:11px');
+  console.log('%c◈ 终端不会说谎。但它会忽略。', 'color:#442222;font-size:10px');
+</script>
+</body>
+</html>

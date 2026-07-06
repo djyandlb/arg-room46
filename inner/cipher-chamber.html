@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 密码室</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="index.html">[索引]</a>
+    <a href="terminal.html">[终端]</a>
+    <a href="archives.html">[档案]</a>
+  </div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; <a href="index.html">索引</a> &gt; 密码室</div>
+
+<div class="title">◈ 密码室</div>
+<div class="subtitle">加密挑战 · 凯撒密码偏移量已在观察日志中揭示</div>
+
+<div class="note">
+  <b>欢迎来到密码室。</b>
+  这里所有的秘密都被锁在加密文字之后。
+  你需要找到正确的钥匙——<b>文字</b>就是钥匙。
+  观察日志底部有一段加密信息，用它来证明你已经掌握了密码学的第一步。
+</div>
+
+<!-- 挑战区域 -->
+<div class="challenge-box">
+  <div class="q"><b>挑战：</b>以下密文使用凯撒密码加密。偏移量隐藏在 <b>观察日志</b> 页面中。</div>
+  <div class="cipher-text"><span style="color:#660000;">Xk gszmp hszr xl lmtvihy zx xzkviv-gsz nvih. Tsv hrew ivwsvwsvih ziv gsviv.</span></div>
+  <div class="a">
+    <input type="text" id="caesar-answer" placeholder="输入解码后的英文小写（不包含标点）">
+    <button onclick="checkAnswer()">验证</button>
+  </div>
+  <div class="status" id="caesar-status">提示：观察日志页面底部有线索。偏移量隐藏在 <b>46</b> 这个数字中。</div>
+</div>
+
+<!-- 成功信息 -->
+<div class="success-msg" id="success-msg">
+  <span style="font-size:16px;">◈</span><br><br>
+  <b>挑战完成！</b><br><br>
+  <span style="font-size:12px;">你破译了这段凯撒密码。</span><br><br>
+  <span style="color:#880000;font-size:13px;letter-spacing:1px;">
+    <b>"You stand now at the entrance of the cipher-chamber. The keys are everywhere."</b>
+  </span><br><br>
+  <span class="dim">"你已站在密码室的入口。钥匙无处不在。"</span><br><br>
+  <div class="divider">◈ ◈ ◈</div>
+  <p style="color:#550000;margin-top:10px;">
+    你已经掌握了凯撒密码。<br>
+    但还有更多的秘密等待解锁。<br>
+    记住：<b>钥匙就在你手中</b>。
+  </p>
+</div>
+
+<div class="divider">◈ ◈ ◈</div>
+
+<!-- 凯撒解码器工具 -->
+<div class="entry">
+  <div class="body">
+    <p><b>凯撒密码解码器</b></p>
+    <p class="dim">输入任意凯撒密码加密的文字，选择偏移量，点击解码。</p>
+  </div>
+</div>
+
+<div class="controls">
+  <label>加密文本：</label><br>
+  <textarea id="cipher-input" rows="2" placeholder="输入要解码的文本"></textarea><br>
+  <label>偏移量：</label>
+  <input type="number" id="shift-input" value="6" min="1" max="25">
+  <button onclick="decode()">解码</button>
+  <button onclick="clearDecode()">清空</button>
+  <span style="color:#330000;font-size:9px;margin-left:8px;">（偏移量 = 字母向后移动的位数）</span>
+</div>
+
+<div class="result-box" id="result-box">解码结果将显示在这里</div>
+
+<!-- 说明 -->
+<div class="entry">
+  <div class="body">
+    <p><b>关于凯撒密码</b></p>
+    <p>凯撒密码是最古老的加密技术之一。每个字母在字母表中向后（或向前）移动固定的偏移量。</p>
+    <p>例如，偏移量为 <b>6</b> 时：</p>
+    <p style="font-family:monospace;color:#660000;margin:6px 0;">
+      A → U &nbsp; B → V &nbsp; C → W &nbsp; D → X &nbsp; E → Y &nbsp; F → Z &nbsp; G → A &nbsp; H → B
+    </p>
+    <p>观察日志中给出的密文 "Xk gszmp..." 使用偏移量 <b>6</b> 加密。</p>
+    <p>你可以在本页面的解码器中验证这一点。</p>
+    <br>
+    <p class="dim"><b>提示：</b>偏移量 6 对应了频率 <b>46Hz</b> 中的第二个数字。
+    一切线索最终都指向同一个数字。</p>
+  </div>
+</div>
+
+<div class="nav-links">
+    <a href="terminal.html">[ 终端 ]</a>
+  <a href="archives.html">[ 档案室 ]</a>
+  <a href="observation-log.html">[ 观察日志 ]</a>
+  <a href="experiment.html">[ 实验记录 ]</a>
+  <a href="hosts.html">[ 宿主名单 ]</a>
+  <a href="../forum.html">[ 返回论坛 ]</a>
+  </div>
+
+</div>
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+<script>
+function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+initSearch();
+
+/* 检查localStorage中是否已成功 */
+(function(){
+  var solved = localStorage.getItem('room46_caesar_solved');
+  if(solved){
+    document.getElementById('caesar-status').textContent = '✅ 已完成。偏移量 +6。';
+    document.getElementById('caesar-status').className = 'status done';
+    document.getElementById('success-msg').style.display = 'block';
+  }
+})();
+
+/* 验证答案 */
+function checkAnswer(){
+  var a = document.getElementById('caesar-answer').value.trim().toLowerCase();
+  var expected = "you stand now at the entrance of the cipher-chamber the keys are everywhere";
+  var clean = a.replace(/[^a-z\s]/g, '');
+  if(clean === expected || a.indexOf('cipher-chamber') !== -1){
+    document.getElementById('caesar-status').textContent = '✅ 正确！偏移量为 +6。密码室为你敞开。';
+    document.getElementById('caesar-status').className = 'status done';
+    localStorage.setItem('room46_caesar_solved', '1');
+    document.getElementById('success-msg').style.display = 'block';
+  } else {
+    document.getElementById('caesar-status').textContent = '❌ 不正确，再试试。提示：偏移量 +6，去观察日志页面底部找线索。';
+    document.getElementById('caesar-status').className = 'status';
+  }
+}
+
+/* 凯撒解码器 */
+function decode(){
+  var t = document.getElementById('cipher-input').value;
+  var s = parseInt(document.getElementById('shift-input').value) || 6;
+  var r = '';
+  for(var i = 0; i < t.length; i++){
+    var c = t.charCodeAt(i);
+    if(c >= 65 && c <= 90){
+      r += String.fromCharCode(((c - 65 - s + 26) % 26) + 65);
+    } else if(c >= 97 && c <= 122){
+      r += String.fromCharCode(((c - 97 - s + 26) % 26) + 97);
+    } else {
+      r += t.charAt(i);
+    }
+  }
+  document.getElementById('result-box').textContent = r;
+  document.getElementById('result-box').className = 'result-box success';
+}
+
+function clearDecode(){
+  document.getElementById('cipher-input').value = '';
+  document.getElementById('result-box').textContent = '解码结果将显示在这里';
+  document.getElementById('result-box').className = 'result-box';
+}
+
+console.log('◈ 密码室。凯撒偏移量 +6。你早就知道了，不是吗？');
+console.log('◈ 解码后的密文："You stand now at the entrance of the cipher-chamber. The keys are everywhere."');
+</script>
+</body>
+</html>

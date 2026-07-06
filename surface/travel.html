@@ -1,0 +1,466 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大理洱海真的太美了，发点照片 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="#">旅行驿站</a> › 大理洱海真的太美了，发点照片
+  </div>
+
+  <div class="thread-card">
+    <!-- ── 楼主帖子 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D4E0D8;">步</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">步履不停</span>
+          <span>#1 · 2008-10-12 14:26</span>
+        </div>
+        <div class="body">
+          <p>刚从云南回来，趁着记忆还新鲜赶紧把照片整理了一下。这次去了<b>大理洱海</b>，待了整整五天四夜。之前在网上看了不少攻略，但真的到了才发现，<b>照片根本拍不出十分之一的美</b>。洱海的水清澈得不像话，站在岸边能看到湖底的石头和水草，那种蓝色不是后期调出来的，是真的、真的就那么蓝。</p>
+
+          <p>先放第一张——<b>清晨六点的洱海</b>，我住的客栈就在才村码头附近，推开窗就是湖面。那天六点不到就醒了，天还没全亮，湖面上笼着一层薄雾，远处苍山的轮廓若隐若现。我端着相机在阳台上等了一个多小时，就为了拍日出那一瞬间——阳光从苍山背后漫过来的时候，整个湖面像被点燃了一样，金光碎了一地。</p>
+
+          <div class="img-ph">📷 [img/erhai-sunrise-dawn.jpg] — 洱海日出全景，清晨六点半，湖面薄雾弥漫，苍山隐现，阳光从山脊后漫射而出，水面泛起碎金般的粼光，画面左下角可见客栈露台的木栏杆，远处有渔船剪影</div>
+
+          <p>第二张是<b>环海西路的田园风光</b>。第三天租了一辆自行车，沿着环海西路骑了大半天。那条路真的太舒服了——一边是洱海，一边是稻田和村庄。十月份的稻子已经黄了，风吹过去像金色的海浪。路上基本没有什么车，偶尔能碰到几个同样骑车的外国游客，互相打个招呼擦肩而过。我中途在喜洲古镇停下来吃了喜洲粑粑，热腾腾的，外酥里软，才两块钱一个。坐在古镇的四方街吃粑粑看白族建筑的飞檐翘角，那种感觉真的无法形容。</p>
+
+          <div class="img-ph">📷 [img/erhai-cycling-road.jpg] — 环海西路骑行视角，右侧是湛蓝的洱海湖面，左侧是金黄色的稻田和灰瓦白墙的白族村落，柏油路延伸向远方，天空是高原特有的透澈湛蓝色，远处可见苍山连绵的山脊线</div>
+
+          <p>第三张——也是我自己最满意的一张——<b>双廊古镇的黄昏</b>。第四天傍晚去了双廊，沿着玉几岛的海边栈道走了一圈。日落时分的光线真的是摄影师的黄金时刻，整个天空从金黄色渐变成玫瑰紫，洱海就像一面镜子，把天空的颜色完整地倒映在水面上。我站在栈道上按了可能有四五十张，但最好看的就是这一张——水面完全静止，天空的颜色从橙红过渡到深蓝，层次分明。</p>
+
+          <div class="img-ph">📷 [img/erhai-twilight-reflection.jpg] — 双廊古镇日落，天空呈橙红至深蓝的渐变色，洱海如镜面般完美倒映天空，水面有细微的波纹，近处可见白族民居的屋顶轮廓，远处南诏风情岛的剪影隐约可见</div>
+
+          <p>说几个这次旅行的小提醒：</p>
+          <p>① <b>防晒一定要做好</b>——大理海拔接近两千米，紫外线强得离谱。我第一天偷懒没涂防晒霜，晚上回客栈发现脖子和手臂直接晒红了，后面几天火辣辣地疼。当地人说大理一年四季紫外线都强，阴天也一样，<b>千万别低估高原的太阳</b>。</p>
+          <p>② <b>早晚温差极大</b>——白天出太阳的时候穿短袖都嫌热，但一到晚上气温骤降，风也挺大的。我第三天晚上在洱海边散步，穿了一件薄外套冻得直哆嗦。<b>带一件冲锋衣或者厚外套</b>很有必要。</p>
+          <p>③ <b>不要跟那种一日游的团</b>——洱海真的要慢慢走才好看。那些旅行团带游客去的地方全是观景台，拍个照就走人，体验不到洱海的真正味道。自由行租个车或者租自行车是最舒服的方式，想停就停，看到好看的地方随时可以拐进去。</p>
+          <p>④ <b>喜洲的粑粑和凉鸡米线一定要吃</b>——这次旅行最大的美食收获就是这两样。喜洲粑粑分甜咸两种，甜的包红糖玫瑰，咸的包葱花肉末，都好吃。凉鸡米线酸酸辣辣的，鸡丝很嫩，在大理的几天我几乎每天都吃一碗。</p>
+          <p>⑤ <b>带好相机电池和存储卡</b>——洱海太适合拍照了，我带了 8GB 的 CF 卡都差点不够用（对，8GB 现在看起来不大，但那会儿已经是很大的容量了）。如果你也是个摄影迷，强烈建议多带几张卡。</p>
+          <p>这次大理之行唯一有点遗憾的是时间不够，没去成苍山和沙溪古镇。客栈的老板说沙溪是那种未开发的古镇，比丽江安静一百倍，下次一定要补上。另外在洱海边骑行的路上，有一段路边的树林特别密，阳光完全透不进去，骑在里面阴冷阴冷的，感觉和周围明亮的风光完全两个世界。当时也没多想，现在翻照片的时候看到那片区域拍出来的照片，总觉得哪里不对劲——<b>照片上那片树林的颜色不正常</b>，不是绿得不正常，是偏灰，像蒙了一层什么滤镜似的。但我检查了相机设置，没用滤镜也没调过白平衡。</p>
+          <p>大概是我多心了。好了不啰嗦了，大家看图吧！有什么问题尽管问，我尽量回答。</p>
+        </div>
+        <div class="sig">—— 步履不停 · 用脚丈量世界 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #2 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8E8;">云</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">云游四方</span>
+          <span>#2 · 2008-10-13 09:12</span>
+        </div>
+        <div class="body">
+          <p>哇，大理洱海真的是百去不厌的地方。我前年秋天也去过一次，看了楼主的照片又勾起了回忆。楼主拍的日出那张真的太美了，我在才村也住过，同样是推开窗就是洱海，同样是清晨爬起来拍日出——但说实话我没楼主那么勤快，六点起来我肯定做不到哈哈哈！</p>
+          <p>说到楼主提到的<b>那片颜色不对的树林</b>，我倒是有点想法。环海西路有一段靠近<b>小邑庄</b>附近的路，两边种了很多<b>柏树和桉树</b>，树冠很密，加上那个路段正好是个背阴坡，日照时间短，所以会显得特别阴冷。至于照片偏灰的问题，可能是因为林子里的<b>色温偏高</b>，而相机自动白平衡在这种混合光源下容易判断失误，把冷色调拉得更冷，所以看起来灰蒙蒙的。不是什么怪力乱神啦哈哈哈！</p>
+          <p>不过我倒是要补充楼主一点：去苍山的话<b>一定要坐洗马潭索道</b>，那个索道是全线最长的，到顶之后海拔接近四千米，但是风景绝对值了——苍山十九峰尽收眼底，洱海像一块蓝宝石嵌在脚下。虽然我上次去的时候高反了，下来之后头疼了两天，但还是觉得值。</p>
+          <p>另外沙溪确实值得去，而且趁现在还没开发赶紧去。我朋友上个月刚去过，说沙溪的寺登街和玉津桥还是原来的样子，没有商业化，街上的老太太还在卖自己做的乳扇和凉粉。相比丽江那满街的手鼓店和义乌小商品，沙溪才是真正的云南啊！</p>
+          <p>最后问一下楼主，你那张双廊黄昏的照片有没有做后期？颜色真的太漂亮了，我在双廊也拍过日落，但颜色没你那么饱和，是季节原因还是镜头原因？还是说真的是人品问题……</p>
+        </div>
+        <div class="sig">—— 云游四方 · 下一站，西藏 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复 #3 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D8E0D0;">海</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">海边的卡夫卡</span>
+          <span>#3 · 2008-10-13 15:38</span>
+        </div>
+        <div class="body">
+          <p>作为大理本地人看到这个帖子真的很欣慰——终于有人不是只去丽江大理随便逛一圈就算完事了。楼主这种骑自行车慢慢走的方式才是洱海的正确打开方式。</p>
+          <p>回复楼上云游四方：双廊的日落颜色确实很看季节和天气。楼主十月去正好是<b>秋季空气最通透</b>的时候，加上最近大理一直没有下雨，空气中水汽少，所以晚霞的饱和度会特别高。我从小在大理长大，可以负责任地说，<b>每年九月底到十一月初是洱海最漂亮的季节</b>，天空的能见度可以达到二三十公里，苍山的每一道褶皱都看得清清楚楚。</p>
+          <p>楼主说到的那个树林，我倒是知道具体位置。那段路本地人叫"<b>黑树林</b>"，确实是个背阴面，加上以前那边有个采石场，后来废弃了种了树，土质偏黑，所以整个色调就暗沉沉的。不过楼主说照片偏灰，我倒是有个猜测：你是不是用的<b>佳能相机</b>？佳能那几年的机型自动白平衡在绿色占主导的场景下确实会偏灰偏蓝，这是佳能 CMOS 的祖传老毛病了，不是你的问题。换尼康会好很多（开个玩笑，别当真哈哈哈！）</p>
+          <p>给楼主推荐一个下次可以去的冷门地：<b>大理古城北门的菜市场</b>。早上六七点去，能看到本地人最真实的生活——卖新鲜菌子的、卖乳扇的、卖手工红糖的、卖刚从苍山上采下来的草药的。那才是大理的灵魂，比任何景点都值得逛。<b>尤其是秋天菌子季</b>，有松茸、牛肝菌、鸡油菌，买回去让客栈老板帮忙做一下，鲜得你舌头都要吞下去。但是注意：<b>不认识的菌子绝对不要买</b>，每年都有游客自己买野生菌吃了中毒的新闻，这不是开玩笑的。</p>
+          <p>说到中毒，突然想起一件事。楼主你骑行那天经过黑树林的时候，有没有闻到一股说不上来的味道？不是臭味，是一种……怎么说呢，有点像雨后泥土混着某种花腐烂的味道？我小时候经常在那附近玩，每次经过那段路都能闻到，大人说是采石场遗留下来的矿石味道。但后来我听一个在环保局工作的亲戚说，那片区域的地下可能有什么特殊的矿物沉积，具体的他也不肯多说，就说"别在那附近待太久"。我当时也没当回事，今天看到楼主的帖子突然想起来了。</p>
+          <p>唔，可能也是我想多了。总之大理是好地方，欢迎大家来玩！本地人表示很欢迎像楼主这样认真感受大理的旅行者。</p>
+        </div>
+        <div class="sig">—— 海边的卡夫卡 · 苍山脚下长大 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复框 ── -->
+    <div class="reply-form">
+      <textarea placeholder="写下你的回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;"></textarea>
+      <button class="btn" onclick="replyCheck()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 右下角广告 ── -->
+<div class="ad-corner" id="ad-corner">
+  <div class="ad-close" onclick="closeAd()">✕</div>
+  <div class="ad-body">
+    <div class="ad-visitor">⚠ 在线访客：1 人</div>
+    <div class="ad-user">今日注册：3 人<br>本日发帖：17 篇<br>最高在线：<em>260 人</em></div>
+    <div style="font-size:10px;color:#999;border-top:1px solid #E0D8C0;padding-top:8px;margin-top:8px;">
+      🔒 <b>加密节点</b>已启用<br>
+      <span style="color:#B0B0B0;">IPv6 隧道 · 端到端加密</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+function replyCheck() {
+  var u = localStorage.getItem('echo_login_user');
+  if (u) {
+    showModal('✅', '<b>回复已提交</b><br><br>你的回复已发送。但管理员已离线，审核可能不会很快。');
+  } else {
+    showModal('🔒', '<b>请先登录</b><br><br>只有注册用户可以发表回复。<br><a href="login.html" style="color:#0000CC;">前往登录 →</a>');
+  }
+}
+function closeAd() {
+  document.getElementById('ad-corner').classList.add('hidden');
+}
+
+/* ── 页面加载时检查登录状态 ── */
+(function() {
+  var user = localStorage.getItem('echo_login_user');
+  var display = localStorage.getItem('echo_login_display');
+  if (user && display) {
+    var ls = document.getElementById('login-status');
+    if (ls) { ls.textContent = display; ls.style.color = '#FFD700'; }
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[个人中心]'; ll.href = 'profile.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'inline';
+  }
+})();
+
+/* ── ARG 隐藏线索 ── */
+console.log('◈ 大理洱海的水面下有什么？');
+console.log('◈ 步履不停拍到了不该拍的东西。');
+console.log('◈ 黑树林的地下矿物沉积……是什么？');
+console.log('◈ 海边的卡夫卡知道些什么？');
+console.log('◈ echo_login_user in localStorage — 是谁在登录？');
+</script>
+</body>
+</html>

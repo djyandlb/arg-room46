@@ -1,0 +1,613 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回声茶馆 · Echo Teahouse Forum</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner .ad-body .ad-badge { color: #CC0000; font-size: 10px; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+.ad-corner .ad-body .ad-badge:hover { color: #FF0000; }
+.ad-corner:hover { border-color: #A0A0A0; background: #FFFFF8; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="forum.html">首页</a>
+    <a href="surface/rules.html">版规</a>
+    <a href="surface/faq.html">帮助</a>
+    <a href="surface/register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <a href="surface/profile.html" id="profile-link" style="display:none;color:#FFD700;text-decoration:none;font-size:10px;font-weight:bold;margin-right:2px;">[主页]</a>
+    <a href="surface/profile.html" id="login-status" style="color:#FFD700;text-decoration:none;font-size:10px;font-weight:bold;"></a>
+    <span style="color:#4A6A85;font-size:10px;display:none;" id="login-sep">|</span>
+    <a href="surface/login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 广告弹窗 ── -->
+<div class="ad-corner" id="ad-corner" onclick="showModal('🎉','恭喜你！你是第 <b>46</b> 位访客！<br><br>奖品是一个被遗忘的账号：<br><b>用户名：</b>V47<br><b>密码：</b>********<br><br>（密码已过期 46 年）')">
+  <div class="ad-close" onclick="event.stopPropagation();closeAd()">✕</div>
+  <div class="ad-body">
+    <div class="ad-visitor">🎉 第46位访客！</div>
+    <div class="ad-user">用户名：<em>V47</em></div>
+    <div class="ad-badge">点击领取您的专属奖品</div>
+  </div>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list">
+    <div class="entry"><span class="keyword">回音</span> <span class="found">找到 1 条结果</span></div>
+    <div class="entry"><span class="keyword">46号房间</span> <span class="found">找到 3 条结果</span></div>
+    <div class="entry"><span class="keyword">V47</span> <span class="found">找到 2 条结果</span></div>
+    <div class="entry"><span class="keyword">WATCHING</span> <span class="found">找到 1 条结果</span></div>
+    <div class="entry"><span class="keyword">那扇门</span> <span class="found">找到 5 条结果</span></div>
+  </div>
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+<!-- 论坛统计 -->
+<div class="stats-banner">
+  帖子总数<b>46,046</b> &nbsp; 会员总数<b>4,604</b> &nbsp; 在线<b>46人</b> &nbsp; 上次访问：<b>2004-06-01</b>
+</div>
+
+<!-- ===== 闲聊区 ===== -->
+<div class="category">
+<div class="category-header"><span>◈ 闲聊区</span><span class="count">今日 23 帖</span></div>
+
+<div class="thread-row" onclick="window.location.href='surface/rules.html'">
+  <div class="icon pin">📌</div>
+  <div class="main">
+    <div class="title"><span class="badge pin">置顶</span>【版规】回声茶馆发帖指南</div>
+    <div class="meta">园丁 · 2004-06-01</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
+  <div class="last">2008-01-01<br><span class="author">好家伙</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/newbie.html'">
+  <div class="icon normal">👋</div>
+  <div class="main">
+    <div class="title">萌新报道！大家好呀～</div>
+    <div class="meta">萌新小透明 · 2004-06-03</div>
+  </div>
+  <div class="stat"><div class="num">31</div><div class="label">回复</div></div>
+  <div class="last">2004-06-05<br><span class="author">深海鱼</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/echo.html'">
+  <div class="icon hot">🔥</div>
+  <div class="main">
+    <div class="title"><span class="badge hot">热门</span>我最近总是听到<b>回音</b></div>
+    <div class="meta">失眠患者_23 · 2005-03-21</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
+  <div class="last">2005-03-22<br><span class="author">解密大师</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/dream.html'">
+  <div class="icon hot">🔥</div>
+  <div class="main">
+    <div class="title"><span class="badge hot">热门</span>我已经连续<b>46</b>天做同一个梦了</div>
+    <div class="meta">深海鱼 · 2007-07-04</div>
+  </div>
+  <div class="stat"><div class="num">142</div><div class="label">回复</div></div>
+  <div class="last">2007-07-04<br><span class="author">失眠患者_23</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/food.html'">
+  <div class="icon normal">🍳</div>
+  <div class="main">
+    <div class="title">周末做了红烧排骨，超级成功</div>
+    <div class="meta">小厨娘 · 2005-06-12</div>
+  </div>
+  <div class="stat"><div class="num">27</div><div class="label">回复</div></div>
+  <div class="last">2005-06-13<br><span class="author">咸鱼一条</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/movie.html'">
+  <div class="icon normal">🎬</div>
+  <div class="main">
+    <div class="title">来推荐点冷门电影吧</div>
+    <div class="meta">熬夜选手 · 2005-09-15</div>
+  </div>
+  <div class="stat"><div class="num">56</div><div class="label">回复</div></div>
+  <div class="last">2005-09-16<br><span class="author">影迷甲</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/travel.html'">
+  <div class="icon normal">📷</div>
+  <div class="main">
+    <div class="title">大理洱海真的太美了</div>
+    <div class="meta">步履不停 · 2006-04-20</div>
+  </div>
+  <div class="stat"><div class="num">22</div><div class="label">回复</div></div>
+  <div class="last">2006-04-22<br><span class="author">旅行者</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/diary.html'">
+  <div class="icon normal">📝</div>
+  <div class="main">
+    <div class="title">在公司楼下遇到一只流浪猫</div>
+    <div class="meta">普通上班族 · 2006-11-02</div>
+  </div>
+  <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
+  <div class="last">2006-11-02<br><span class="author">普通上班族</span></div>
+</div>
+</div>
+
+<!-- ===== 技术角落 ===== -->
+<div class="category">
+<div class="category-header"><span>◈ 技术角落</span><span class="count">今日 16 帖</span></div>
+
+<div class="thread-row" onclick="window.location.href='surface/tech.html'">
+  <div class="icon normal">💻</div>
+  <div class="main">
+    <div class="title">Chrome最近更新后变得特别卡</div>
+    <div class="meta">技术宅阿明 · 2008-03-21</div>
+  </div>
+  <div class="stat"><div class="num">41</div><div class="label">回复</div></div>
+  <div class="last">2008-03-22<br><span class="author">程序员小张</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/browser.html'">
+  <div class="icon hot">🔥</div>
+  <div class="main">
+    <div class="title"><span class="badge hot">热门</span>浏览器总自动打开陌生页面，标题是一个菱形符号</div>
+    <div class="meta">夜行客 · 2006-10-31</div>
+  </div>
+  <div class="stat"><div class="num">89</div><div class="label">回复</div></div>
+  <div class="last">2006-10-31<br><span class="author">匿名用户</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/router.html'">
+  <div class="icon normal">💻</div>
+  <div class="main">
+    <div class="title">路由器怎么设置才能让全屋都有信号</div>
+    <div class="meta">网管小哥 · 2007-12-01</div>
+  </div>
+  <div class="stat"><div class="num">33</div><div class="label">回复</div></div>
+  <div class="last">2007-12-03<br><span class="author">程序员小张</span></div>
+</div>
+</div>
+
+<!-- ===== 生活笔记 ===== -->
+<div class="category">
+<div class="category-header"><span>◈ 生活笔记</span><span class="count">今日 9 帖</span></div>
+
+<div class="thread-row" onclick="window.location.href='surface/suzhou.html'">
+  <div class="icon normal">📷</div>
+  <div class="main">
+    <div class="title">苏州园林一日游，拍了些照片</div>
+    <div class="meta">快门工 · 2007-08-12</div>
+  </div>
+  <div class="stat"><div class="num">18</div><div class="label">回复</div></div>
+  <div class="last">2007-08-20<br><span class="author">摄影爱好者</span></div>
+</div>
+
+<div class="thread-row" onclick="window.location.href='surface/moon.html'">
+  <div class="icon normal">📝</div>
+  <div class="main">
+    <div class="title">今晚的月亮特别圆，拍了张照</div>
+    <div class="meta">夜猫子 · 2008-01-04</div>
+  </div>
+  <div class="stat"><div class="num">12</div><div class="label">回复</div></div>
+  <div class="last">2008-01-06<br><span class="author">月下独酌</span></div>
+</div>
+</div>
+
+<!-- ===== 归档区 ===== -->
+<div class="category archived">
+<div class="category-header"><span>◈ 归档区</span><span class="count">最后活跃 2009</span></div>
+
+<div class="thread-row" style="cursor:default;">
+  <div class="icon lock">🔒</div>
+  <div class="main">
+    <div class="title" style="color:#999;">2004-2009 年度归档（已锁定）</div>
+    <div class="meta" style="color:#aaa;">系统 · 已归档</div>
+  </div>
+  <div class="stat"><div class="num" style="color:#ccc;">—</div></div>
+  <div class="last" style="color:#ccc;">已锁定</div>
+</div>
+
+<div class="thread-row" onclick="doAdminAccess()">
+  <div class="icon lock">🔒</div>
+  <div class="main">
+    <div class="title" style="color:#999;">站务管理 <span id="admin-badge" style="display:none;"></span></div>
+    <div class="meta" style="color:#bbb;">· 共 46 帖</div>
+  </div>
+  <div class="stat"><div class="num" style="color:#ccc;">—</div></div>
+  <div class="last" style="color:#ccc;">点击进入</div>
+</div>
+</div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) { ls.textContent = '访客'; ls.href = '#'; }
+    var pl = document.getElementById('profile-link');
+    if (pl) pl.style.display = 'none';
+    var sp = document.getElementById('login-sep');
+    if (sp) sp.style.display = 'none';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'surface/login.html'; ll.style.display = 'inline'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.href = '#'; }
+  var pl = document.getElementById('profile-link');
+  if (pl) pl.style.display = 'none';
+  var sp = document.getElementById('login-sep');
+  if (sp) sp.style.display = 'none';
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'surface/login.html'; ll.style.display = 'inline'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+</script>
+
+<script>
+/* ═════════════════════════════════════════
+   forum.html 特有功能
+   ═════════════════════════════════════════ */
+
+/* ── 控制台输出 ── */
+console.log('◈ 回声茶馆 · 论坛已加载');
+console.log('◈ 第46位访客：V47');
+
+/* ── 关闭广告 ── */
+function closeAd() {
+  document.getElementById('ad-corner').classList.add('hidden');
+  try { localStorage.setItem('echo_ad_closed', '1'); } catch(e) {}
+}
+try {
+  if (localStorage.getItem('echo_ad_closed') === '1') {
+    document.getElementById('ad-corner').classList.add('hidden');
+  }
+} catch(e) {}
+
+/* ── 回复检查 ── */
+function replyCheck() {
+  var loginUser = localStorage.getItem('echo_login_user');
+  if (!loginUser) {
+    showModal('🔒', '请先<a href="surface/login.html" style="color:#0000CC;">登录</a>后再回复。');
+    return false;
+  }
+  return true;
+}
+
+/* ── 管理员访问 ── */
+function doAdminAccess() {
+  var role = localStorage.getItem('echo_login_role');
+  if (role === 'admin') {
+    window.location.href = 'surface/admin.html';
+  } else {
+    showModal('🔒', '<b>权限不足</b><br><br>站务管理仅限管理员访问。<br>请使用管理员账号登录。');
+  }
+}
+
+/* ── 登录状态恢复 ── */
+try {
+  var loginUser = localStorage.getItem('echo_login_user');
+  var loginRole = localStorage.getItem('echo_login_role');
+  if (loginUser) {
+    document.getElementById('login-status').textContent = loginUser;
+    document.getElementById('login-status').href = 'surface/profile.html';
+    document.getElementById('profile-link').style.display = 'inline';
+    document.getElementById('login-sep').style.display = 'inline';
+    document.getElementById('login-link').style.display = 'none';
+    document.getElementById('logout-link').style.display = 'inline';
+    if (loginRole === 'admin') {
+      var badge = document.getElementById('admin-badge');
+      if (badge) {
+        badge.style.display = 'inline';
+        badge.textContent = '✅ 管理员已登录';
+        badge.style.cssText = 'display:inline;background:#006600;color:#fff;font-size:9px;padding:1px 6px;border-radius:2px;';
+      }
+    }
+  }
+} catch(e) {}
+
+/* ── 安全导航（兼容 file:// 协议）── */
+(function(){
+  function doNav(url) {
+    try { window.location.href = url; } catch(e) {
+      try { document.location = url; } catch(e2) { window.open(url, '_self'); }
+    }
+  }
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('[onclick*="location.href"]');
+    if (el) {
+      var m = el.getAttribute('onclick').match(/location\.href='([^']+)'/);
+      if (m) { e.preventDefault(); doNav(m[1]); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

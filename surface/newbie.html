@@ -1,0 +1,490 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>萌新报道！大家好呀～ · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 5px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 6px; align-items: center; justify-content: flex-start; }
+.search-bar input { width: 220px; padding: 4px 8px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 4px 14px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; margin-bottom: 8px; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .note-box { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 10px 12px; margin: 8px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框 ── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 帖子锁定提示 ── */
+.lock-notice { background: #FFF0F0; border: 1px solid #E0A0A0; padding: 10px 14px; margin-bottom: 8px; font-size: 10px; color: #CC6666; text-align: center; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <!-- ── 面包屑 ── -->
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="../forum.html">新人报到</a> › 萌新报道！大家好呀～
+  </div>
+
+  <!-- ── 统计横幅 ── -->
+  <div class="stats-banner">
+    📊 本版共 <b>1,247</b> 个主题 · <b>6,832</b> 篇帖子 · 在线会员 <span class="highlight"><b>19</b></span> 人
+  </div>
+
+  <!-- ── 帖子卡片 ── -->
+  <div class="thread-card" id="thread-card">
+
+    <!-- ── 主楼 · 萌新小透明 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E8E0D0;font-size:13px;">萌</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">萌新小透明</span>
+          <span>#1 · 2008-10-14 15:32</span>
+        </div>
+        <div class="body">
+          <p>大家好呀！我是新来的，叫我小透明就好！</p>
+          <p>终于找到这个论坛了，之前在好几个论坛都注册过，但都没怎么说话，希望这次能在这里待久一点（笑）。</p>
+          <p>先介绍一下自己吧：我是一名大学新生，学的是计算机科学专业，但其实刚入学没多久，什么都不会。对很多东西都感兴趣但都是浅尝辄止，会一点点 HTML 和 CSS，会做一点简单的静态页面，但说到 JavaScript 就完全是一头雾水了。</p>
+          <p>通过搜索引擎找到的这个论坛，感觉氛围很好，帖子都很有内容，不像别的地方全是水帖。看了一下 <b>版规</b> 和 <b>置顶帖</b>，感觉规则很清楚，我会好好遵守的。</p>
+          <p>有几个问题想请教各位前辈：</p>
+          <p>1. 论坛的各个版块有什么区别？我看技术角落、水区、归档区什么的，不太清楚哪个版该发什么。<br>
+          2. 这里有没有什么 <b>新人任务</b> 或者 <b>报到流程</b>？我好像没看到专门的报到贴格式。<br>
+          3. 论坛有没有 QQ 群或者 IRC 频道？想加一下方便交流。</p>
+          <p>暂时就这些啦！希望能和大家好好相处，也希望能学到很多东西。如果有大佬愿意带带我那就更好啦，嘿嘿！</p>
+
+          <div class="img-ph">📷 [img/newbie-desktop.jpg] — 一张桌面截图：Windows XP 默认蓝天白云壁纸，桌面上散落着 VS Code 快捷键备忘、HTML 入门教程的快捷方式、Firefox 浏览器图标和几个课程文件夹，任务栏显示时间为 15:32</div>
+
+          <p>对了，附上我的桌面截图一张，标准的萌新配置哈哈！大佬们别笑话我呀！</p>
+        </div>
+        <div class="sig">—— 萌新小透明 · 请多指教 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 园丁 · 版主回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D0;font-size:13px;">园</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">园丁</span>
+          <span style="color:#CC0000;font-weight:bold;">★ 版主</span>
+          <span>#2 · 2008-10-14 17:05</span>
+        </div>
+        <div class="body">
+          <p><b>欢迎！版规看了吗？先看置顶。</b></p>
+          <p>你问到版块区别的问题——置顶帖里其实写得很清楚了：<b>技术角落</b> 发技术讨论，<b>水区</b> 发闲聊，<b>归档区</b> 是锁定的旧帖子。新人报到一般发在水区，不过你这帖发在这里也行，我帮你移动一下标签就好。</p>
+          <p>关于新人流程：没有强制的报到格式，随便写写就行，就像你这样。不过建议你先 <a href="rules.html" style="color:#0000CC;">读完版规</a>，了解哪些内容会被删帖。<b>禁止广告机</b> 和 <b>恶意灌水</b> 是底线。</p>
+          <p>论坛没有 QQ 群。暂时也不打算建群——论坛就是论坛，有什么话在版面上说就好。</p>
+          <p>如果你是计算机专业的新生，建议去 <b>技术角落</b> 看看，那边有不少学习资源帖。</p>
+        </div>
+        <div class="sig">—— 园丁 · 守护每一棵幼苗 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 解密大师回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0D0E8;font-size:13px;">密</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">解密大师</span>
+          <span style="color:#006600;font-weight:bold;">★ 元老</span>
+          <span>#3 · 2008-10-14 19:28</span>
+        </div>
+        <div class="body">
+          <p>小透明你好，欢迎来到回声茶馆。</p>
+          <p>关于你的问题，我补充几点：</p>
+          <p>喜欢 <b>编码相关</b> 可以来技术角落看看——那边有不少技术讨论和学习资源，还有一些有意思的话题等着你去探索。虽然你说是萌新，但有些东西不需要多深的功底也能学，关键是 <b>好奇心</b>。</p>
+          <p>你学的是计算机专业的话，我建议你在学基础课的同时，多动手做一些小项目。不要等着课程教——课程永远比实际慢半拍。论坛里有些老帖子虽然被归档了，但内容仍然值得一读。<b>很多有用的经验都在旧帖子里</b>，你可以自己去翻翻看。</p>
+          <p>另外，桌面截图上我看到你有个文件夹叫 "projects" 对吧？里面是空的还是有什么东西？随口问问。</p>
+        </div>
+        <div class="sig">—— 解密大师 · 真理在细节中 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 深海鱼回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D8E8E0;font-size:13px;">海</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">深海鱼</span>
+          <span style="color:#006600;font-weight:bold;">★ 元老</span>
+          <span>#4 · 2008-10-15 01:12</span>
+        </div>
+        <div class="body">
+          <p>新人你好，我是深海鱼。</p>
+          <p><b>归档区有些旧帖子</b>，虽然已经锁了不能回复，但还是可以看的。那些帖子记录了论坛早期的一些 <b>历史事件</b> 和 <b>讨论</b>，有些内容还挺有意思的。如果你对论坛的过去感兴趣，可以去翻翻看。</p>
+          <p>不过有一点要提醒你：归档区的帖子时间跨度很大，最早的帖子能追溯到 <b>2004 年</b>。那个年代的帖子排版和现在很不一样，而且有些链接已经失效了。但 <b>精华内容不会因为时间而贬值</b>——至少我是这么认为的。</p>
+          <p>顺便说一句，你的桌面我很眼熟——XP 的默认壁纸用了好多年了，我一直没换过。经典就是经典。</p>
+        </div>
+        <div class="sig">—— 深海鱼 · 深水区居民 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 回复区域（已锁定） ── -->
+    <div class="reply-form" id="reply-form">
+      <div class="lock-notice" id="lock-notice">
+        🔒 <b>本帖已锁定</b> — 该帖发布已超过 90 天，已被自动归档，无法回复。
+      </div>
+      <textarea placeholder="本帖已锁定，无法回复…" disabled style="color:#999;cursor:not-allowed;background:#F8F0F0;"></textarea>
+      <button class="btn" onclick="replyLocked()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+    </div>
+  </div>
+
+  <!-- ── 相关信息 ── -->
+  <div class="box">
+    <h2>📌 相关主题</h2>
+    <div style="font-size:11px;line-height:2;">
+      <div>• <a href="../forum.html">◈ 回到论坛首页</a></div>
+      <div>• <a href="rules.html">📖 版规（必读）</a></div>
+      <div>• <a href="tech.html">💻 技术角落精华帖</a></div>
+      <div>• <a href="faq.html">❓ 常见问题</a></div>
+    </div>
+    <div class="note" style="margin-top:12px;">
+      💡 提示：新人建议先阅读版规和置顶帖，了解论坛的基本规则后再发帖～ 避免因不熟悉规则导致帖子被删。
+    </div>
+  </div>
+
+  <!-- ── 浏览统计 ── -->
+  <div class="stats-banner">
+    👁️ 正在浏览此帖：<b>3</b> 位会员 · <b>1</b> 位访客 · 总浏览量 <b>342</b> 次
+  </div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 右下角广告 ── -->
+<div class="ad-corner" id="ad-corner">
+  <div class="ad-close" onclick="closeAd()">✕</div>
+  <div class="ad-body">
+    <div class="ad-visitor">🎮 神秘代码</div>
+    <div class="ad-user">
+      ████ ███ █████<br>
+      接入点：<em style="color:#006600;">???.???.???.???</em>
+    </div>
+    <div style="font-size:9px;color:#B0B0B0;margin-top:4px;">
+      广告位招租 · 联系管理员
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+
+/* ── 检查登录状态 ── */
+(function() {
+  var user = localStorage.getItem('echo_login_user');
+  var display = localStorage.getItem('echo_login_display');
+  var role = localStorage.getItem('echo_login_role');
+  if (user && display) {
+    var ls = document.getElementById('login-status');
+    if (ls) {
+      var roleTag = role ? ' <span style="color:#FFD700;">[' + role + ']</span>' : '';
+      ls.innerHTML = '欢迎回来，<b>' + display + '</b>' + roleTag;
+      ls.style.color = '#FFD700';
+    }
+    var ll = document.getElementById('login-link');
+    if (ll) ll.style.display = 'none';
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'inline';
+  }
+})();
+
+/* ── 帖子已锁定回复处理 ── */
+function replyLocked() {
+  showModal('🔒', '<b>本帖已锁定</b><br><br>该帖发布已超过 90 天，已被自动归档。<br>锁定帖无法回复。<br><br>如有疑问，请联系管理员。');
+}
+
+/* ── 关闭广告 ── */
+function closeAd() {
+  var el = document.getElementById('ad-corner');
+  if (el) el.classList.add('hidden');
+  try { localStorage.setItem('echo_ad_closed', '1'); } catch(e) {}
+}
+try {
+  if (localStorage.getItem('echo_ad_closed') === '1') {
+    var el = document.getElementById('ad-corner');
+    if (el) el.classList.add('hidden');
+  }
+} catch(e) {}
+
+/* ── ARG 线索 ── */
+console.log('◈ 新人帖收到了回复。园丁看起来有点紧张。');
+</script>
+
+</body>
+</html>

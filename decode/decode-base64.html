@@ -1,0 +1,449 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Base64 解码器 · 回声茶馆 · V4cXy</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:13px/1.8 "Courier New",monospace;background:#0A0A0A;color:#AAA;min-height:100vh;overflow-x:hidden}
+::selection{background:#00CC00;color:#0A0A0A}
+::-webkit-scrollbar{width:6px;background:#0A0A0A}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#555}
+
+/* 顶部导航 */
+.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;position:sticky;top:0;z-index:1000}
+.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;user-select:none}
+.topbar .logo span{color:#8AB8D9}
+.topbar .nav{margin-left:auto}
+.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;margin:0 8px;transition:color 0.2s}
+.topbar .nav a:hover{color:#fff}
+
+/* 页面布局 */
+.container{max-width:760px;margin:0 auto;padding:24px 20px}
+
+/* 标题 */
+h1{color:#00CC00;font-size:18px;margin-bottom:4px;letter-spacing:2px}
+h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacing:1px}
+
+/* 区块 */
+.section{background:#111;border:1px solid #222;padding:20px;margin-bottom:20px;border-radius:2px;position:relative}
+.section h3{color:#00CC00;font-size:11px;margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;padding-bottom:6px;border-bottom:1px solid #1A1A1A}
+
+/* 编码块 */
+.code-block{background:#0D0D0D;border:1px solid #2A2A2A;padding:16px;font-size:14px;color:#888;word-break:break-all;margin-bottom:12px;font-family:"Courier New",monospace;line-height:1.8;position:relative;overflow-x:auto}
+.code-block::before{content:"▸ 编码内容";position:absolute;top:-8px;left:12px;background:#111;padding:0 8px;font-size:8px;color:#444;letter-spacing:1px}
+.code-block .comment-mark{color:#333}
+.code-block .b64-char{color:#8AB8D9;letter-spacing:0.5px}
+.code-block .eq-sign{color:#555}
+
+/* 编码分析 */
+.analysis-row{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0;padding:10px;background:#0A0A0A;border:1px solid #1A1A1A;font-size:10px;color:#555;font-family:"Courier New",monospace}
+.analysis-row .char-box{display:inline-flex;flex-direction:column;align-items:center;padding:2px 1px;min-width:18px}
+.analysis-row .char-box .char-top{color:#444;font-size:8px}
+.analysis-row .char-box .char-b64{color:#8AB8D9;font-size:10px}
+
+/* 解码步骤 */
+.step-line{color:#555;font-size:11px;padding:5px 0;margin:2px 0;padding-left:8px;border-left:2px solid #1A1A1A;transition:all 0.2s}
+.step-line .step-icon{display:inline-block;width:18px;color:#444}
+.step-line.done{color:#00CC00;border-left-color:#00CC00;background:rgba(0,204,0,0.03)}
+.step-line.active{color:#CCCC00;border-left-color:#CCCC00;background:rgba(204,204,0,0.04);animation:blink 1s infinite}
+.step-line .step-detail{color:#666;font-size:10px;display:block;padding-left:22px;margin-top:1px}
+.step-line.done .step-detail{color:#446644}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* 解码中间过程展示 */
+.intermediate-box{background:#0A0A0A;border:1px solid #1A1A1A;padding:12px;margin:12px 0;font-size:10px;color:#555;font-family:"Courier New",monospace;line-height:1.7}
+.intermediate-box .interm-title{color:#444;font-size:9px;margin-bottom:6px;letter-spacing:1px}
+.intermediate-box .interm-row{padding:2px 0;color:#666}
+.intermediate-box .interm-row .highlight-b64{color:#8AB8D9}
+.intermediate-box .interm-row .highlight-dec{color:#00CC00}
+
+/* 结果框 */
+.result-box{background:#0A1A0A;border:2px solid #00CC00;padding:24px 20px;text-align:center;margin:16px 0;position:relative;overflow:hidden}
+.result-box::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,rgba(0,204,0,0.05) 0%,transparent 70%);pointer-events:none}
+.result-box .label{color:#666;font-size:10px;margin-bottom:8px;letter-spacing:3px;text-transform:uppercase}
+.result-box .result-en{font-size:24px;font-weight:bold;color:#00CC00;margin-bottom:6px;letter-spacing:1px;text-shadow:0 0 10px rgba(0,204,0,0.25);font-family:"Courier New",monospace}
+.result-box .result-zh{font-size:14px;color:#00CC00;opacity:0.8;letter-spacing:1px}
+.result-box .result-sub{color:#006600;font-size:10px;margin-top:10px;letter-spacing:1px;opacity:0.6}
+.result-box .divider{height:1px;background:#1A3A1A;margin:12px auto;width:60%}
+
+/* 上下文线索 */
+.context-area{background:#0A0A0A;border:1px solid #1A1A1A;padding:18px;margin:16px 0;border-left:3px solid #003300;position:relative}
+.context-area p{color:#666;font-size:12px;line-height:2;margin:8px 0;text-indent:2em}
+.context-area p .highlight{color:#CC0000;font-weight:bold}
+.context-area p .glow{color:#00CC00;font-weight:bold}
+.context-area .sig{text-align:right;color:#333;font-size:10px;margin-top:12px;border-top:1px solid #1A1A1A;padding-top:8px;letter-spacing:1px}
+
+/* Base64 教学 */
+.tutorial-box{background:#0D0D0D;border:1px solid #222;padding:18px;margin:16px 0;font-size:11px;color:#666;line-height:1.9}
+.tutorial-box h4{color:#00CC00;font-size:11px;margin-bottom:8px;margin-top:16px;letter-spacing:1px}
+.tutorial-box h4:first-child{margin-top:0}
+.tutorial-box p{margin:6px 0;text-indent:2em}
+.tutorial-box code{background:#1A1A1A;color:#8AB8D9;padding:1px 6px;font-size:10px;font-family:"Courier New",monospace;border:1px solid #2A2A2A}
+.tutorial-box .example-box{background:#0A0A0A;border:1px solid #1A1A1A;padding:10px 14px;margin:8px 0;font-size:10px;font-family:"Courier New",monospace;color:#666;line-height:1.6}
+.tutorial-box .example-box .eg-comment{color:#333}
+.tutorial-box .example-box .eg-b64{color:#8AB8D9}
+.tutorial-box .example-box .eg-result{color:#00CC00}
+.tutorial-box .tip{background:#0A1A0A;border-left:2px solid #00CC00;padding:8px 14px;margin:8px 0;font-size:10px;color:#888}
+.tutorial-box .tip strong{color:#00CC00}
+.tutorial-box ul{margin:6px 0 6px 20px;list-style:none}
+.tutorial-box ul li{padding:3px 0;position:relative}
+.tutorial-box ul li::before{content:"▸";color:#004400;position:absolute;left:-14px}
+
+/* 解码日志 */
+.decode-log{background:#080808;border:1px solid #1A1A1A;padding:14px;margin:16px 0;font-size:10px;color:#444;font-family:"Courier New",monospace;line-height:1.7;max-height:220px;overflow-y:auto}
+.decode-log .log-line{padding:1px 0}
+.decode-log .log-line .log-time{color:#2A2A2A}
+.decode-log .log-line .log-ok{color:#006600}
+.decode-log .log-line .log-warn{color:#665500}
+
+/* 进度条 */
+.progress-bar{height:2px;background:#1A1A1A;margin-bottom:16px;border-radius:1px;overflow:hidden}
+.progress-bar .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#003300,#00CC00);transition:width 0.5s;border-radius:1px}
+
+/* 导航链接 */
+.nav-links{margin-top:24px;padding:14px 0;border-top:1px solid #222;font-size:11px;display:flex;flex-wrap:wrap;gap:8px}
+.nav-links a{color:#555;text-decoration:none;margin-right:16px;transition:color 0.2s}
+.nav-links a:hover{color:#00CC00}
+.nav-links a.link-warn{color:#883333}
+.nav-links a.link-warn:hover{color:#CC0000}
+
+/* 页脚 */
+.page-footer{text-align:center;padding:16px;font-size:9px;color:#333;border-top:1px solid #1A1A1A;margin-top:24px;line-height:2}
+.page-footer .disclaimer{color:#444;letter-spacing:1px}
+.page-footer .footer-sig{color:#1A1A1A;font-size:8px;margin-top:4px}
+
+/* 模态框 */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal-box{background:#111;border:2px solid #2A2A2A;padding:0;width:400px;max-width:92%;box-shadow:0 0 40px rgba(0,0,0,0.9)}
+.modal-box .modal-titlebar{background:#0D3050;color:#fff;padding:10px 14px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{width:20px;height:20px;background:#2A2A2A;text-align:center;line-height:18px;cursor:pointer;font-size:10px;color:#888;border-radius:2px;transition:all 0.2s}
+.modal-box .modal-titlebar .modal-close-btn:hover{background:#CC0000;color:#fff}
+.modal-box .modal-body{padding:28px 18px;font-size:12px;color:#AAA;text-align:center;line-height:1.9}
+.modal-box .modal-footer{border-top:1px solid #222;padding:10px;text-align:center}
+.modal-box .modal-footer .modal-btn{padding:7px 28px;background:#2A2A2A;border:1px solid #444;color:#AAA;font:11px "Courier New",monospace;cursor:pointer;transition:all 0.2s}
+.modal-box .modal-footer .modal-btn:hover{background:#3A3A3A;color:#fff}
+
+/* 解码步骤的详细子步骤 */
+.sub-steps{padding-left:22px;margin:4px 0}
+.sub-steps .sub-step{font-size:10px;color:#444;padding:1px 0;transition:color 0.2s}
+.sub-steps .sub-step.done{color:#666}
+
+/* 响应式 */
+@media(max-width:640px){
+.container{padding:16px 12px}
+.result-box .result-en{font-size:18px;letter-spacing:0}
+.section{padding:14px}
+.code-block{font-size:12px}
+}
+@media(max-width:400px){
+.result-box .result-en{font-size:15px}
+.code-block{font-size:10px}
+}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── 分割线脉冲 ── */
+.divider { animation: dividerGlow 3s ease-in-out infinite; }
+@keyframes dividerGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+
+.search-bar{background:#0D0D0D;padding:8px 16px;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #333;background:#0A0A0A;font:10px monospace;color:#AAA;outline:none}
+.search-bar input:focus{border-color:#00CC00}
+.search-bar button{padding:4px 14px;background:#222;border:1px solid #444;color:#AAA;font:10px monospace;cursor:pointer}
+.search-bar button:hover{background:#333;color:#00CC00}
+
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div></div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+
+<div class="container">
+
+<!-- 标题区 -->
+<h1>◈ Base64 解码终端 v1.4</h1>
+<h2>检测到嵌入编码 · 来源：browser.html · 触发词：V4cXy</h2>
+
+<!-- 进度条 -->
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+<!-- 原始编码 -->
+<div class="section">
+<h3>📄 原始编码数据</h3>
+<div class="code-block">
+<span class="comment-mark">&lt;!-- </span><span class="b64-char">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span><span class="comment-mark"> --&gt;</span>
+</div>
+<div class="analysis-row">
+<span style="color:#333;margin-right:8px">字符分析：</span>
+<span>总长 48 字符 · Base64 字符集匹配 100%</span>
+<span style="color:#333;margin:0 8px">|</span>
+<span>末尾填充：<span style="color:#555">无</span></span>
+<span style="color:#333;margin:0 8px">|</span>
+<span>编码模式：<span style="color:#8AB8D9">标准 Base64</span></span>
+</div>
+</div>
+
+<!-- 解码过程 -->
+<div class="section">
+<h3>⚙️ 解码过程 · 四步解码</h3>
+<div id="decode-steps">
+<div class="step-line" id="s1">
+<span class="step-icon">①</span> 检测到 Base64 编码模式
+<span class="step-detail">扫描 HTML 注释 · 识别标准 Base64 字符集（A-Za-z0-9+/）· 长度 48 字符 · 匹配通过</span>
+</div>
+<div class="step-line" id="s2">
+<span class="step-icon">②</span> 移除注释标记，提取编码内容
+<span class="step-detail">去除 &lt;!-- 前缀和 --&gt; 后缀 · 获取纯 Base64 字符串 · 长度验证通过</span>
+</div>
+<div class="step-line" id="s3">
+<span class="step-icon">③</span> 运行 atob() 解码算法
+<span class="step-detail">Base64 → ASCII · 每4字符解码为3字节 · base64解码表映射 · 输出原始字节流</span>
+</div>
+<div class="step-line" id="s4">
+<span class="step-icon">④</span> 验证输出，显示解码结果
+<span class="step-detail">字符编码检测 · 输出可读文本 · 解码结果符合英文语法 · 置信度 100%</span>
+</div>
+</div>
+
+<!-- 中间解码过程展示 -->
+<div class="intermediate-box" id="intermediate-box" style="display:none;">
+<div class="interm-title">▸ 解码中间状态</div>
+<div class="interm-row">
+<span style="color:#333">原始 Base64：</span>
+<span class="highlight-b64">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span>
+</div>
+<div class="interm-row">
+<span style="color:#333">去除填充后：</span>
+<span class="highlight-b64">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span>
+<span style="color:#444">（无填充字符）</span>
+</div>
+<div class="interm-row">
+<span style="color:#333">解码字节流：</span>
+<span style="color:#555">56 6a 51 33 ... 53 34 69</span>
+<span style="color:#444">（十六进制）</span>
+</div>
+<div class="interm-row">
+<span style="color:#333">ASCII 输出：</span>
+<span class="highlight-dec">V47 left you a clue. Search "V4cXy".</span>
+</div>
+</div>
+</div>
+
+<!-- 解码结果 -->
+<div class="section" id="result-section" style="display:none;">
+<h3>✅ 解码完成 · 线索提取</h3>
+<div class="result-box">
+<div class="label">◈ Base64 解码结果 ◈</div>
+<div class="result-en">V47 left you a clue. Search "V4cXy".</div>
+<div class="divider"></div>
+<div class="result-zh">V47 给你留下了一条线索。搜索 "V4cXy"。</div>
+<div class="result-sub">[ 解码模式：Base64 · 校验：通过 · 置信度：100% ]</div>
+</div>
+
+<!-- 上下文线索 -->
+<div class="context-area">
+<p>"V47——这个名字在论坛里出现了几次。他是谁？" 你在搜索记录里见过这个名字——它出现在几个不同的帖子中，但每次都是以访客身份留下的评论，从未注册账号。IP 地址每次都不同，但语气和用词习惯完全一致。</p>
+<p>去他的个人主页看看：<span class="highlight">profile.html?user=V47</span></p>
+<p>V47 说这条线索是 <span class="glow">给你</span> 的。不是给"所有人"，不是给"论坛用户"，而是"你"。他知道你会找到这里。他知道你会解码这条信息。问题是——他还知道多少？</p>
+<p>搜索 "V4cXy"——这看起来像是一个用户名、一个密码、或者另一个触发词。把这个词带到论坛的搜索框里，看看会发生什么。</p>
+<div class="sig">◈ 线索链 · V47 → V4cXy → ? · 追踪中 ◈</div>
+</div>
+
+<!-- 解码日志 -->
+<div class="decode-log" id="decode-log"></div>
+</div>
+
+<!-- Base64 教学 -->
+<div class="section">
+<h3>📖 Base64 编码原理与识别方法</h3>
+<div class="tutorial-box">
+
+<h4>什么是 Base64？</h4>
+<p>Base64 是一种将二进制数据编码为可打印 ASCII 字符的编码方案。它使用 64 个可打印字符（A-Z、a-z、0-9、+、/）来表示二进制数据，等号（=）用作填充字符。Base64 不是加密算法——它只是编码，任何人都可以轻松解码。在 ARG 解谜中，Base64 常用于在网页源码中隐藏短文本信息。</p>
+
+<h4>如何识别 Base64？</h4>
+<p>Base64 编码有几个明显的特征：</p>
+<ul>
+<li><strong>字符集有限：</strong> 只包含字母（大小写各26个）、数字（10个）、加号（+）、斜杠（/），末尾可能有等号（=）填充</li>
+<li><strong>长度通常是4的倍数：</strong> 标准 Base64 的输出长度一定是4的倍数，不足时用 = 或 == 补齐</li>
+<li><strong>隐藏在注释中：</strong> 在网页中，Base64 经常出现在 HTML 注释 <code>&lt;!-- ... --&gt;</code> 或 JavaScript 字符串中</li>
+<li><strong>看起来像乱码但有规律：</strong> 它看起来是一串大小写混排的字母数字，偶尔以等号结尾</li>
+</ul>
+
+<h4>快速解码方法</h4>
+<div class="tip"><strong>浏览器控制台：</strong> 按 F12 打开开发者工具，在控制台输入 <code>atob("编码内容")</code> 即可解码。例如 <code>atob("SGVsbG8=")</code> 会输出 "Hello"。</div>
+<div class="tip"><strong>在线工具：</strong> 搜索 "Base64 Decode" 可找到大量在线解码工具，适合解码较长的内容。</div>
+<div class="tip"><strong>Node.js：</strong> 在 Node 环境中使用 <code>Buffer.from("编码内容", "base64").toString()</code> 进行解码。</div>
+
+<h4>实战示例</h4>
+<div class="example-box">
+<span class="eg-comment">&lt;!-- 编码前：Hello World --&gt;</span><br>
+<span class="eg-comment">&lt;!-- Base64：</span><span class="eg-b64">SGVsbG8gV29ybGQ=</span><span class="eg-comment"> --&gt;</span><br>
+<span class="eg-comment">解码 → </span><span class="eg-result">"Hello World"</span>
+</div>
+<div class="example-box">
+<span class="eg-comment">&lt;!-- 编码前：V47 left a clue --&gt;</span><br>
+<span class="eg-comment">&lt;!-- Base64：</span><span class="eg-b64">VjQ3IGxlZnQgYSBjbHVl</span><span class="eg-comment"> --&gt;</span><br>
+<span class="eg-comment">解码 → </span><span class="eg-result">"V47 left a clue"</span>
+</div>
+
+<h4>在回声茶馆中寻找 Base64</h4>
+<p>Base64 编码可能隐藏在论坛的以下位置：</p>
+<ul>
+<li>HTML 源码注释中（<code>&lt;!-- ... --&gt;</code>）</li>
+<li>JavaScript 变量或字符串中</li>
+<li>CSS 文件的 data URI 中</li>
+<li>用户签名档的隐藏代码中</li>
+<li>帖子中看起来像乱码的字母数字串</li>
+</ul>
+<p>本解码终端解码的 Base64 字符串来自 browser.html 的注释。解码结果指向用户 V47 和触发词 V4cXy。将这些线索带到论坛的搜索功能中，可能会揭示更多隐藏内容。</p>
+
+<h4>Base64 编码原理（进阶）</h4>
+<p>Base64 的编码过程如下：将原始数据的每 3 个字节（24 位）分成 4 组，每组 6 位。6 位二进制数可以表示 0-63 的范围，对应 Base64 字符表中的 64 个字符。如果原始数据的字节数不是 3 的倍数，用等号填充。解码时反向操作：将 4 个 Base64 字符的 6 位值合并为 24 位（3 个字节），还原原始数据。</p>
+
+<div class="tip"><strong>小贴士：</strong> 在回声茶馆的后续探索中，如果你发现以 <code>VjQ</code> 开头的字符串，它很可能又是 Base64 编码——因为 <code>VjQ</code> 是 "V4" 的 Base64 编码起始，而 V4 是论坛中一个重要的标识前缀。</div>
+
+</div>
+</div>
+
+<!-- 隐藏线索提示 -->
+<div class="section">
+<h3>🔍 线索链分析</h3>
+<div class="tutorial-box" style="border-left:2px solid #003300">
+<h4>当前线索状态</h4>
+<p>本页面是回声茶馆 ARG 解谜链中的一环。以下是已知的线索链条：</p>
+<ul>
+<li><strong>browser.html</strong> → 隐藏 Base64 编码注释</li>
+<li><strong>Base64 解码</strong> → "V47 left you a clue. Search 'V4cXy'."</li>
+<li><strong>V47</strong> → 论坛神秘用户，个人主页在 <code>profile.html?user=V47</code></li>
+<li><strong>V4cXy</strong> → 触发词，可能用于解锁下一个页面或内容</li>
+</ul>
+<p>这条线索链表明，回声茶馆中存在多个隐藏层。每个解码页面都指向下一个谜题。如果你还没有探索摩斯密码解码页面，那里可能包含与这条线索相关的额外信息。</p>
+<div class="tip" style="margin-top:10px"><strong>建议：</strong> 将触发词 <strong>V4cXy</strong> 带到论坛搜索中。它可能是一个隐藏帖子的密码，也可能是一个用户名的线索。同时关注用户 V47 的动向——他似乎正在主动引导解谜者。</div>
+</div>
+</div>
+
+<!-- 导航链接 -->
+<div class="nav-links">
+<a href="../forum.html">◈ 返回回声茶馆</a>
+<a href="../forum.html" class="link-warn">🔍 搜索"V4cXy"</a>
+<a href="../forum.html" class="link-warn">🔍 搜索"V47"</a>
+<a href="../surface/browser.html">🌐 浏览器终端</a>
+<a href="decode-morse.html">◈ 摩斯解码器</a>
+<a href="../surface/profile.html?user=V47">👤 V47 的主页</a>
+</div>
+
+</div>
+
+<!-- 页脚 -->
+<div class="page-footer">
+<div class="disclaimer">⚠ ARG 解谜游戏 · 回声茶馆 · Base64 解码终端 v1.4</div>
+<div class="footer-sig">「信息总在表面之下。继续挖掘。」—— 解码器日志 2024</div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal-box">
+<div class="modal-titlebar">
+<span>◈ 终端消息</span>
+<span class="modal-close-btn" onclick="closeModal()">✕</span>
+</div>
+<div class="modal-body"><div id="modal-text">消息</div></div>
+<div class="modal-footer"><button class="modal-btn" onclick="closeModal()">确 定</button></div>
+</div>
+</div>
+
+<script>
+(function() {
+  // 解码步骤配置
+  var steps = ['s1', 's2', 's3', 's4'];
+  var stepDelay = 500;
+  var progressFill = document.getElementById('progress-fill');
+  var logEl = document.getElementById('decode-log');
+
+  // 按顺序执行解码步骤
+  steps.forEach(function(id, i) {
+    setTimeout(function() {
+      // 标记当前步骤为活跃
+      document.getElementById(id).className = 'step-line active';
+
+      // 进度条更新
+      var pct = Math.round(((i + 1) / steps.length) * 100);
+      progressFill.style.width = pct + '%';
+
+      setTimeout(function() {
+        // 标记当前步骤为完成
+        document.getElementById(id).className = 'step-line done';
+
+        // 最后一步：显示结果
+        if (i === steps.length - 1) {
+          document.getElementById('result-section').style.display = 'block';
+          document.getElementById('intermediate-box').style.display = 'block';
+
+          // 解码日志
+          var logLines = [
+            '[03:52:04] ◈ 扫描 HTML 源码 · 检测到注释内含 Base64 编码',
+            '[03:52:06] ◈ 编码提取完成 · 长度 48 字符 · 字符集校验通过',
+            '[03:52:08] ◈ 解码算法启动 · Base64 → 原始字节流',
+            '[03:52:10] ◈ 字节流转换 · 解码为 ASCII 文本 · 校验通过',
+            '[03:52:11] ◈ 解码结果：V47 left you a clue. Search "V4cXy".',
+            '[03:52:11] ◈ 线索标注 · 指向用户 V47 · 触发词 V4cXy',
+            '[03:52:12] ⚠ 注意：解码内容为主动留下的线索，非被动泄露',
+            '[03:52:13] ◈ 日志写入完毕 · 建议前往 profile.html?user=V47'
+          ];
+          logLines.forEach(function(l) {
+            var logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            logLine.innerHTML = '<span class="log-time">' + l.slice(0,10) + '</span> ' + l.slice(10);
+            logEl.appendChild(logLine);
+          });
+
+          // 控制台输出 — 按要求准确
+          console.log('◈ Base64 解码完成。线索指向：V47。');
+          console.log('◈ 解码内容：V47 left you a clue. Search "V4cXy".');
+          console.log('◈ 编码来源：browser.html · 解码耗时 ' + (steps.length * (stepDelay + 300)) + 'ms');
+        }
+      }, 300);
+    }, i * stepDelay);
+  });
+
+  // 页面加载完成的额外提示
+  setTimeout(function() {
+    console.log('%c◈ 回声茶馆终端 · Base64 解码器 v1.4', 'color: #00CC00; font-size: 14px; font-weight: bold');
+    console.log('%c◈ 提示：触发词 V4cXy 可能在其他地方有用途', 'color: #666; font-size: 11px');
+    console.log('%c◈ 提示：查看页面源码（Ctrl+U）可能发现更多隐藏信息', 'color: #666; font-size: 11px');
+  }, 200);
+})();
+
+// 模态框函数
+function showModal(t) {
+  document.getElementById('modal-text').innerHTML = t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+
+</body></html>

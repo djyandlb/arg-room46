@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 守门人 · 接替仪式</title>
+<style>
+/* ===== 重置 & 基础 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0A0000;
+  color:#8B0000;
+  font:14px/2 "Courier New",monospace;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+  overflow-x:hidden;
+  position:relative
+}
+
+/* ===== 粒子画布 ===== */
+#particleCanvas{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  z-index:0;
+  pointer-events:none
+}
+
+/* ===== 背景光晕 ===== */
+.halo{
+  position:fixed;
+  top:50%;left:50%;
+  width:600px;height:600px;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(139,0,0,0.08) 0%,rgba(10,0,0,0) 70%);
+  z-index:0;
+  pointer-events:none;
+  animation:haloPulse 4s ease-in-out infinite
+}
+@keyframes haloPulse{
+  0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+}
+
+/* ===== 纹章 ===== */
+.emblem{
+  position:relative;
+  z-index:1;
+  width:100px;height:100px;
+  margin:0 auto 20px;
+  border:2px solid #8B0000;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  color:#CC0000;
+  text-shadow:0 0 20px rgba(204,0,0,0.4);
+  animation:emblemGlow 3s ease-in-out infinite,appear 2s forwards;
+  opacity:0
+}
+.emblem-inner{
+  width:80px;height:80px;
+  border:1px solid #440000;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+@keyframes emblemGlow{
+  0%,100%{box-shadow:0 0 10px rgba(139,0,0,0.2),inset 0 0 10px rgba(139,0,0,0.1)}
+  50%{box-shadow:0 0 30px rgba(139,0,0,0.4),inset 0 0 20px rgba(139,0,0,0.2)}
+}
+
+/* ===== 容器 ===== */
+.container{
+  position:relative;
+  z-index:1;
+  max-width:600px;
+  width:100%;
+  opacity:0;
+  animation:appear 2s 0.5s forwards
+}
+@keyframes appear{to{opacity:1}}
+
+/* ===== 标题 ===== */
+.main-title{
+  font-size:22px;
+  color:#CC0000;
+  letter-spacing:8px;
+  margin-bottom:8px;
+  text-shadow:0 0 20px rgba(204,0,0,0.3);
+  animation:titleFlicker 5s infinite
+}
+@keyframes titleFlicker{
+  0%,100%{opacity:1}
+  3%{opacity:0.7}
+  6%{opacity:1}
+  45%{opacity:1}
+  48%{opacity:0.8}
+  50%{opacity:1}
+  80%{opacity:1}
+  83%{opacity:0.6}
+  85%{opacity:1}
+}
+.sub-title{
+  font-size:12px;
+  color:#440000;
+  letter-spacing:4px;
+  margin-bottom:30px
+}
+
+/* ===== 通用文字 ===== */
+.text{color:#880000;font-size:13px;line-height:2.2;margin:12px 0}
+.text .hl{color:#CC0000;font-weight:bold;text-shadow:0 0 8px rgba(204,0,0,0.2)}
+.text .dim{color:#440000}
+.text .gold{color:#AA6600;text-shadow:0 0 6px rgba(170,102,0,0.2)}
+
+/* ===== 符文装饰线 ===== */
+.rune-line{
+  color:#2A0000;
+  font-size:11px;
+  letter-spacing:6px;
+  margin:16px 0;
+  animation:runePulse 3s ease-in-out infinite
+}
+@keyframes runePulse{
+  0%,100%{opacity:0.3}
+  50%{opacity:0.7}
+}
+
+/* ===== 分隔线 ===== */
+.divider{
+  color:#330000;
+  font-size:12px;
+  margin:20px 0;
+  letter-spacing:6px;
+  animation:dividerPulse 2s ease-in-out infinite
+}
+@keyframes dividerPulse{
+  0%,100%{opacity:0.3}
+  50%{opacity:0.8}
+}
+
+/* ===== 守门人序列 ===== */
+.roll-section{
+  margin:20px 0;
+  padding:16px;
+  border:1px solid #1A0000;
+  background:rgba(10,0,0,0.5);
+  opacity:0;
+  animation:appear 2s 1s forwards
+}
+.roll-title{
+  font-size:11px;
+  color:#440000;
+  letter-spacing:3px;
+  margin-bottom:12px
+}
+.roll-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px
+}
+.roll-table td{
+  padding:6px 8px;
+  border-bottom:1px solid #1A0000;
+  color:#660000
+}
+.roll-table .roll-year{color:#440000;font-size:10px;text-align:right;width:90px}
+.roll-table .roll-name{color:#8B0000;text-align:left}
+.roll-table .roll-mark{color:#330000;text-align:center;width:30px}
+.roll-table tr.current td{
+  color:#CC0000;
+  text-shadow:0 0 8px rgba(204,0,0,0.2);
+  border-bottom:1px solid #330000
+}
+.roll-table tr.current .roll-name{color:#CC0000;font-weight:bold}
+.roll-table tr.next-row td{
+  color:#440000;
+  border-bottom:none;
+  font-style:italic
+}
+.roll-table tr.next-row .roll-mark{
+  animation:blinkMark 1.5s ease-in-out infinite;
+  color:#440000
+}
+@keyframes blinkMark{
+  0%,100%{opacity:0.3}
+  50%{opacity:1;color:#660000}
+}
+
+/* ===== 契约区域 ===== */
+.covenant-section{
+  margin:20px 0;
+  padding:16px;
+  border:1px solid #1A0000;
+  background:rgba(10,0,0,0.5);
+  opacity:0;
+  animation:appear 2s 1.5s forwards;
+  position:relative;
+  overflow:hidden
+}
+.covenant-scroll{
+  max-height:160px;
+  overflow-y:auto;
+  padding-right:8px;
+  scrollbar-width:thin;
+  scrollbar-color:#330000 transparent
+}
+.covenant-scroll::-webkit-scrollbar{width:4px}
+.covenant-scroll::-webkit-scrollbar-track{background:transparent}
+.covenant-scroll::-webkit-scrollbar-thumb{background:#330000;border-radius:2px}
+.covenant-title{
+  font-size:11px;
+  color:#440000;
+  letter-spacing:3px;
+  margin-bottom:12px
+}
+.covenant-line{
+  font-size:11px;
+  line-height:2;
+  color:#550000;
+  margin:4px 0;
+  text-align:left;
+  padding-left:12px;
+  border-left:1px solid #1A0000
+}
+.covenant-line .hl{color:#8B0000}
+.covenant-line .dim{color:#330000}
+
+/* ===== 交互区 ===== */
+.interaction-section{
+  margin:20px 0;
+  padding:20px;
+  border:1px solid #2A0000;
+  background:rgba(10,0,0,0.6);
+  opacity:0;
+  animation:appear 2s 2s forwards
+}
+.interaction-label{
+  font-size:11px;
+  color:#440000;
+  margin-bottom:10px;
+  letter-spacing:2px
+}
+.interaction-input{
+  display:block;
+  width:200px;
+  margin:10px auto;
+  padding:8px 12px;
+  background:transparent;
+  border:1px solid #440000;
+  color:#CC0000;
+  font:14px/1.6 "Courier New",monospace;
+  text-align:center;
+  letter-spacing:4px;
+  outline:none;
+  transition:border-color 0.3s
+}
+.interaction-input:focus{
+  border-color:#8B0000;
+  box-shadow:0 0 12px rgba(139,0,0,0.2)
+}
+.interaction-input::placeholder{
+  color:#220000;
+  letter-spacing:2px;
+  font-size:11px
+}
+.interaction-btn{
+  display:inline-block;
+  margin:10px 4px;
+  padding:8px 24px;
+  background:transparent;
+  border:1px solid #440000;
+  color:#880000;
+  font:12px/1.6 "Courier New",monospace;
+  cursor:pointer;
+  letter-spacing:3px;
+  transition:all 0.3s
+}
+.interaction-btn:hover{
+  border-color:#8B0000;
+  color:#CC0000;
+  box-shadow:0 0 12px rgba(139,0,0,0.15)
+}
+.interaction-msg{
+  font-size:11px;
+  margin-top:12px;
+  min-height:20px;
+  transition:all 0.5s
+}
+.msg-error{color:#440000;animation:msgShake 0.4s}
+@keyframes msgShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-4px)}
+  75%{transform:translateX(4px)}
+}
+.msg-success{color:#AA6600;text-shadow:0 0 8px rgba(170,102,0,0.3)}
+
+/* ===== 仪式完成区 ===== */
+.ritual-complete{
+  display:none;
+  margin:20px 0
+}
+.ritual-complete.show{display:block}
+.complete-title{
+  font-size:18px;
+  color:#AA6600;
+  letter-spacing:6px;
+  margin-bottom:16px;
+  text-shadow:0 0 20px rgba(170,102,0,0.3);
+  animation:completeGlow 2s ease-in-out infinite
+}
+@keyframes completeGlow{
+  0%,100%{text-shadow:0 0 10px rgba(170,102,0,0.2)}
+  50%{text-shadow:0 0 30px rgba(170,102,0,0.5)}
+}
+.complete-sub{
+  font-size:12px;
+  color:#660000;
+  margin:8px 0
+}
+.complete-countdown{
+  font-size:36px;
+  color:#440000;
+  margin:20px 0;
+  letter-spacing:4px;
+  animation:countdownPulse 1s ease-in-out infinite
+}
+@keyframes countdownPulse{
+  0%,100%{opacity:0.4}
+  50%{opacity:1;color:#660000}
+}
+.ritual-flame{
+  display:inline-block;
+  font-size:28px;
+  animation:flameDance 0.5s ease-in-out infinite alternate;
+  color:#8B0000
+}
+@keyframes flameDance{
+  0%{transform:scale(1) rotate(-2deg);opacity:0.7}
+  100%{transform:scale(1.1) rotate(2deg);opacity:1}
+}
+
+/* ===== 淡出黑屏遮罩 ===== */
+.fade-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#000;
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 3s ease
+}
+.fade-overlay.active{
+  opacity:1;
+  pointer-events:auto
+}
+
+/* ===== 页脚 ===== */
+.footer{
+  position:relative;
+  z-index:1;
+  color:#1A0000;
+  font-size:9px;
+  margin-top:30px;
+  opacity:0;
+  animation:appear 2s 3s forwards;
+  letter-spacing:2px
+}
+
+/* ===== 响应式 ===== */
+@media(max-width:600px){
+  body{padding:12px}
+  .container{max-width:100%}
+  .main-title{font-size:17px;letter-spacing:4px}
+  .roll-table td{padding:4px 6px;font-size:11px}
+  .roll-table .roll-year{width:70px;font-size:9px}
+  .interaction-input{width:160px}
+  .emblem{width:80px;height:80px;font-size:26px}
+  .emblem-inner{width:64px;height:64px}
+  .covenant-scroll{max-height:120px}
+  .complete-countdown{font-size:28px}
+}
+@media(max-width:400px){
+  .main-title{font-size:15px;letter-spacing:2px}
+  .sub-title{font-size:10px}
+  .text{font-size:12px}
+  .roll-table td{font-size:10px}
+  .roll-table .roll-year{width:60px;font-size:8px}
+  .interaction-input{width:130px;font-size:12px}
+  .interaction-btn{padding:6px 16px;font-size:11px}
+}
+
+@keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
+
+</style>
+
+</head>
+<body>
+<!-- ===== 背景光晕 ===== -->
+<div class="halo"></div>
+
+<!-- ===== 粒子画布 ===== -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ===== 淡出遮罩 ===== -->
+<div class="fade-overlay" id="fadeOverlay"></div>
+
+<!-- ===== 主容器 ===== -->
+<div class="container">
+
+  <!-- 纹章 -->
+  <div class="emblem">
+    <div class="emblem-inner">◈</div>
+  </div>
+
+  <!-- 标题 -->
+  <div class="main-title">守 门 人</div>
+  <div class="sub-title">— GATEKEEPER —</div>
+
+  <!-- 符文线 -->
+  <div class="rune-line">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ</div>
+
+  <!-- 开场文字 -->
+  <div class="text" style="animation:appear 2s 0.8s forwards;opacity:0;">
+    <span class="dim">你站在祭坛前。</span>
+  </div>
+  <div class="text" style="animation:appear 2s 1.2s forwards;opacity:0;">
+    <span class="dim">46 号房间的烛火在你身后摇曳。</span>
+  </div>
+  <div class="text" style="animation:appear 2s 1.6s forwards;opacity:0;">
+    <span class="dim">空气中有古老纸张和灰尘的气息。</span>
+  </div>
+  <div class="text" style="animation:appear 2s 2.0s forwards;opacity:0;">
+    一柄银色的钥匙躺在你的掌心。
+  </div>
+  <div class="text" style="animation:appear 2s 2.4s forwards;opacity:0;">
+    它在微微 <span class="hl">发烫</span>。
+  </div>
+
+  <div class="divider" style="animation:appear 2s 2.8s forwards;opacity:0;">◈ ◈ ◈</div>
+
+  <!-- ===== 守门人序列 ===== -->
+  <div class="roll-section">
+    <div class="roll-title">— 守 门 人 序 列 —</div>
+    <table class="roll-table">
+      <tr>
+        <td class="roll-year">1975–1982</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 1 任 · UNKNOWN</td>
+      </tr>
+      <tr>
+        <td class="roll-year">1982–1989</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 2 任 · ECHO</td>
+      </tr>
+      <tr>
+        <td class="roll-year">1989–1995</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 3 任 · SILENTIUM</td>
+      </tr>
+      <tr>
+        <td class="roll-year">1995–1998</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 4 任 · OBSERVER</td>
+      </tr>
+      <tr>
+        <td class="roll-year">1998–2002</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 5 任 · LUCID</td>
+      </tr>
+      <tr>
+        <td class="roll-year">...</td>
+        <td class="roll-mark">⋮</td>
+        <td class="roll-name" style="color:#330000">——— 中断的记录 ———</td>
+      </tr>
+      <tr>
+        <td class="roll-year">2002–2003</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 42 任 · ORPHEUS</td>
+      </tr>
+      <tr>
+        <td class="roll-year">2003–2005</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 43 任 · NYX</td>
+      </tr>
+      <tr>
+        <td class="roll-year">2005–2007</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 44 任 · KARMA</td>
+      </tr>
+      <tr>
+        <td class="roll-year">2007–2009</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name">第 45 任 · LUMEN</td>
+      </tr>
+      <tr class="current">
+        <td class="roll-year">2009–2026</td>
+        <td class="roll-mark">◈</td>
+        <td class="roll-name"><span class="hl">第 46 任 · V47</span> <span class="dim">（倒数第二任）</span></td>
+      </tr>
+      <tr class="next-row">
+        <td class="roll-year">—— ——</td>
+        <td class="roll-mark">◊</td>
+        <td class="roll-name"><span class="dim" id="nextRowText">第 47 任 · 等待接替</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ===== 前任留言 ===== -->
+  <div class="text" style="animation:appear 2s 3s forwards;opacity:0;">
+    <span class="dim">上一任守门人在墙壁上留下了刻字——</span>
+  </div>
+  <div class="text" style="animation:appear 2s 3.4s forwards;opacity:0;font-size:12px;color:#440000;line-height:1.8;">
+    <em>"我守了 17 年。<br>现在轮到你了。<br>——V47"</em>
+  </div>
+
+  <div class="divider" style="animation:appear 2s 3.8s forwards;opacity:0;">◈ ◈ ◈</div>
+
+  <!-- ===== 契约文字 ===== -->
+  <div class="covenant-section">
+    <div class="covenant-title">— 守 门 人 契 约 —</div>
+    <div class="covenant-scroll" id="covenantScroll">
+      <div class="covenant-line">第一条　<span class="hl">守护</span>。<span class="dim">你将成为 46 号房间的门锁。</span></div>
+      <div class="covenant-line">第二条　<span class="hl">沉默</span>。<span class="dim">你不可向任何人透露房间的存在。</span></div>
+      <div class="covenant-line">第三条　<span class="hl">守望</span>。<span class="dim">你必须时刻注意论坛的异常信号。</span></div>
+      <div class="covenant-line">第四条　<span class="hl">记录</span>。<span class="dim">每一任守门人的姓名都将被刻在墙上。</span></div>
+      <div class="covenant-line">第五条　<span class="hl">接替</span>。<span class="dim">当你找到继承者时，方可卸下职责。</span></div>
+      <div class="covenant-line">第六条　<span class="hl">唯一</span>。<span class="dim">守门人只能有一个。不可共享权柄。</span></div>
+      <div class="covenant-line">第七条　<span class="hl">期限</span>。<span class="dim">没有期限。直到你找到下一个守门人。</span></div>
+      <div class="covenant-line">第八条　<span class="hl">献祭</span>。<span class="dim">你的一部分将被房间吞噬。这是代价。</span></div>
+      <div class="covenant-line">第九条　<span class="hl">永恒</span>。<span class="dim">房间不会消失。只要还有一人记得它。</span></div>
+      <div class="covenant-line">第十条　<span class="hl">钥匙</span>。<span class="dim">银色钥匙将永远跟随你。你无法丢弃。</span></div>
+      <div class="covenant-line" style="border-left-color:#330000;color:#440000;margin-top:8px;">
+        <span class="dim">——以上条款由第 1 任守门人起草，<br>经历任守门人确认，不可更改。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 符文线 -->
+  <div class="rune-line">ᛏ ᛟ ᚱ ᛖ ᛗ ᛖ ᛞ ᛖ ᚾ ᛞ ᛖ</div>
+
+  <!-- ===== 交互区 ===== -->
+  <div class="interaction-section" id="interactionSection">
+    <div class="interaction-label">— 接 替 仪 式 —</div>
+    <div class="text" style="opacity:1;animation:none;">
+      <span class="dim">宣读契约后，请在下方输入确认词：</span>
+    </div>
+    <div class="text" style="opacity:1;animation:none;font-size:10px;color:#330000;">
+      输入 <span class="hl" style="font-size:11px">I ACCEPT</span> 以示接受
+    </div>
+    <input class="interaction-input" id="acceptInput" type="text" placeholder="I ACCEPT" autocomplete="off" spellcheck="false" maxlength="9">
+    <div>
+      <button class="interaction-btn" id="acceptBtn">◈ 确认</button>
+      <button class="interaction-btn" id="resetBtn" style="border-color:#220000;color:#440000;">◈ 重来</button>
+    </div>
+    <div class="interaction-msg" id="interactionMsg"></div>
+  </div>
+
+  <!-- ===== 仪式完成区 ===== -->
+  <div class="ritual-complete" id="ritualComplete">
+
+    <div class="divider" style="animation:dividerPulse 2s ease-in-out infinite;">◈ ◈ ◈ ◈ ◈</div>
+
+    <div class="text" style="animation:appear 2s 0.5s forwards;opacity:0;">
+      <span class="hl" style="font-size:15px;">契约成立。</span>
+    </div>
+
+    <div class="complete-title">第 47 任守门人 · 欢迎回家</div>
+
+    <div class="complete-sub" style="animation:appear 2s 1s forwards;opacity:0;">
+      <span class="ritual-flame">🔥</span>
+      <span class="dim">祭坛上的火焰猛地窜高，又缓缓落下。</span>
+      <span class="ritual-flame">🔥</span>
+    </div>
+
+    <div class="complete-sub" style="animation:appear 2s 1.5s forwards;opacity:0;">
+      <span class="dim">钥匙沉入你的掌心。</span>
+    </div>
+
+    <div class="complete-sub" style="animation:appear 2s 2s forwards;opacity:0;">
+      你的名字浮现在墙壁上——<br>
+      在 V47 的名字下方。
+    </div>
+
+    <div class="complete-sub" style="animation:appear 2s 2.5s forwards;opacity:0;">
+      <span class="gold">◈ 序列完成 ◈</span>
+    </div>
+
+    <div class="complete-sub" style="animation:appear 2s 3s forwards;opacity:0;">
+      <span class="dim">你听到了 46 号房间的呼吸声。</span>
+    </div>
+
+    <div class="complete-sub" style="animation:appear 2s 3.5s forwards;opacity:0;">
+      它认识你了。
+    </div>
+
+    <div class="complete-countdown" id="countdownDisplay">46</div>
+
+    <div class="complete-sub" style="opacity:0;animation:appear 2s 4s forwards;">
+      <span class="dim">46 秒后，祭坛将熄灭……</span>
+    </div>
+
+    <div class="complete-sub" style="opacity:0;animation:appear 2s 4.5s forwards;">
+      <span class="dim">你将成为房间的一部分。</span>
+    </div>
+
+    <div class="text" style="opacity:0;animation:appear 3s 5s forwards;">
+      <span class="hl">欢迎回家，守门人。</span>
+    </div>
+
+    <div class="text" style="opacity:0;animation:appear 3s 6s forwards;font-size:10px;color:#440000;">
+      <em>从此以后——<br>
+      你在这里，在论坛，在每一串代码中。<br>
+      你从未离开。<br>
+      你无法离开。</em>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ===== 页脚 ===== -->
+<div class="footer">◈ 守门人结局 · 第 47 任 ◈</div>
+
+<script>
+// ===== 粒子系统 =====
+(function(){
+  var c=document.getElementById('particleCanvas');
+  var ctx=c.getContext('2d');
+  var particles=[];
+  var w,h;
+
+  function resize(){
+    w=c.width=window.innerWidth;
+    h=c.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  for(var i=0;i<60;i++){
+    particles.push({
+      x:Math.random()*w,
+      y:Math.random()*h,
+      vx:(Math.random()-0.5)*0.4,
+      vy:(Math.random()-0.5)*0.4,
+      r:Math.random()*2+0.5,
+      a:Math.random()*0.3+0.05,
+      pulse:Math.random()*Math.PI*2
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    var t=Date.now()/1000;
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i];
+      p.x+=p.vx;
+      p.y+=p.vy;
+      p.pulse+=0.02;
+      if(p.x<0)p.x=w;
+      if(p.x>w)p.x=0;
+      if(p.y<0)p.y=h;
+      if(p.y>h)p.y=0;
+      var alpha=p.a*(0.6+0.4*Math.sin(p.pulse));
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(139,0,0,'+alpha+')';
+      ctx.fill();
+    }
+    // 连接线（近距离粒子之间）
+    for(var i=0;i<particles.length;i++){
+      for(var j=i+1;j<particles.length;j++){
+        var dx=particles[i].x-particles[j].x;
+        var dy=particles[i].y-particles[j].y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<100){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle='rgba(139,0,0,'+(0.06*(1-dist/100))+')';
+          ctx.lineWidth=0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ===== 契约滚动：页面到85%后自动滚到底，禁止手动 =====
+(function(){
+  var sc=document.getElementById('covenantScroll');
+  var sh=sc.scrollHeight-sc.clientHeight;
+  if(sh<=0)return;
+  var started=false,st=null;
+  // 禁止手动滚动
+  sc.addEventListener('wheel',function(e){if(started)e.preventDefault();},{passive:false});
+  sc.addEventListener('touchmove',function(e){if(started)e.preventDefault();},{passive:false});
+  function auto(t){
+    if(!st)st=t;
+    var p=Math.min((t-st)/6000,1);
+    sc.scrollTop=p*sh;
+    if(p<1)requestAnimationFrame(auto);
+    else console.log('◈ 契约已阅毕。');
+  }
+  function chk(){
+    if(started)return;
+    if(window.scrollY/(document.body.scrollHeight-window.innerHeight)>0.85){
+      started=true;
+      requestAnimationFrame(auto);
+      window.removeEventListener('scroll',chk);
+    }
+  }
+  window.addEventListener('scroll',chk);
+})();
+
+// ===== 交互逻辑 =====
+(function(){
+  var input=document.getElementById('acceptInput');
+  var btn=document.getElementById('acceptBtn');
+  var resetBtn=document.getElementById('resetBtn');
+  var msg=document.getElementById('interactionMsg');
+  var complete=document.getElementById('ritualComplete');
+  var overlay=document.getElementById('fadeOverlay');
+  var countdownEl=document.getElementById('countdownDisplay');
+  var interactionSection=document.getElementById('interactionSection');
+  var isSuccess=false;
+  var countdownTimer=null;
+
+  function checkAccept(){
+    if(isSuccess)return;
+    var val=input.value.trim().toUpperCase();
+    if(val==='I ACCEPT'){
+      // 成功
+      isSuccess=true;
+      var nr=document.getElementById('nextRowText');
+      if(nr){nr.innerHTML='第 47 任 · <span style="color:#AA6600;">已接替</span>';nr.style.color='#AA6600';}
+      msg.innerHTML='<span class="msg-success">◈ 契约成立。灵魂绑定完成。</span>';
+      input.style.borderColor='#AA6600';
+      input.style.color='#AA6600';
+      btn.style.borderColor='#AA6600';
+      btn.style.color='#AA6600';
+      // 隐藏交互区，显示完成区
+      setTimeout(function(){
+        interactionSection.style.display='none';
+        complete.classList.add('show');
+        // 触发滚动到顶部
+        window.scrollTo({top:0,behavior:'smooth'});
+        // 开始倒计时
+        startCountdown();
+      },1500);
+      // 控制台输出
+      console.log('◈ 你成为了第47任守门人。');
+    }else if(val===''){
+      msg.innerHTML='<span class="msg-error">请输入确认词。</span>';
+    }else{
+      msg.innerHTML='<span class="msg-error">✗ 确认词错误。请重新输入。</span>';
+    }
+  }
+
+  function startCountdown(){
+    var count=46;
+    countdownEl.textContent=count;
+    countdownTimer=setInterval(function(){
+      count--;
+      countdownEl.textContent=count;
+      if(count<=0){
+        clearInterval(countdownTimer);
+        // 淡出黑屏
+        overlay.classList.add('active');
+        // 控制台额外输出
+        console.log('◈ 第47任守门人已就位。46号房间安然入眠。');
+      }
+    },1000);
+  }
+
+  function resetInteraction(){
+    if(isSuccess)return;
+    input.value='';
+    msg.innerHTML='';
+    input.style.borderColor='#440000';
+    input.style.color='#CC0000';
+    btn.style.borderColor='#440000';
+    btn.style.color='#880000';
+    input.focus();
+  }
+
+  btn.addEventListener('click',checkAccept);
+  resetBtn.addEventListener('click',resetInteraction);
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter')checkAccept();
+    if(e.key==='Escape')resetInteraction();
+  });
+
+  // 滚动到交互区附近才自动聚焦，避免强制跳转
+  function scrollFocus(){
+    var rect=input.getBoundingClientRect();
+    if(rect.top<window.innerHeight-100){
+      input.focus();
+      window.removeEventListener('scroll',scrollFocus);
+    }
+  }
+  window.addEventListener('scroll',scrollFocus);
+})();
+
+// ===== 控制台铭文 =====
+console.log('◈ 你成为了第47任守门人。');
+console.log('◈ 祭坛的火焰映照着你的脸。');
+console.log('◈ 从现在起，46号房间由你守护。');
+</script>
+
+<!-- ===== 弹窗系统 ===== -->
+<style>
+.modal-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font:12px/1.6 "Courier New",monospace
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:#0A0000;
+  border:2px solid #2A0000;
+  padding:0;
+  width:340px;
+  max-width:90%;
+  box-shadow:0 0 40px rgba(139,0,0,0.1)
+}
+.modal-titlebar{
+  background:#0F0000;
+  color:#8B0000;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:2px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #2A0000
+}
+.modal-close-btn{
+  width:18px;height:18px;
+  background:#1A0000;
+  border:1px solid #440000;
+  text-align:center;
+  line-height:16px;
+  cursor:pointer;
+  font-size:10px;
+  color:#660000;
+  transition:all 0.3s
+}
+.modal-close-btn:hover{
+  background:#330000;
+  color:#CC0000
+}
+.modal-body{
+  padding:16px;
+  font-size:11px;
+  color:#880000;
+  line-height:1.8
+}
+.modal-body .hl{color:#CC0000;text-shadow:0 0 6px rgba(204,0,0,0.3)}
+.modal-body .gold{color:#AA6600;text-shadow:0 0 6px rgba(170,102,0,0.2)}
+.modal-body .dim{color:#440000}
+
+</style>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span id="modalTitle">◈ 守门人祭坛</span>
+      <span class="modal-close-btn" id="modalCloseBtn">✕</span>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var mO=document.getElementById('modalOverlay');
+  var mT=document.getElementById('modalTitle');
+  var mB=document.getElementById('modalBody');
+  var mC=document.getElementById('modalCloseBtn');
+  window.showModal=function(t,c){mT.textContent=t||'◈ 提示';mB.innerHTML=c||'';mO.classList.add('show');};
+  mC.addEventListener('click',function(){mO.classList.remove('show');});
+  mO.addEventListener('click',function(e){if(e.target===mO)mO.classList.remove('show');});
+})();
+</script>
+</body>
+</html>

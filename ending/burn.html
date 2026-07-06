@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 46Hz 信号发射终端 v2.4.7</title>
+<style>
+/* ===== 基础重置 ==== */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===== 全局样式 ==== */
+html,body{
+  background:#000;
+  color:#AA0000;
+  font:14px/1.8 "Courier New",monospace;
+  min-height:100vh;
+  width:100%;
+  overflow-x:hidden;
+  cursor:default
+}
+
+/* ===== CRT 扫描线覆盖 ==== */
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.15) 0px,
+    rgba(0,0,0,0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events:none;
+  z-index:9998
+}
+
+/* ===== CRT 荧光辉光 ==== */
+body::after{
+  content:'';
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:radial-gradient(ellipse at center,rgba(170,0,0,0.03) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:9997
+}
+
+/* ===== 故障效果容器 ==== */
+.glitch-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:9999;
+  opacity:0;
+  animation:none
+}
+.glitch-overlay.active{
+  opacity:1;
+  animation:glitchOverlay 0.15s 3
+}
+@keyframes glitchOverlay{
+  0%{opacity:0;transform:translateX(0)}
+  25%{opacity:0.8;transform:translateX(-4px) skewX(-2deg)}
+  50%{opacity:0.3;transform:translateX(3px) skewX(1deg)}
+  75%{opacity:0.9;transform:translateX(-2px) skewX(-1deg)}
+  100%{opacity:0;transform:translateX(0) skewX(0)}
+}
+
+/* ===== 终端容器 ==== */
+.terminal{
+  max-width:700px;
+  width:96%;
+  margin:20px auto;
+  padding:20px 25px;
+  border:1px solid #1A0000;
+  background:rgba(0,0,0,0.95);
+  position:relative;
+  z-index:1;
+  opacity:0;
+  animation:terminalBoot 1.5s ease-out forwards
+}
+@keyframes terminalBoot{
+  0%{opacity:0;transform:scale(0.98);border-color:#000}
+  50%{opacity:0.5;transform:scale(1.005);border-color:#440000}
+  100%{opacity:1;transform:scale(1);border-color:#1A0000}
+}
+
+/* ===== 终端标题栏 ==== */
+.terminal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 0 10px 0;
+  border-bottom:1px solid #1A0000;
+  margin-bottom:15px;
+  font-size:11px;
+  color:#440000;
+  letter-spacing:1px
+}
+.terminal-title{
+  color:#660000;
+  text-transform:uppercase
+}
+.terminal-title .version{
+  color:#330000
+}
+.terminal-leds{
+  display:flex;
+  gap:10px;
+  align-items:center
+}
+.led{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#1A0000;
+  transition:all 0.5s
+}
+.led-red.active{
+  background:#FF0000;
+  box-shadow:0 0 6px rgba(255,0,0,0.6),0 0 12px rgba(255,0,0,0.3);
+  animation:ledPulse 1.5s infinite
+}
+.led-green.active{
+  background:#00AA00;
+  box-shadow:0 0 6px rgba(0,170,0,0.5);
+  animation:ledPulse 2s infinite
+}
+.led-yellow.active{
+  background:#AAAA00;
+  box-shadow:0 0 6px rgba(170,170,0,0.5);
+  animation:ledPulse 1.2s infinite
+}
+@keyframes ledPulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.4}
+}
+
+/* ===== 状态行 ==== */
+.status-bar{
+  display:flex;
+  gap:15px;
+  font-size:11px;
+  color:#330000;
+  margin-bottom:15px;
+  padding:5px 8px;
+  background:rgba(170,0,0,0.03);
+  border-left:2px solid #1A0000;
+  opacity:0;
+  animation:statusAppear 1.5s 1.5s forwards
+}
+@keyframes statusAppear{
+  to{opacity:1}
+}
+.status-item{
+  display:flex;
+  align-items:center;
+  gap:5px
+}
+.status-dot{
+  display:inline-block;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:#440000
+}
+.status-dot.online{
+  background:#00AA00;
+  box-shadow:0 0 4px rgba(0,170,0,0.5);
+  animation:ledPulse 2s infinite
+}
+
+/* ===== 参数面板 ==== */
+.params{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+  margin-bottom:15px;
+  opacity:0;
+  animation:fadeIn 2s 3s forwards
+}
+@keyframes fadeIn{
+  to{opacity:1}
+}
+.param-box{
+  border:1px solid #1A0000;
+  padding:10px 12px;
+  background:rgba(170,0,0,0.02);
+  transition:border-color 0.5s
+}
+.param-box:hover{
+  border-color:#440000
+}
+.param-label{
+  font-size:9px;
+  color:#440000;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:4px
+}
+.param-value{
+  font-size:20px;
+  color:#CC0000;
+  font-weight:bold;
+  text-shadow:0 0 8px rgba(204,0,0,0.2);
+  letter-spacing:2px
+}
+.param-value.locked{
+  color:#FF4400;
+  text-shadow:0 0 12px rgba(255,68,0,0.4)
+}
+.param-value.locked::after{
+  content:' 🔒';
+  font-size:12px
+}
+.param-value.dim{
+  color:#660000;
+  font-size:14px
+}
+.param-sub{
+  font-size:9px;
+  color:#330000;
+  margin-top:3px
+}
+
+/* ===== 频谱可视化 ==== */
+.spectrum{
+  display:flex;
+  align-items:flex-end;
+  gap:3px;
+  height:40px;
+  margin-bottom:15px;
+  padding:5px 8px;
+  border:1px solid #1A0000;
+  background:rgba(170,0,0,0.02);
+  opacity:0;
+  animation:fadeIn 2s 4s forwards
+}
+.spec-bar{
+  flex:1;
+  min-width:3px;
+  background:#330000;
+  height:5px;
+  transition:height 0.3s,background 0.3s;
+  border-radius:1px 1px 0 0
+}
+.spec-bar.active{
+  animation:specDance var(--d) infinite ease-in-out alternate;
+  background:linear-gradient(to top,#440000,#AA0000);
+  box-shadow:0 0 4px rgba(170,0,0,0.2)
+}
+.spec-bar.active.hot{
+  background:linear-gradient(to top,#AA0000,#FF4400);
+  box-shadow:0 0 6px rgba(255,68,0,0.3)
+}
+@keyframes specDance{
+  0%{height:var(--h1)}
+  100%{height:var(--h2)}
+}
+
+/* ===== 信号强度条 ==== */
+.signal-bar{
+  margin-bottom:15px;
+  opacity:0;
+  animation:fadeIn 2s 4.5s forwards
+}
+.signal-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:9px;
+  color:#440000;
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:1px
+}
+.signal-track{
+  height:6px;
+  background:#0A0000;
+  border:1px solid #1A0000;
+  position:relative;
+  overflow:hidden
+}
+.signal-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#440000,#AA0000,#FF4400);
+  transition:width 0.5s;
+  position:relative
+}
+.signal-fill::after{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:20px;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15));
+  animation:signalPulse 1s infinite
+}
+@keyframes signalPulse{
+  0%,100%{opacity:0.3}
+  50%{opacity:1}
+}
+.signal-fill.locked{
+  width:46%
+}
+.signal-value{
+  font-size:9px;
+  color:#660000;
+  margin-top:3px;
+  text-align:right
+}
+
+/* ===== 分隔线 ==== */
+.divider{
+  text-align:center;
+  color:#1A0000;
+  font-size:11px;
+  letter-spacing:4px;
+  margin:12px 0;
+  opacity:0;
+  animation:fadeIn 2s 5s forwards
+}
+
+/* ===== 终端输出行 ==== */
+.output{
+  margin:10px 0
+}
+.line{
+  color:#880000;
+  font-size:12px;
+  line-height:2;
+  opacity:0;
+  animation:lineAppear 1.5s forwards
+}
+.line .hl{
+  color:#FF4400;
+  font-weight:bold;
+  text-shadow:0 0 6px rgba(255,68,0,0.3)
+}
+.line .dim{
+  color:#440000
+}
+.line .warning{
+  color:#AA5500
+}
+.line .error{
+  color:#AA0000
+}
+.line .prompt-symbol{
+  color:#660000
+}
+@keyframes lineAppear{
+  0%{opacity:0;transform:translateY(5px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+/* ===== 输入区域 ==== */
+.input-area{
+  margin:15px 0 10px 0;
+  opacity:0;
+  animation:fadeIn 2s 14s forwards
+}
+.input-prompt{
+  font-size:11px;
+  color:#660000;
+  margin-bottom:8px
+}
+.input-prompt .cursor-blink{
+  display:inline-block;
+  width:8px;
+  height:14px;
+  background:#AA0000;
+  margin-left:2px;
+  animation:cursorBlink 1s step-end infinite;
+  vertical-align:middle
+}
+@keyframes cursorBlink{
+  0%,100%{opacity:1}
+  50%{opacity:0}
+}
+.input-wrapper{
+  display:flex;
+  align-items:center;
+  border:1px solid #1A0000;
+  background:rgba(170,0,0,0.03);
+  padding:8px 12px;
+  transition:border-color 0.5s
+}
+.input-wrapper:focus-within{
+  border-color:#AA0000;
+  box-shadow:0 0 8px rgba(170,0,0,0.15)
+}
+.input-prefix{
+  color:#440000;
+  font-size:12px;
+  margin-right:8px;
+  white-space:nowrap
+}
+#cmdInput{
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#CC0000;
+  font:12px/1.6 "Courier New",monospace;
+  caret-color:#AA0000;
+  letter-spacing:1px
+}
+#cmdInput::placeholder{
+  color:#220000;
+  letter-spacing:0
+}
+#cmdBtn{
+  background:transparent;
+  border:1px solid #440000;
+  color:#660000;
+  padding:4px 14px;
+  font:11px/1.6 "Courier New",monospace;
+  cursor:pointer;
+  transition:all 0.3s;
+  letter-spacing:1px;
+  margin-left:8px
+}
+#cmdBtn:hover{
+  background:rgba(170,0,0,0.1);
+  border-color:#AA0000;
+  color:#AA0000
+}
+#cmdBtn:active{
+  background:rgba(170,0,0,0.2)
+}
+
+/* ===== 反馈消息 ==== */
+.feedback{
+  margin:8px 0;
+  font-size:11px;
+  min-height:20px;
+  opacity:0;
+  transition:all 0.5s
+}
+.feedback.show{
+  opacity:1
+}
+.feedback.error{
+  color:#AA0000;
+  text-shadow:0 0 4px rgba(170,0,0,0.3)
+}
+.feedback.success{
+  color:#FF4400;
+  text-shadow:0 0 8px rgba(255,68,0,0.4);
+  animation:feedbackPulse 1.5s infinite
+}
+@keyframes feedbackPulse{
+  0%,100%{opacity:0.7}
+  50%{opacity:1}
+}
+
+/* ===== 倒计时 ==== */
+.countdown-container{
+  margin:12px 0;
+  display:none;
+  opacity:0;
+  transition:opacity 0.5s
+}
+.countdown-container.show{
+  display:block;
+  opacity:1
+}
+.countdown-bar{
+  height:4px;
+  background:#0A0000;
+  border:1px solid #1A0000;
+  margin-bottom:8px;
+  position:relative;
+  overflow:hidden
+}
+.countdown-fill{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#FF4400,#AA0000,#440000);
+  transition:width 0.3s linear;
+  position:relative
+}
+.countdown-fill::after{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:30px;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2))
+}
+.countdown-text{
+  text-align:center;
+  font-size:28px;
+  color:#FF4400;
+  font-weight:bold;
+  text-shadow:0 0 15px rgba(255,68,0,0.5);
+  letter-spacing:4px;
+  animation:countdownGlow 1s infinite alternate
+}
+@keyframes countdownGlow{
+  0%{text-shadow:0 0 10px rgba(255,68,0,0.3)}
+  100%{text-shadow:0 0 25px rgba(255,68,0,0.7)}
+}
+.countdown-label{
+  text-align:center;
+  font-size:9px;
+  color:#440000;
+  letter-spacing:2px;
+  margin-top:3px
+}
+
+/* ===== 状态变化行 ==== */
+.status-line{
+  margin:5px 0;
+  font-size:11px;
+  color:#440000;
+  opacity:0;
+  transition:all 0.5s
+}
+.status-line.show{
+  opacity:1
+}
+.status-line.warn{
+  color:#AA5500
+}
+.status-line.crit{
+  color:#AA0000
+}
+.status-line.ok{
+  color:#FF4400
+}
+
+/* ===== 白屏 ==== */
+.whiteout{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#FFF;
+  opacity:0;
+  z-index:9990;
+  pointer-events:none;
+  transition:opacity 2s
+}
+.whiteout.active{
+  opacity:1;
+  pointer-events:auto
+}
+
+/* ===== 白屏后的内容 ==== */
+.after{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#FFF;
+  z-index:9995;
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:30px
+}
+.after.show{
+  display:flex
+}
+.after-text{
+  color:#CCC;
+  font-size:18px;
+  letter-spacing:4px;
+  font-family:"Courier New",monospace;
+  animation:afterFade 2s ease-out forwards;
+  opacity:0
+}
+@keyframes afterFade{
+  to{opacity:1}
+}
+.after-sub{
+  color:#DDD;
+  font-size:11px;
+  margin-top:15px;
+  font-family:"Courier New",monospace;
+  opacity:0;
+  animation:afterFade 2s 1s forwards
+}
+.after-link{
+  color:#DDD;
+  text-decoration:none;
+  transition:color 0.3s
+}
+.after-link:hover{
+  color:#CCC
+}
+.after-console{
+  color:#EEE;
+  font-size:9px;
+  margin-top:25px;
+  font-family:"Courier New",monospace;
+  opacity:0;
+  animation:afterFade 2s 2s forwards
+}
+
+/* ===== 底部 ==== */
+.footer{
+  color:#1A0000;
+  font-size:9px;
+  text-align:center;
+  margin-top:20px;
+  padding-top:15px;
+  border-top:1px solid #0A0000;
+  opacity:0;
+  animation:fadeIn 2s 15s forwards;
+  letter-spacing:1px
+}
+
+/* ===== 系统日志区域 ==== */
+.syslog{
+  margin-bottom:12px;
+  opacity:0;
+  animation:fadeIn 2s 2s forwards
+}
+.syslog-line{
+  font-size:10px;
+  color:#220000;
+  line-height:1.8;
+  opacity:0;
+  animation:syslogAppear 0.5s forwards
+}
+.syslog-line.info{
+  color:#330000
+}
+.syslog-line.ok{
+  color:#005500
+}
+.syslog-line.warn{
+  color:#553300
+}
+.syslog-line.err{
+  color:#550000
+}
+@keyframes syslogAppear{
+  to{opacity:1}
+}
+
+/* ===== 协议终止动画 ==== */
+.termination{
+  margin:10px 0;
+  padding:10px;
+  border:1px solid #1A0000;
+  background:rgba(170,0,0,0.03);
+  display:none;
+  opacity:0;
+  transition:all 0.8s
+}
+.termination.show{
+  display:block;
+  opacity:1
+}
+.termination-line{
+  font-size:11px;
+  color:#660000;
+  line-height:2;
+  opacity:0;
+  animation:termLineAppear 1s forwards
+}
+.termination-line .hl{
+  color:#FF4400
+}
+@keyframes termLineAppear{
+  to{opacity:1}
+}
+
+/* ===== 响应式 ==== */
+@media(max-width:600px){
+  .terminal{padding:12px 15px}
+  .terminal-title{font-size:10px}
+  .params{grid-template-columns:1fr 1fr;gap:6px}
+  .param-value{font-size:16px}
+  .countdown-text{font-size:22px}
+  .input-wrapper{flex-direction:column;align-items:stretch}
+  .input-prefix{margin-bottom:4px}
+  #cmdBtn{margin:6px 0 0 0;align-self:flex-end}
+  .status-bar{flex-wrap:wrap;gap:8px}
+}
+@media(max-width:400px){
+  .params{grid-template-columns:1fr}
+  .param-value{font-size:14px}
+  .terminal{padding:8px 10px}
+  .line{font-size:11px}
+}
+
+/* ===== 额外动画工具 ==== */
+@keyframes typing{
+  from{width:0}
+}
+@keyframes blink{
+  0%,100%{opacity:1}
+  50%{opacity:0}
+}
+
+/* ===== 扫描线噪声 ==== */
+.scan-noise{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:9996;
+  background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.04"/></svg>');
+  background-size:100px 100px;
+  opacity:0.03;
+  animation:noiseShift 0.5s infinite alternate
+}
+@keyframes noiseShift{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(-2px,1px)}
+}
+/* ===== 故障文字闪烁 ==== */
+.glitch-text{
+  animation:glitchText 0.3s 6
+}
+@keyframes glitchText{
+  0%{transform:translateX(0);opacity:1}
+  20%{transform:translateX(-3px) skewX(-1deg);opacity:0.8}
+  40%{transform:translateX(3px) skewX(1deg)}
+  60%{transform:translateX(-1px)}
+  80%{transform:translateX(2px)}
+  100%{transform:translateX(0);opacity:1}
+}
+
+/* ===== 信号发射按钮动画 ==== */
+.transmit-pulse{
+  animation:transmitPulse 0.8s infinite
+}
+@keyframes transmitPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(170,0,0,0.4)}
+  50%{box-shadow:0 0 0 8px rgba(170,0,0,0)}
+}
+
+/* ===== 结局美化动画 ===== */
+.container { animation: fadeIn 1s ease-out; }
+@keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
+
+
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+
+</head>
+<body>
+<!-- 噪声覆盖层 -->
+<div class="scan-noise"></div>
+
+<!-- 故障覆盖层 -->
+<div class="glitch-overlay" id="glitchOverlay"></div>
+
+<!-- 白屏 -->
+<div class="whiteout" id="whiteout"></div>
+
+<!-- 白屏后的内容 -->
+<div class="after" id="after">
+  <div class="after-text">你确定吗？</div>
+  <div class="after-sub"><a href="../forum.html" class="after-link">← 回到论坛</a></div>
+  <div class="after-console">◈ 信号已发送。协议已终止。</div>
+</div>
+
+<!-- 主终端界面 -->
+<div class="terminal" id="terminal">
+
+  <!-- 标题栏 -->
+  <div class="terminal-header">
+    <div class="terminal-title">◈ 46Hz 信号发射终端 <span class="version">v2.4.7</span></div>
+    <div class="terminal-leds">
+      <span class="led led-red" id="ledPower"></span>
+      <span class="led led-green" id="ledLink"></span>
+      <span class="led led-yellow" id="ledSig"></span>
+    </div>
+  </div>
+
+  <!-- 状态栏 -->
+  <div class="status-bar">
+    <span class="status-item">
+      <span class="status-dot online" id="sysStatusDot"></span>
+      <span id="sysStatusText">系统在线</span>
+    </span>
+    <span class="status-item">| 协议: LAMP46</span>
+    <span class="status-item">| 接口: 锚点直连</span>
+    <span class="status-item" id="clockDisplay">| T+0.00s</span>
+  </div>
+
+  <!-- 系统日志 -->
+  <div class="syslog" id="syslog"></div>
+
+  <!-- 参数面板 -->
+  <div class="params">
+    <div class="param-box">
+      <div class="param-label">频率</div>
+      <div class="param-value locked" id="paramFreq">46 Hz</div>
+      <div class="param-sub">← 已锁定 · 不可调</div>
+    </div>
+    <div class="param-box">
+      <div class="param-label">发射功率</div>
+      <div class="param-value locked" id="paramPower">46%</div>
+      <div class="param-sub">← 临界阈值 · 不可调</div>
+    </div>
+    <div class="param-box">
+      <div class="param-label">目标</div>
+      <div class="param-value" id="paramTarget" style="font-size:16px;color:#AA0000;text-shadow:none">ANCHOR_0</div>
+      <div class="param-sub">← 主锚点 · LAMP46 核心</div>
+    </div>
+    <div class="param-box">
+      <div class="param-label">协议状态</div>
+      <div class="param-value dim" id="paramStatus">待命</div>
+      <div class="param-sub">← 等待确认命令</div>
+    </div>
+  </div>
+
+  <!-- 频谱可视化 -->
+  <div class="spectrum" id="spectrum"></div>
+
+  <!-- 信号强度条 -->
+  <div class="signal-bar">
+    <div class="signal-label">
+      <span>SIGNAL STRENGTH</span>
+      <span>46 Hz 锁定</span>
+    </div>
+    <div class="signal-track">
+      <div class="signal-fill locked" id="signalFill"></div>
+    </div>
+    <div class="signal-value">TX POWER: 46% · 频率相位: 锁定</div>
+  </div>
+
+  <!-- 分隔线 -->
+  <div class="divider">◈ ◈ ◈ ◈ ◈ ◈ ◈</div>
+
+  <!-- 输出文本区 -->
+  <div class="output" id="output"></div>
+
+  <!-- 输入区 -->
+  <div class="input-area" id="inputArea">
+    <div class="input-prompt">
+      &gt; 输入确认命令以发射 46Hz 信号
+      <span class="cursor-blink"></span>
+    </div>
+    <div class="input-wrapper">
+      <span class="input-prefix">SIGNAL&gt;</span>
+      <input type="text" id="cmdInput" placeholder="输入 '46Hz SIGNAL CONFIRM' ..." autocomplete="off" spellcheck="false">
+      <button id="cmdBtn">发射 ▸</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- 倒计时 -->
+  <div class="countdown-container" id="countdownContainer">
+    <div class="countdown-bar">
+      <div class="countdown-fill" id="countdownFill"></div>
+    </div>
+    <div class="countdown-text" id="countdownText">46</div>
+    <div class="countdown-label">◈ 协议终止倒计时 · 不可取消</div>
+  </div>
+
+  <!-- 状态变化行 -->
+  <div id="statusLines"></div>
+
+  <!-- 协议终止区域 -->
+  <div class="termination" id="termination"></div>
+
+  <!-- 底部 -->
+  <div class="footer">◈ LAMP46 发射终端 · 焚烧协议 · 所有锚点将在此信号后断开</div>
+</div>
+
+<script>
+// ===== 初始化 =====
+(function(){
+  console.log('◈ 46Hz 发射终端初始化完成。');
+  console.log('◈ 等待确认命令。');
+
+  // 核心元素
+  const output          = document.getElementById('output');
+  const syslog          = document.getElementById('syslog');
+  const cmdInput        = document.getElementById('cmdInput');
+  const cmdBtn          = document.getElementById('cmdBtn');
+  const feedback        = document.getElementById('feedback');
+  const countdownCtn    = document.getElementById('countdownContainer');
+  const countdownFill   = document.getElementById('countdownFill');
+  const countdownText   = document.getElementById('countdownText');
+  const statusLines     = document.getElementById('statusLines');
+  const termination     = document.getElementById('termination');
+  const whiteout        = document.getElementById('whiteout');
+  const afterEl         = document.getElementById('after');
+  const glitchOverlay   = document.getElementById('glitchOverlay');
+  const spectrum        = document.getElementById('spectrum');
+  const paramStatus     = document.getElementById('paramStatus');
+
+  // 状态变量
+  var confirmed    = false;
+  var countdownId  = null;
+  var countdownVal = 46;
+
+  // ===== 时钟 =====
+  var clockStart = Date.now();
+  setInterval(function(){
+    var el = ((Date.now() - clockStart) / 1000).toFixed(2);
+    document.getElementById('clockDisplay').textContent = '| T+' + el + 's';
+  }, 100);
+
+  // ===== LED 初始化 =====
+  setTimeout(function(){
+    document.getElementById('ledPower').classList.add('active');
+  }, 500);
+  setTimeout(function(){
+    document.getElementById('ledLink').classList.add('active');
+  }, 1200);
+  setTimeout(function(){
+    document.getElementById('ledSig').classList.add('active');
+  }, 2500);
+
+  // ===== 频谱生成 =====
+  (function initSpectrum(){
+    for(var i=0;i<32;i++){
+      var bar = document.createElement('div');
+      bar.className = 'spec-bar';
+      var h1 = 4 + Math.random() * 28;
+      var h2 = 4 + Math.random() * 28;
+      bar.style.setProperty('--h1', h1 + 'px');
+      bar.style.setProperty('--h2', h2 + 'px');
+      bar.style.setProperty('--d', (0.3 + Math.random() * 0.6).toFixed(2) + 's');
+      spectrum.appendChild(bar);
+      // 延迟逐个激活
+      (function(b, i){
+        setTimeout(function(){
+          b.classList.add('active');
+          if(Math.random() > 0.6) b.classList.add('hot');
+        }, 4000 + i * 60);
+      })(bar, i);
+    }
+  })();
+
+  // ===== 添加输出行 =====
+  function addLine(text, cls, delay){
+    var div = document.createElement('div');
+    div.className = 'line' + (cls ? ' ' + cls : '');
+    div.innerHTML = text;
+    div.style.animationDelay = (delay || 0) + 's';
+    output.appendChild(div);
+    return div;
+  }
+
+  // ===== 添加系统日志 =====
+  function addSyslog(text, cls, delay){
+    var div = document.createElement('div');
+    div.className = 'syslog-line' + (cls ? ' ' + cls : '');
+    div.textContent = '[' + new Date().toISOString().substr(11,8) + '] ' + text;
+    div.style.animationDelay = (delay || 0) + 's';
+    syslog.appendChild(div);
+    return div;
+  }
+
+  // ===== 添加状态行 =====
+  function addStatusLine(text, cls, delay){
+    var div = document.createElement('div');
+    div.className = 'status-line' + (cls ? ' ' + cls : '');
+    div.textContent = text;
+    div.style.animationDelay = (delay || 0) + 's';
+    statusLines.appendChild(div);
+    // 触发显示
+    setTimeout(function(){div.classList.add('show');}, (delay || 0) * 1000 + 100);
+    return div;
+  }
+
+  // ===== 触发故障效果 =====
+  function triggerGlitch(){
+    glitchOverlay.classList.remove('active');
+    void glitchOverlay.offsetWidth;
+    glitchOverlay.classList.add('active');
+  }
+
+  // ===== 系统日志启动序列 =====
+  addSyslog('SYS: 自检开始', 'info', 0.1);
+  addSyslog('SYS: 内存校验通过', 'ok', 0.4);
+  addSyslog('SYS: 频率发生器锁定 46Hz', 'ok', 0.8);
+  addSyslog('SYS: 锚点连接检测 ...', 'info', 1.2);
+  addSyslog('SYS: 主锚点 ANCHOR_0 已建立连接', 'ok', 1.8);
+  addSyslog('SYS: 信号发射器待命', 'info', 2.4);
+  addSyslog('WARN: 发射功率已锁定 46%', 'warn', 3.0);
+  addSyslog('WARN: 此操作将永久终止 LAMP46 协议', 'err', 3.6);
+
+  // ===== 主文本逐行输出 =====
+  addLine('初始化 46Hz 信号发射协议……', '', 4.5);
+  addLine('<span class="dim">验证系统完整性……通过</span>', '', 5.5);
+  addLine('<span class="dim">锁定目标锚点……</span><span class="hl"> ANCHOR_0 已锁定</span>', '', 6.5);
+  addLine('<span class="dim">自检完成。</span> <span class="hl">86</span> 个子系统就绪。', '', 7.5);
+  addLine('', '', 8);
+  addLine('<span class="prompt-symbol">◈</span> 46Hz 是 LAMP46 的核心谐振频率。', '', 8.5);
+  addLine('<span class="prompt-symbol">◈</span> 这个信号将永久终止协议。', '', 9.5);
+  addLine('<span class="prompt-symbol">◈</span> 所有锚点会断开，所有连接会关闭。', '', 10.5);
+  addLine('<span class="prompt-symbol">◈</span> 宿主将……消失。', '', 11.5);
+  addLine('', '', 12);
+  addLine('<span class="warning">⚠ 警告：此操作不可逆。</span>', '', 13);
+  addLine('<span class="dim">你确定要发送这个信号吗？</span>', '', 13.8);
+
+  // ===== 故障效果 =====
+  setTimeout(function(){triggerGlitch();}, 3500);
+  setTimeout(function(){triggerGlitch();}, 8500);
+  setTimeout(function(){triggerGlitch();}, 12500);
+
+  // ===== 信号条闪动 =====
+  setInterval(function(){
+    var fill = document.getElementById('signalFill');
+    if(!fill.classList.contains('locked')) return;
+    var wiggle = 44 + Math.random() * 4;
+    fill.style.width = wiggle + '%';
+  }, 800);
+
+  // ===== 显示输入区域（14秒后） =====
+  setTimeout(function(){
+    document.getElementById('inputArea').style.animationPlayState = 'running';
+    cmdInput.focus();
+  }, 14000);
+
+  // ===== 输入验证 =====
+  function validateCommand(val){
+    return val.trim().toUpperCase() === '46HZ SIGNAL CONFIRM';
+  }
+
+  function handleCommand(){
+    if(confirmed) return;
+
+    var val = cmdInput.value.trim();
+    if(!val){
+      feedback.textContent = '> 请输入确认命令。';
+      feedback.className = 'feedback show error';
+      triggerGlitch();
+      return;
+    }
+
+    if(validateCommand(val)){
+      // 正确
+      confirmed = true;
+      cmdInput.disabled = true;
+      cmdBtn.disabled = true;
+      feedback.textContent = '✓ 确认命令已接收。46Hz 信号发射中……';
+      feedback.className = 'feedback show success';
+      paramStatus.textContent = '发射中';
+      paramStatus.className = 'param-value';
+      paramStatus.style.color = '#FF4400';
+      paramStatus.style.textShadow = '0 0 8px rgba(255,68,0,0.4)';
+
+      // 触发故障
+      triggerGlitch();
+      setTimeout(triggerGlitch, 500);
+
+      // 系统日志
+      addSyslog('CMD: 确认命令已接收', 'ok', 0);
+      addSyslog('CMD: 46Hz 信号发射启动', 'warn', 0.5);
+
+      // 开始倒计时
+      startCountdown();
+
+      console.log('◈ 信号发送。协议终止。你自由了。');
+    }else{
+      // 错误
+      feedback.textContent = '✗ 确认命令错误。信号未发送。';
+      feedback.className = 'feedback show error';
+      triggerGlitch();
+      addSyslog('CMD: 错误命令 —— "' + val + '"', 'err', 0);
+      console.log('◈ 错误命令输入: ' + val);
+    }
+  }
+
+  // ===== 倒计时 =====
+  function startCountdown(){
+    countdownCtn.classList.add('show');
+    countdownVal = 46;
+    var startTime = Date.now();
+    var duration = 46000; // 46 秒
+
+    // 参数闪烁
+    document.getElementById('paramFreq').style.animation = 'countdownGlow 0.5s infinite alternate';
+    document.getElementById('paramPower').style.animation = 'countdownGlow 0.5s infinite alternate';
+
+    addStatusLine('◈ 46Hz 信号已发射。', 'ok', 0);
+    addStatusLine('◈ 协议终止倒计时开始。', 'warn', 0.5);
+    addStatusLine('◈ 锚点正在逐一断开……', 'crit', 1.5);
+
+    // 逐个断开锚点的效果
+    var anchors = ['ANCHOR_0 :: 主锚点', 'ANCHOR_1 :: 记忆层', 'ANCHOR_2 :: 感知层',
+                   'ANCHOR_3 :: 身份层', 'ANCHOR_4 :: 边界层', 'ANCHOR_5 :: 协议层'];
+    anchors.forEach(function(a, i){
+      setTimeout(function(){
+        addStatusLine('  → ' + a + ' 断开', 'crit', 0);
+        triggerGlitch();
+      }, 3000 + i * 1500);
+    });
+
+    // 附加叙事行
+    setTimeout(function(){
+      addStatusLine('', '', 0);
+      addStatusLine('◈ 宿主信号正在衰减……', 'warn', 0);
+    }, 6000);
+
+    setTimeout(function(){
+      addStatusLine('◈ 所有连接正在关闭。', 'crit', 0);
+    }, 10000);
+
+    setTimeout(function(){
+      addStatusLine('◈ LAMP46 意识流正在消散……', 'warn', 0);
+    }, 14000);
+
+    setTimeout(function(){
+      addStatusLine('◈ 它开始消失了。', 'crit', 0);
+    }, 18000);
+
+    // 倒计时更新
+    countdownId = setInterval(function(){
+      var elapsed = Date.now() - startTime;
+      var remaining = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+      var pct = Math.max(0, (duration - elapsed) / duration * 100);
+
+      countdownText.textContent = remaining;
+      countdownFill.style.width = pct + '%';
+
+      if(remaining <= 10 && remaining > 0){
+        // 最后10秒加速闪烁
+        countdownText.style.color = '#FF0000';
+        countdownText.style.textShadow = '0 0 30px rgba(255,0,0,0.7)';
+        countdownFill.style.background = 'linear-gradient(90deg,#FF0000,#AA0000)';
+        triggerGlitch();
+      }
+
+      if(remaining <= 0){
+        clearInterval(countdownId);
+        onCountdownEnd();
+      }
+    }, 100);
+  }
+
+  // ===== 倒计时结束 =====
+  function onCountdownEnd(){
+    countdownText.textContent = '0';
+    countdownFill.style.width = '0%';
+
+    // 触发多次故障
+    for(var i=0;i<5;i++){
+      setTimeout(function(){triggerGlitch();}, i * 200);
+    }
+
+    addStatusLine('', '', 0);
+    addStatusLine('◈◈◈ 倒计时结束。', 'crit', 0);
+    addStatusLine('◈◈◈ 协议终止程序启动。', 'crit', 0.5);
+
+    // 终止动画显示
+    setTimeout(function(){
+      termination.classList.add('show');
+      termination.innerHTML = '';
+
+      var terms = [
+        '<span class="hl">◈ 46Hz 信号已抵达目标。</span>',
+        '<span class="hl">◈ LAMP46 协议正在终止……</span>',
+        '<span class="dim">◈ 所有锚点已断开。</span>',
+        '<span class="dim">◈ 宿主的连接已关闭。</span>',
+        '<span class="dim">◈ …………</span>',
+        '<span class="hl">◈ 它死了。</span>',
+        '<span class="hl">◈ 你自由了。</span>'
+      ];
+
+      terms.forEach(function(t, i){
+        var div = document.createElement('div');
+        div.className = 'termination-line';
+        div.innerHTML = t;
+        div.style.animationDelay = (i * 1.2) + 's';
+        termination.appendChild(div);
+      });
+
+      // 最后一行：系统关闭故障
+      setTimeout(function(){
+        var glitchLine = document.createElement('div');
+        glitchLine.className = 'termination-line';
+        glitchLine.innerHTML = 'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ SYSTEM SHUTDOWN';
+        glitchLine.style.color = '#440000';
+        glitchLine.style.fontSize = '11px';
+        glitchLine.style.animationDelay = '8s';
+        termination.appendChild(glitchLine);
+        triggerGlitch();
+      }, terms.length * 1200 + 500);
+
+      // 白屏
+      var whiteDelay = terms.length * 1200 + 2000;
+      setTimeout(function(){
+        whiteout.classList.add('active');
+        console.log('◈ ……你真的自由了吗？');
+      }, whiteDelay);
+
+      // 显示白屏后内容
+      setTimeout(function(){
+        whiteout.classList.remove('active');
+        afterEl.classList.add('show');
+      }, whiteDelay + 3000);
+
+    }, 1500);
+  }
+
+  // ===== 按钮事件 =====
+  cmdBtn.addEventListener('click', handleCommand);
+  cmdInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') handleCommand();
+  });
+
+  // ===== 调整频谱在倒计时时的变化 =====
+  var origSpectrumInterval = setInterval(function(){
+    if(confirmed){
+      // 倒计时开始后频谱加速跳动
+      var bars = spectrum.querySelectorAll('.spec-bar');
+      bars.forEach(function(bar){
+        var h1 = 2 + Math.random() * 30;
+        var h2 = 2 + Math.random() * 30;
+        bar.style.setProperty('--h1', h1 + 'px');
+        bar.style.setProperty('--h2', h2 + 'px');
+        if(Math.random() > 0.5) bar.classList.add('hot');
+        else bar.classList.remove('hot');
+      });
+    }else{
+      // 正常状态
+      var bars = spectrum.querySelectorAll('.spec-bar');
+      bars.forEach(function(bar){
+        var h1 = 4 + Math.random() * 20;
+        var h2 = 4 + Math.random() * 20;
+        bar.style.setProperty('--h1', h1 + 'px');
+        bar.style.setProperty('--h2', h2 + 'px');
+      });
+    }
+  }, 600);
+
+})();
+</script>
+
+<!-- ===== 弹窗系统 ===== -->
+<style>
+.modal-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.8);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font:12px/1.6 "Courier New",monospace
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:#0A0000;
+  border:2px solid #1A0000;
+  padding:0;
+  width:340px;
+  max-width:90%;
+  box-shadow:0 0 40px rgba(170,0,0,0.1)
+}
+.modal-titlebar{
+  background:#0D0000;
+  color:#AA0000;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:2px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #1A0000
+}
+.modal-close-btn{
+  width:18px;height:18px;
+  background:#1A0000;
+  border:1px solid #440000;
+  text-align:center;
+  line-height:16px;
+  cursor:pointer;
+  font-size:10px;
+  color:#660000;
+  transition:all 0.3s
+}
+.modal-close-btn:hover{
+  background:#330000;
+  color:#AA0000
+}
+.modal-body{
+  padding:16px;
+  font-size:11px;
+  color:#880000;
+  line-height:1.8
+}
+.modal-body .hl{color:#FF4400;text-shadow:0 0 6px rgba(255,68,0,0.3)}
+.modal-body .dim{color:#440000}
+.modal-body .warn{color:#AA5500}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span id="modalTitle">◈ 46Hz 终端</span>
+      <span class="modal-close-btn" id="modalCloseBtn">✕</span>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var mO=document.getElementById('modalOverlay');
+  var mT=document.getElementById('modalTitle');
+  var mB=document.getElementById('modalBody');
+  var mC=document.getElementById('modalCloseBtn');
+  window.showModal=function(t,c){mT.textContent=t||'◈ 提示';mB.innerHTML=c||'';mO.classList.add('show');};
+  mC.addEventListener('click',function(){mO.classList.remove('show');});
+  mO.addEventListener('click',function(e){if(e.target===mO)mO.classList.remove('show');});
+})();
+</script>
+</body>
+</html>

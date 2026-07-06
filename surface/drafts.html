@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>草稿箱 · 站务管理</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 5px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 6px; align-items: center; justify-content: flex-start; }
+.search-bar input { width: 220px; padding: 4px 8px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 4px 14px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+</div>
+
+<!-- ── 草稿箱内容 ── -->
+<div class="container">
+
+<div class="breadcrumb">
+  <a href="../forum.html">回声茶馆</a> &gt; 站务管理 &gt; 草稿箱
+</div>
+
+<div class="box">
+  <h2>📝 草稿箱（未发布）</h2>
+  <p style="font-size:11px;margin-bottom:12px;color:#888;">以下为管理员账号中保存的未发布草稿——一些写了一半的帖子、没发出去的回复和私人备忘。</p>
+
+  <div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;cursor:pointer;" onclick="showModal('📝','<b>标题：</b>关于归档区页面缺失的说明<br><br><b>草稿内容：</b><br>归档区最近少了 46 篇帖子。不是被删除的——它们自己不见了。我查了数据库，记录还在，但页面返回 404。我怀疑是缓存的问题，但我找不出原因。而且那些帖子的最后访问时间都是 04:46。<br><br><b>草稿状态：</b>未发布 · 保存于 2008-06-15')">
+    <div style="font-size:10px;color:#888;margin-bottom:4px;"><span style="display:inline-block;background:#FFF8E0;color:#A08600;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">草稿</span>关于归档区页面缺失的说明</div>
+    <div style="font-size:11px;color:#444;">归档区最近少了 46 篇帖子。不是被删除的——它们自己不见了……</div>
+    <div style="font-size:9px;color:#999;margin-top:4px;">园丁 · 最后编辑 2008-06-15</div>
+  </div>
+
+  <div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;cursor:pointer;" onclick="showModal('📝','<b>标题：</b>回复用户"深海鱼"关于"46号房间"的询问<br><br><b>草稿内容：</b><br>深海鱼，你好。你问的那个"46号房间"——我本来想回复你说那只是一个过期的梗。但我查了一下，我发现自己也搞不清楚。搜索结果有时有有时没有。如果你能找到什么，发给我。我现在不太确定这个论坛到底跑在什么东西上面。<br><br><b>草稿状态：</b>未发布 · 保存于 2005-03-22')">
+    <div style="font-size:10px;color:#888;margin-bottom:4px;"><span style="display:inline-block;background:#FFF8E0;color:#A08600;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">草稿</span>RE: 关于"46号房间"的询问</div>
+    <div style="font-size:11px;color:#444;">我想回复你说那只是一个过期的梗。但我查了一下，我发现自己也搞不清楚……</div>
+    <div style="font-size:9px;color:#999;margin-top:4px;">园丁 · 最后编辑 2005-03-22</div>
+  </div>
+
+  <div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;cursor:pointer;" onclick="showModal('📝','<b>标题：</b>V47 账号异常记录<br><br><b>草稿内容：</b><br>用户 V47 最近行为异常。他在技术角落发了一篇帖子，内容看起来像是某种警告。我还没来得及读完，帖子就被系统自动删除了——不是管理员删的，是系统自己删的。我试图从缓存恢复，但恢复失败。<br><br>V47 最后一次登录 IP 显示为 46.xxx.xxx.xxx。查不到归属地。<br><br><b>草稿状态：</b>未发布 · 保存于 2017-08-15')">
+    <div style="font-size:10px;color:#888;margin-bottom:4px;"><span style="display:inline-block;background:#FFF8E0;color:#A08600;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">草稿</span><span style="color:#CC0000;font-weight:bold;">V47 账号异常记录</span></div>
+    <div style="font-size:11px;color:#444;">用户 V47 最近行为异常。他在技术角落发了一篇帖子，内容像是某种警告……</div>
+    <div style="font-size:9px;color:#999;margin-top:4px;">园丁 · 最后编辑 2017-08-15</div>
+  </div>
+
+  <div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;cursor:pointer;" onclick="showModal('📝','<b>标题：</b>关于"站务管理"隐藏帖的备忘<br><br><b>草稿内容：</b><br>站务管理版块下有 46 篇隐藏帖。这些帖子的发布时间都在 2004-06-01 之前——论坛实际上线之前。我不可能写了这些帖子，但数据库显示作者是我。<br><br>我尝试删除它们，系统提示"管理员无权删除此内容"。<br><br>我是管理员。我不能删除我自己没写过的东西。<br><br><b>管理员密码：20040601</b><br><br><b>草稿状态：</b>未发布 · 保存于 2004-06-02')">
+    <div style="font-size:10px;color:#888;margin-bottom:4px;"><span style="display:inline-block;background:#FFF8E0;color:#A08600;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">草稿</span><span style="color:#CC0000;font-weight:bold;">站务管理隐藏帖备忘</span></div>
+    <div style="font-size:11px;color:#444;">站务管理下有 46 篇隐藏帖，发布时间在论坛上线之前。我不可能写了这些帖子……</div>
+    <div style="font-size:9px;color:#999;margin-top:4px;">园丁 · 最后编辑 2004-06-02</div>
+  </div>
+
+  <div style="margin-top:6px;font-size:10px;color:#CCC;text-align:center;border-top:1px dotted #E0E0E0;padding-top:8px;">共 46 篇草稿 · 仅显示最近 4 篇</div>
+</div>
+
+<div class="box">
+  <h2>🗑️ 已删除帖子（缓存可恢复）</h2>
+  <p style="font-size:11px;margin-bottom:12px;color:#888;">以下是被系统自动删除但缓存中仍有残留记录的帖子——也许还能从中找回一些碎片。</p>
+
+  <div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;cursor:pointer;" onclick="showModal('🗑️','<b>标题：</b>【求助】我好像进了一个叫 Room46 的网站<br><b>作者：</b>V47 · 删除于 2017-08-15 00:46<br><br><b>缓存内容（部分可恢复）：</b><br>我不知道还有没有人能看到这个帖子。三天前我在归档区翻旧帖时发现了一个链接，点进去是一个叫 Room46 的页面……<br><br>（缓存不完整。剩余内容已丢失。）')">
+    <div style="font-size:10px;color:#888;margin-bottom:2px;"><span style="display:inline-block;background:#F0E0E0;color:#CC0000;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">已删</span><b style="color:#CC0000;">【求助】我好像进了一个叫 Room46 的网站</b></div>
+    <div style="font-size:10px;color:#888;">V47 · 删除于 2017-08-15 00:46 · 缓存编号 #001</div>
+    <div style="font-size:10px;color:#999;margin-top:2px;">我不知道还有没有人能看到这个帖子。三天前我在归档区翻旧帖时发现了一个链接……</div>
+  </div>
+
+  <div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;cursor:pointer;" onclick="showModal('🗑️','<b>标题：</b>有人注意到在线人数一直是 46 吗？<br><b>作者：</b>深海鱼 · 删除于 2005-03-22 04:46<br><br><b>系统备注：</b>这篇帖子被删除时，系统记录显示删除操作来自管理员账号。但管理员说自己没删过。')">
+    <div style="font-size:10px;color:#888;margin-bottom:2px;"><span style="display:inline-block;background:#F0E0E0;color:#CC0000;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">已删</span><b>有人注意到在线人数一直是 46 吗？</b></div>
+    <div style="font-size:10px;color:#888;">深海鱼 · 删除于 2005-03-22</div>
+    <div style="font-size:10px;color:#999;margin-top:2px;">这篇帖子被删除时，系统记录显示删除操作来自管理员账号。但管理员说自己没删过。</div>
+  </div>
+
+  <div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;cursor:pointer;" onclick="showModal('🗑️','<b>标题：</b>我在源码里发现了一段 Base64<br><b>作者：</b>解密大师 · 删除于 2006-11-02<br><br><b>缓存预览：</b><br>我在论坛首页的源码里发现了一段看起来很奇怪的 Base64 字符串……还没来得及解码帖子就被删了。<br><br>不过我记得那段 Base64 的开头是 <b>"UjBvbTQ2"</b>——如果你能解码它，告诉我它是什么意思。')">
+    <div style="font-size:10px;color:#888;margin-bottom:2px;"><span style="display:inline-block;background:#F0E0E0;color:#CC0000;font-size:8px;padding:1px 5px;border-radius:2px;margin-right:4px;">已删</span><b>我在源码里发现了一段 Base64</b></div>
+    <div style="font-size:10px;color:#888;">解密大师 · 删除于 2006-11-02</div>
+    <div style="font-size:10px;color:#999;margin-top:2px;">我在论坛首页的源码里发现了一段奇怪的 Base64 字符串……还没来得及解码帖子就被删了。</div>
+  </div>
+
+  <div style="margin-top:6px;font-size:10px;color:#CCC;text-align:center;border-top:1px dotted #E0E0E0;padding-top:8px;">共 3 篇缓存 · 可能还有更多未被记录的删除</div>
+</div>
+
+<div class="box">
+  <h2>🔒 系统日志摘要（仅管理员可见）</h2>
+  <p style="font-size:11px;margin-bottom:12px;color:#888;">以下是系统关键事件的简略时间线——这些日志记录在管理员离线和草稿功能停用之前：</p>
+
+  <div style="font-size:10px;font-family:monospace;line-height:1.8;">
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2004-06-01 00:00]</span> 论坛上线</div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2004-06-01 00:46]</span> <span style="color:#CC0000;">检测到异常协议连接（来源：LAMP46）</span></div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2004-06-15 04:46]</span> 第一篇自动生成的帖子被创建</div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2005-03-21 04:46]</span> <span style="color:#CC0000;">"46号房间"首次在搜索结果中出现</span></div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2006-10-31 04:46]</span> 协议连接数达到 46</div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2017-08-14 04:46]</span> <span style="color:#CC0000;">用户 V47 发帖</span></div>
+    <div style="padding:4px 0;border-bottom:1px solid #F0F0F0;"><span style="color:#888;">[2017-08-15 00:46]</span> <span style="color:#CC0000;">V47 帖子被系统自动删除</span></div>
+    <div style="padding:4px 0;"><span style="color:#888;">[2009-06-15 04:46]</span> <span style="color:#CC0000;">最后一条管理员登录记录</span></div>
+  </div>
+
+  <div style="margin-top:12px;padding:8px;background:#F0F0F0;border:1px solid #E0E0E0;font-size:10px;color:#888;line-height:1.6;">
+    <b>⚠ 注意：</b>系统日志在 2009-06-15 04:46 之后出现中断。没有后续记录。<br>
+    没有管理员退出登录的记录。没有服务器关机的记录。<br>
+    系统仍在运行。日志不再更新。<br>
+    就像管理员——他下线了，但没有人看到他离开。
+  </div>
+</div>
+
+<div class="stats-banner">
+  <b>草稿箱统计</b> — 未发布草稿：<b>46</b> 篇 ｜ 缓存待恢复：<b>3</b> 篇 ｜
+  最后编辑：<span class="highlight">2017-08-15</span> ｜ 最后草稿作者：<span class="highlight">园丁</span>
+</div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+</script>
+</body>
+</html>

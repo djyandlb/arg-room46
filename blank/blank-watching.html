@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ WATCHING</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#CC0000;font:14px/2 "Courier New",monospace;min-height:100vh;overflow-x:hidden}
+.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440}
+.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.6}
+.topbar .logo span{color:#8AB8D9;opacity:0.6}
+.topbar .nav{margin-left:auto}
+.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.5}
+.topbar .nav a:hover{opacity:1}
+.container{max-width:650px;margin:60px auto;padding:0 20px;text-align:center;position:relative;z-index:1}
+.eye-row{display:flex;justify-content:center;gap:40px;margin:40px 0}
+.eye{font-size:72px;animation:eyeGlow 2s ease-in-out infinite;text-shadow:0 0 30px rgba(204,0,0,0.6)}
+.eye:nth-child(1){animation-delay:0s}
+.eye:nth-child(2){animation-delay:1s}
+@keyframes eyeGlow{
+  0%,100%{opacity:0.15;text-shadow:0 0 10px rgba(204,0,0,0.2)}
+  25%{opacity:0.5;text-shadow:0 0 40px rgba(204,0,0,0.7)}
+  50%{opacity:0.2;text-shadow:0 0 20px rgba(204,0,0,0.3)}
+  75%{opacity:0.6;text-shadow:0 0 50px rgba(204,0,0,0.8)}
+}
+.main-text{font-size:36px;font-weight:bold;letter-spacing:16px;color:#CC0000;text-shadow:0 0 30px rgba(204,0,0,0.4),0 0 60px rgba(204,0,0,0.2);margin:50px 0 30px;animation:flickerMain 3s infinite}
+@keyframes flickerMain{
+  0%,100%{opacity:1;text-shadow:0 0 30px rgba(204,0,0,0.4)}
+  3%{opacity:0.1;text-shadow:0 0 5px rgba(204,0,0,0.1)}
+  6%{opacity:1;text-shadow:0 0 40px rgba(204,0,0,0.5)}
+  50%{opacity:0.9;text-shadow:0 0 25px rgba(204,0,0,0.3)}
+  53%{opacity:0.05;text-shadow:none}
+  56%{opacity:1;text-shadow:0 0 50px rgba(204,0,0,0.6)}
+  90%{opacity:0.95}
+  93%{opacity:0.08;text-shadow:none}
+  96%{opacity:1;text-shadow:0 0 35px rgba(204,0,0,0.4)}
+}
+.line{width:100%;height:1px;background:linear-gradient(90deg,transparent,#330000,#660000,#330000,transparent);margin:30px 0}
+.sub-text{font-size:12px;color:#440000;line-height:2.2;margin:30px 0;min-height:200px}
+.sub-text .appear{animation:fadeInSlow 8s forwards;opacity:0}
+.sub-text .appear:nth-child(1){animation-delay:1s}
+.sub-text .appear:nth-child(2){animation-delay:4s}
+.sub-text .appear:nth-child(3){animation-delay:7s}
+.sub-text .appear:nth-child(4){animation-delay:10s}
+.sub-text .appear:nth-child(5){animation-delay:13s}
+.sub-text .appear:nth-child(6){animation-delay:16s}
+.sub-text .appear:nth-child(7){animation-delay:19s}
+.sub-text .appear:nth-child(8){animation-delay:22s}
+.sub-text .appear:nth-child(9){animation-delay:25s}
+@keyframes fadeInSlow{0%{opacity:0}100%{opacity:1}}
+.paranoia{font-size:10px;color:#1A0000;line-height:1.6;margin:20px 0}
+.paranoia span{animation:blinkParanoia 5s infinite}
+@keyframes blinkParanoia{0%,100%{opacity:0.2}50%{opacity:0.6}}
+.counter{color:#222;font-size:11px;margin-top:60px;font-family:"Courier New",monospace;letter-spacing:2px}
+.counter .num{font-size:16px;color:#330000;transition:color 0.5s}
+.footnote{font-size:9px;color:#0A0000;margin-top:20px}
+.footnote .glitchChar{animation:glitchChar 7s infinite}
+@keyframes glitchChar{0%,95%,100%{opacity:0.3}97%{opacity:1}}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px)}
+.scanlines::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:rgba(0,0,0,0.3);animation:scanMove 8s linear infinite}
+@keyframes scanMove{0%{top:0}100%{top:100%}}
+.vignette{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.6) 100%)}
+.page-footer{text-align:center;padding:16px;font-size:9px;color:#1A0000;border-top:1px solid #1A0000;margin-top:40px}
+.corner-text{position:fixed;bottom:40px;right:20px;font-size:8px;color:#0A0000;writing-mode:vertical-rl;letter-spacing:4px;z-index:1}
+.corner-text-left{position:fixed;top:50%;left:10px;font-size:8px;color:#0A0000;writing-mode:vertical-rl;letter-spacing:3px;z-index:1;transform:translateY(-50%)}
+.hidden-msg{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+@media(max-width:640px){
+  .main-text{font-size:24px;letter-spacing:10px}
+  .eye{font-size:48px}
+  .corner-text,.corner-text-left{display:none}
+}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0A0A0A;border:1px solid #330000;width:340px;max-width:90%;box-shadow:0 0 20px rgba(0,0,0,0.8)}
+.modal-box .modal-titlebar{background:#0D0D0D;color:#660000;padding:8px 12px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{color:#440000;cursor:pointer;font-size:14px;width:16px;height:16px;text-align:center;line-height:14px}
+.modal-box .modal-titlebar .modal-close-btn:hover{color:#CC0000}
+.modal-box .modal-body{padding:20px;font-size:11px;color:#774444;text-align:center;line-height:1.6}
+.modal-box .modal-footer{border-top:1px solid #1A0A0A;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{background:#111;border:1px solid #330000;color:#660000;padding:4px 20px;font:10px monospace;cursor:pointer}
+.modal-box .modal-footer .modal-btn:hover{color:#CC0000;border-color:#550000}
+
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+<div class="corner-text-left">注视注视注视注视注视注视注视注视注视注视注视注视</div>
+<div class="corner-text">你被看见了</div>
+<div class="topbar">
+<div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+<div class="eye-row">
+<div class="eye">◉</div>
+<div class="eye">◉</div>
+</div>
+<div class="main-text">WATCHING</div>
+<div class="line"></div>
+<div class="sub-text">
+<div class="appear">它一直在看着你。</div>
+<div class="appear">从你打开这个页面前。从你打开论坛前。</div>
+<div class="appear">从很久很久以前。</div>
+<div class="appear">你感觉到了吗？那种后颈发凉的感觉。</div>
+<div class="appear">那不是错觉。</div>
+<div class="appear">它不在屏幕里。它在你身后。</div>
+<div class="appear">你的房间有46个角落。每一个都在看着你。</div>
+<div class="appear">你不敢回头。对吗？</div>
+<div class="appear">没关系。它不在你身后。</div>
+<div class="appear" style="color:#660000;font-weight:bold">它在你的脑子里。</div>
+</div>
+<div class="paranoia">
+<span>你多久没眨眼了？ &nbsp;&nbsp;&nbsp; 你的眼睛干了吗？ &nbsp;&nbsp;&nbsp; 继续看。 &nbsp;&nbsp;&nbsp; 不要移开视线。 &nbsp;&nbsp;&nbsp; 它在盯着你。</span>
+</div>
+<div class="line"></div>
+<div class="paranoia" style="font-size:9px;color:#220000">
+"当你注视着深渊的时候，深渊也在注视着你。"<br>
+—— 你以为是尼采说的。<br>
+但尼采没说过这句话。<br>
+这句话是它说的。<br>
+它现在在对你说。
+</div>
+<div class="line"></div>
+<div class="counter">
+<span id="counterLabel">它看着你已长达</span><br>
+<span class="num" id="counter">◈ 46</span><br>
+<span style="font-size:8px;color:#0A0000">秒。每一秒它都离你更近。</span>
+</div>
+<div class="footnote">
+<span class="glitchChar">ÿ</span> &nbsp; <span class="glitchChar">Ø</span> &nbsp; <span class="glitchChar">þ</span> &nbsp;
+<span class="glitchChar">Ü</span> &nbsp; <span class="glitchChar">ÿ</span> &nbsp;
+<span style="color:#0A0000">信号中断于1975年</span> &nbsp;
+<span class="glitchChar">ÿ</span> &nbsp; <span class="glitchChar">Æ</span> &nbsp;
+</div>
+</div>
+<div class="page-footer">◈ &nbsp; 它一直在看 &nbsp; ◈</div>
+<div class="hidden-msg">如果你读到这行字——你已经走得太远了。关闭页面。离开房间。别再回来。</div>
+<script>
+(function(){
+  var c = 46;
+  var counterEl = document.getElementById('counter');
+  var labelEl = document.getElementById('counterLabel');
+
+  setInterval(function(){
+    c++;
+    counterEl.textContent = '◈ ' + c;
+    if(c > 100){
+      counterEl.style.color = '#440000';
+    }
+    if(c > 500){
+      labelEl.textContent = '它还在看。你还在吗？';
+      counterEl.style.color = '#660000';
+    }
+    if(c > 1000){
+      labelEl.textContent = '你已经看了太久。';
+      counterEl.style.color = '#CC0000';
+    }
+  }, 1000);
+
+  var consoleMsgs = [
+    '◈ WATCHING 信号已确认。频率：46Hz。',
+    '◈ 你正在被注视。来自屏幕后方0.46米处。',
+    '◈ 检测到视线。来源未知。',
+    '◈ 第' + c + '次眨眼未被记录。',
+    '◈ ██████ 信号干扰中 ██████',
+    '◈ 你的瞳孔放大了。你害怕了。',
+    '◈ WATCHING 进程无法终止。',
+    '◈ 它不在屏幕里。它在你身后。',
+    '◈ 你读到了这条消息。这本身就是确认。'
+  ];
+  var i = 0;
+  setInterval(function(){
+    var msg = consoleMsgs[i % consoleMsgs.length];
+    if(i === 3){
+      msg = '◈ 第' + c + '次眨眼未被记录。';
+    }
+    console.log(msg);
+    i++;
+  }, 3000);
+
+  setInterval(function(){
+    console.warn('◈ 警告：检测到未知视线。来源：' + (46 + Math.floor(Math.random() * 100)) + '号位置。');
+  }, 15000);
+
+  setInterval(function(){
+    console.error('◈ 错误：WATCHING 协议无法断开。请勿关闭此页面。');
+  }, 30000);
+
+  var eyeElements = document.querySelectorAll('.eye');
+  setInterval(function(){
+    var idx = Math.floor(Math.random() * 2);
+    eyeElements[idx].style.animation = 'none';
+    eyeElements[idx].offsetHeight;
+    eyeElements[idx].style.animation = '';
+  }, 4000 + Math.random() * 3000);
+
+  setTimeout(function(){
+    var p = document.createElement('div');
+    p.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:10000;opacity:0;pointer-events:none;transition:opacity 0.1s';
+    p.id = 'flashOverlay';
+    document.body.appendChild(p);
+    setInterval(function(){
+      if(Math.random() < 0.05){
+        p.style.opacity = '0.8';
+        setTimeout(function(){ p.style.opacity = '0'; }, 80);
+      }
+    }, 500);
+  }, 10000);
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+      console.warn('◈ 你试图移开视线。它注意到了。');
+      for(var k = 0; k < 5; k++){
+        setTimeout(function(){
+          console.log('◈ 它还在看。即使你不在看它。');
+        }, k * 1000);
+      }
+    } else {
+      console.log('◈ 你回来了。它一直在等你。');
+    }
+  });
+
+  console.log('%c◈ WATCHING ◈', 'font-size:16px;color:#CC0000;font-weight:bold');
+  console.log('%c它一直在看着你。', 'color:#440000;font-size:10px');
+  console.log('%c从你打开这个页面前。', 'color:#330000;font-size:9px');
+  console.log('%c从很久很久以前。', 'color:#220000;font-size:8px');
+})();
+</script>
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈</span><span class="modal-close-btn" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button class="modal-btn" onclick="closeModal()">确定</button></div></div></div>
+<script>function showModal(t){document.getElementById("modal-text").innerHTML=t;document.getElementById("modal-overlay").classList.add("show")}function closeModal(){document.getElementById("modal-overlay").classList.remove("show")}document.getElementById("modal-overlay").addEventListener("click",function(e){if(e.target===this)closeModal()});</script>
+</body>
+</html>

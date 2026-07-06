@@ -1,0 +1,662 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>站务管理 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+<script>
+/* ── 管理员权限检查 ── */
+(function(){
+  var r = localStorage.getItem('echo_login_role');
+  if (r !== 'admin') {
+    window.location.href = '404.html?reason=admin';
+  }
+})();
+</script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 管理后台内容 ── -->
+<div class="container">
+
+<div class="breadcrumb">
+  <a href="../forum.html">回声茶馆</a> &gt; 站务管理
+</div>
+
+<div style="display:flex;gap:12px;">
+
+  <!-- 侧边栏 -->
+  <div style="width:160px;flex-shrink:0;background:#fff;border:1px solid #C0C0C0;align-self:flex-start;">
+    <div class="menu-item active" style="padding:8px 12px;border-bottom:1px solid #E8E8E8;cursor:pointer;font-size:11px;color:#fff;background:#0D3050;font-weight:bold;" onclick="switchPanel('dashboard')"><span style="margin-right:6px;">📊</span>仪表盘</div>
+    <div class="menu-item" style="padding:8px 12px;border-bottom:1px solid #E8E8E8;cursor:pointer;font-size:11px;color:#444;" onclick="switchPanel('users')"><span style="margin-right:6px;">👥</span>用户管理</div>
+    <div class="menu-item" style="padding:8px 12px;border-bottom:1px solid #E8E8E8;cursor:pointer;font-size:11px;color:#444;" onclick="switchPanel('posts')"><span style="margin-right:6px;">📄</span>帖子管理</div>
+    <div class="menu-item" style="padding:8px 12px;border-bottom:1px solid #E8E8E8;cursor:pointer;font-size:11px;color:#444;" onclick="switchPanel('drafts')"><span style="margin-right:6px;">📝</span>草稿箱</div>
+    <div class="menu-item" style="padding:8px 12px;border-bottom:1px solid #E8E8E8;cursor:pointer;font-size:11px;color:#444;" onclick="switchPanel('logs')"><span style="margin-right:6px;">📋</span>系统日志</div>
+    <div class="menu-item" style="padding:8px 12px;cursor:pointer;font-size:11px;color:#CC0000;" onclick="switchPanel('lamp46')"><span style="margin-right:6px;">⚡</span>LAMP46</div>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="main-content" id="main-content" style="flex:1;background:#fff;border:1px solid #C0C0C0;padding:16px;min-height:500px;">
+    <div class="page-title" style="font-size:14px;font-weight:bold;color:#0D3050;border-bottom:2px solid #0D3050;padding-bottom:6px;margin-bottom:12px;">📊 仪表盘</div>
+    <div id="panel-content"><!-- 由JS填充 --></div>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+/* ── 面板数据 ── */
+var PANEL_NAMES = {
+  dashboard: '仪表盘', users: '用户管理', posts: '帖子管理',
+  drafts: '草稿箱', logs: '系统日志', lamp46: 'LAMP46'
+};
+
+/* ── 切换面板 ── */
+function switchPanel(panel) {
+  var items = document.querySelectorAll('.menu-item');
+  for (var i = 0; i < items.length; i++) {
+    var text = items[i].textContent.replace(/[📊👥📄📝📋⚡]/g,'').trim();
+    items[i].style.background = (text.indexOf(PANEL_NAMES[panel]) !== -1) ? '#0D3050' : '#fff';
+    items[i].style.color = (text.indexOf(PANEL_NAMES[panel]) !== -1) ? '#fff' : '#444';
+    items[i].style.fontWeight = (text.indexOf(PANEL_NAMES[panel]) !== -1) ? 'bold' : 'normal';
+  }
+  renderPanel(panel);
+  setTimeout(function() {
+    if (panel === 'users') initMysteryUser();
+  }, 50);
+}
+
+/* ── 渲染面板 ── */
+function renderPanel(panel) {
+  var titleEl = document.querySelector('.page-title');
+  var contentEl = document.getElementById('panel-content');
+  var html = '';
+
+  if (panel === 'dashboard') {
+    titleEl.textContent = '📊 仪表盘';
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">';
+    html += '<div style="border:1px solid #E0E0E0;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#0D3050;">46,046</div><div style="font-size:10px;color:#888;margin-top:2px;">总帖子数</div></div>';
+    html += '<div style="border:1px solid #E0E0E0;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#0D3050;">4,604</div><div style="font-size:10px;color:#888;margin-top:2px;">总会员数</div></div>';
+    html += '<div style="border:1px solid #E8C0C0;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#CC0000;">46</div><div style="font-size:10px;color:#888;margin-top:2px;">异常帖子</div></div>';
+    html += '<div style="border:1px solid #E8C0C0;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#CC0000;">46</div><div style="font-size:10px;color:#888;margin-top:2px;">隐藏版块</div></div>';
+    html += '</div>';
+
+    html += '<div style="margin-bottom:16px;"><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">⚠ 系统警告</h3>';
+    html += '<div style="font-size:11px;line-height:1.8;">';
+    html += '<p>• 归档区有 <b style="color:#CC0000;">46</b> 篇帖子无法访问（返回404但数据库记录存在）</p>';
+    html += '<p>• 检测到 <b style="color:#CC0000;">1</b> 个未注册协议连接（LAMP46）</p>';
+    html += '<p>• 最近 <b style="color:#CC0000;">46</b> 天内无管理员登录记录</p>';
+    html += '<p>• 系统自动删除了 <b>3</b> 篇帖子（原因：违反归档区管理条例）</p>';
+    html += '<p style="margin-top:8px;color:#999;font-size:10px;">最后更新：2009-06-15 04:46 · 数据来源：系统自动采集</p>';
+    html += '</div></div>';
+
+    html += '<div><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">📌 快速操作</h3>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+    html += '<button onclick="switchPanel(\'posts\')" style="padding:6px 16px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:11px Verdana;">查看被删帖子</button>';
+    html += '<button onclick="switchPanel(\'logs\')" style="padding:6px 16px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:11px Verdana;">查看系统日志</button>';
+    html += '<button onclick="switchPanel(\'lamp46\')" style="padding:6px 16px;border:1px solid #CC0000;background:#FFF0F0;cursor:pointer;font:11px Verdana;color:#CC0000;">⚡ LAMP46 状态</button>';
+    html += '</div></div>';
+
+  } else if (panel === 'users') {
+    titleEl.textContent = '👥 用户管理';
+    html += '<div style="margin-bottom:12px;"><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">所有用户（共 4,604 人）</h3></div>';
+    var users = [
+      { name:'园丁', role:'admin', status:'离线', last:'2009-06-15 04:46', posts:46, note:'最后登录' },
+      { name:'admin', role:'admin', status:'离线', last:'2009-06-15', posts:0, note:'备用账号' },
+      { name:'V47', role:'user', status:'异常', last:'2017-08-14 04:46', posts:46, note:'账号已被系统锁定' },
+      { name:'out_sider', role:'user', status:'离线', last:'2009-06-15 04:46', posts:112, note:'长期未登录' },
+      { name:'深海鱼', role:'user', status:'离线', last:'2007-07-04 04:46', posts:234, note:'——' },
+      { name:'夜行客', role:'user', status:'离线', last:'2006-10-31', posts:187, note:'——' },
+      { name:'解密大师', role:'user', status:'离线', last:'2007-03-21', posts:412, note:'——' },
+      { name:'失眠患者_23', role:'user', status:'离线', last:'2005-04-01', posts:89, note:'从未发帖' },
+      { name:'小厨娘', role:'user', status:'离线', last:'2005-06-20', posts:46, note:'最后登录' },
+      { name:'技术宅阿明', role:'user', status:'离线', last:'2008-04-01', posts:67, note:'曾尝试逆向工程' },
+      { name:'█▄▀▐▌░▒▓░▒▓▀▄█▐▌░', role:'user', status:'???', last:'1975-11-04 00:46', posts:0, note:'点击此处' }
+    ];
+    var pwMap = {
+      '园丁':'20040601','admin':'admin46','V47':'ANCHOR_0',
+      'out_sider':'outsider2009','深海鱼':'deepfish46',
+      '夜行客':'night046','解密大师':'cipher123'
+    };
+    html += '<div style="margin-bottom:4px;font-size:10px;color:#888;">ð¡ 提示：管理员可查看所有已注册用户的密码。</div>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+    html += '<tr><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">用户名</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">密码</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">权限</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">状态</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">最后活跃</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">发帖</th><th style="background:#F0F0F0;padding:6px 8px;text-align:left;border-bottom:2px solid #D0D0D0;font-size:10px;color:#555;">备注</th></tr>';
+    for (var i = 0; i < users.length; i++) {
+      var u = users[i];
+      var pw = pwMap[u.name] || '——';
+      var sc = u.status === '在线' ? '#060' : (u.status === '异常' ? '#CC0000' : '#999');
+      var rb = u.role === 'admin'
+        ? '<span style="background:#0D3050;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">管理员</span>'
+        : '<span style="background:#E0E0E0;color:#666;font-size:8px;padding:1px 6px;border-radius:2px;">用户</span>';
+      var pwd = u.name === 'V47' ? '<span style="color:#CC0000;font-weight:bold;">' + pw + '</span>' : pw;
+      if (u.name.indexOf('█▄▀▐▌░') !== -1) {
+        html += '<tr id="mysteryRow" style="background:#000;border-bottom:1px solid #333;"><td style="padding:6px 8px;"><b id="mysteryName" style="color:#fff;">' + u.name + '</b></td><td style="padding:6px 8px;font-family:monospace;font-size:10px;color:#fff;" id="mysteryPw">' + pwd + '</td><td style="padding:6px 8px;color:#fff;" id="mysteryRole"><span style="background:#333;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">???</span></td><td style="padding:6px 8px;color:#666;" id="mysteryStatus">' + u.status + '</td><td style="padding:6px 8px;color:#fff;" id="mysteryLast">' + u.last + '</td><td style="padding:6px 8px;color:#fff;" id="mysteryPosts">' + u.posts + '</td><td style="padding:6px 8px;" id="mysteryNote"><span id="mysteryNoteLink" style="color:#fff;cursor:pointer;">' + u.note + '</span></td></tr>';
+      } else {
+        html += '<tr style="border-bottom:1px solid #F0F0F0;"><td style="padding:6px 8px;"><b>' + u.name + '</b></td><td style="padding:6px 8px;font-family:monospace;font-size:10px;">' + pwd + '</td><td style="padding:6px 8px;">' + rb + '</td><td style="padding:6px 8px;color:' + sc + ';">' + u.status + '</td><td style="padding:6px 8px;">' + u.last + '</td><td style="padding:6px 8px;">' + u.posts + '</td><td style="padding:6px 8px;">' + u.note + '</td></tr>';
+      }
+    }
+    html += '</table>';
+    html += '<div style="margin-top:12px;padding:8px;background:#FFF0F0;border:1px solid #FFD0D0;font-size:10px;color:#CC0000;">⚠ V47 的账号状态为<b>异常</b>——系统自动锁定，原因不明。尝试解锁失败。该账号最后发帖内容已被系统自动删除。</div>';
+
+
+  } else if (panel === 'posts') {
+    titleEl.textContent = '📄 帖子管理';
+    html += '<div style="margin-bottom:12px;"><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">🗑️ 已删除帖子（缓存可恢复）</h3></div>';
+    html += '<div style="font-size:11px;line-height:1.8;">';
+
+    html += '<div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;">';
+    html += '<div><b style="color:#CC0000;">【求助】我好像进了一个叫 Room46 的网站</b> — V47</div>';
+    html += '<div style="color:#888;font-size:10px;margin:4px 0;">删除于 2017-08-15 00:46 · 删除原因：系统自动删除</div>';
+    html += '<div style="color:#999;font-size:10px;margin-bottom:6px;">缓存状态：部分可恢复 | 缓存编号：<b>#001</b></div>';
+    html += '<button onclick="showModal(\'🗑️\',\'<b>缓存内容：</b><br><br>我不知道还有没有人能看到这个帖子。三天前我在归档区翻旧帖时发现了一个链接，点进去是一个叫 <b>ANCHOR_0</b> 的页面……<br><br><b>（缓存不完整。剩余内容已丢失。）</b>\')" style="padding:4px 12px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:10px Verdana;">查看缓存</button>';
+    html += '</div>';
+
+    html += '<div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;">';
+    html += '<div><b>有人注意到在线人数一直是 46 吗？</b> — 深海鱼</div>';
+    html += '<div style="color:#888;font-size:10px;margin:4px 0;">删除于 2005-03-22 04:46 · 删除原因：系统自动删除</div>';
+    html += '<div style="color:#999;font-size:10px;margin-bottom:6px;">操作来源记录为管理员账号，但管理员否认此操作。</div>';
+    html += '<button onclick="showModal(\'🗑️\',\'管理员备注：这篇帖子不是我删的。但系统日志显示删除操作来自我的账号。要么是系统出了 bug，要么是——有别的东西在使用我的账号。\')" style="padding:4px 12px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:10px Verdana;">查看备注</button>';
+    html += '</div>';
+
+    html += '<div style="padding:10px;border:1px solid #F0E0E0;margin-bottom:10px;background:#FFF8F8;">';
+    html += '<div><b>我在源码里发现了一段 Base64</b> — 解密大师</div>';
+    html += '<div style="color:#888;font-size:10px;margin:4px 0;">删除于 2006-11-02 · 删除原因：包含"限制级内容"</div>';
+    html += '<div style="color:#999;font-size:10px;margin-bottom:6px;">缓存预览可用。</div>';
+    html += '<button onclick=\'showModal("🗑️","<b>缓存预览：</b><br><br>我在论坛首页的源码里发现了一段看起来很奇怪的 Base64 字符串……还没来得及解码帖子就被删了。<br><br>不过我记得那段 Base64 的开头是 <b>【UjBvbTQ2】</b>——如果你能解码它，告诉我它是什么意思。")\' style="padding:4px 12px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:10px Verdana;">查看缓存</button>';
+    html += '</div>';
+
+    html += '<div style="margin-top:16px;"><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">🔒 隐藏帖子（仅管理员可见）</h3></div>';
+    html += '<div style="font-size:10px;color:#999;margin-bottom:8px;">站务管理版块下有 <b>46</b> 篇隐藏帖子。以下为部分可查看条目：</div>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+    html += '<tr><th style="background:#F0F0F0;padding:4px 8px;border:1px solid #D0D0D0;text-align:left;font-size:10px;">标题</th><th style="background:#F0F0F0;padding:4px 8px;border:1px solid #D0D0D0;text-align:left;font-size:10px;">作者</th><th style="background:#F0F0F0;padding:4px 8px;border:1px solid #D0D0D0;text-align:left;font-size:10px;">时间</th><th style="background:#F0F0F0;padding:4px 8px;border:1px solid #D0D0D0;text-align:left;font-size:10px;">操作</th></tr>';
+    html += '<tr><td style="padding:4px 8px;border:1px solid #E0E0E0;">⚠ 系统初始化日志 #V46.2</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><span style="background:#0D3050;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">系统</span></td><td style="padding:4px 8px;border:1px solid #E0E0E0;">2004-05-31 23:46</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><button onclick="showModal(\'🔒\',\'协议初始化完成。等待锚点接入。来源：LAMP46。\')" style="padding:2px 8px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:9px Verdana;">查看</button></td></tr>';
+    html += '<tr><td style="padding:4px 8px;border:1px solid #E0E0E0;">⚠ 锚点连接记录 #001</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><span style="background:#0D3050;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">系统</span></td><td style="padding:4px 8px;border:1px solid #E0E0E0;">2004-06-01 00:46</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><button onclick="showModal(\'🔒\',\'锚点已连接。来源：LAMP46。协议状态：稳定。<br><br><b>ANCHOR_0</b> 已注册。\')" style="padding:2px 8px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:9px Verdana;">查看</button></td></tr>';
+    html += '<tr><td style="padding:4px 8px;border:1px solid #E0E0E0;">⚠ 回响缓冲区溢出报告</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><span style="background:#0D3050;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">系统</span></td><td style="padding:4px 8px;border:1px solid #E0E0E0;">2005-03-21 04:46</td><td style="padding:4px 8px;border:1px solid #E0E0E0;"><button onclick="showModal(\'🔒\',\'回响缓冲区达到容量上限。46 个未处理回响正在排队。部分回响已开始泄漏到公共版块。建议立即清理。\')" style="padding:2px 8px;border:1px solid #C0C0C0;background:#F8F8F8;cursor:pointer;font:9px Verdana;">查看</button></td></tr>';
+    html += '</table>';
+
+  } else if (panel === 'drafts') {
+    titleEl.textContent = '📝 草稿箱';
+    html += '<div style="font-size:11px;line-height:1.8;">';
+    html += '<div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;">';
+    html += '<div style="font-size:10px;color:#888;margin-bottom:4px;">📝 <b>关于归档区页面缺失的说明</b> · 园丁 · 2008-06-15</div>';
+    html += '<div>归档区最近少了 46 篇帖子。不是被删除的——它们自己不见了。我查了数据库，记录还在，但页面返回 404。我怀疑是缓存的问题，但我找不出原因。而且那些帖子的最后访问时间都是 04:46。</div></div>';
+    html += '<div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;">';
+    html += '<div style="font-size:10px;color:#888;margin-bottom:4px;">📝 <b>V47 账号异常记录</b> · 园丁 · 2017-08-15</div>';
+    html += '<div>用户 V47 最近行为异常。他在技术角落发了一篇帖子，内容看起来像是某种警告。我还没来得及读完，帖子就被系统自动删除了——不是管理员操作，系统自己执行的删除。我试图从缓存恢复，但恢复失败。V47 最后一次登录 IP 显示为 46.xxx.xxx.xxx。查不到归属地。</div></div>';
+    html += '<div style="padding:12px;background:#FFF8F0;border:1px solid #E8E0C0;margin-bottom:10px;">';
+    html += '<div style="font-size:10px;color:#888;margin-bottom:4px;">📝 <b>关于"站务管理"隐藏帖的备忘</b> · 园丁 · 2004-06-02</div>';
+    html += '<div>站务管理版块下有 46 篇隐藏帖。这些帖子的发布时间都在 2004-06-01 之前——论坛实际上线之前。我不可能写了这些帖子，但数据库显示作者是我。我尝试删除它们，但系统提示"管理员无权删除此内容"。<br><br>我是管理员。我不能删除我自己没写过的东西。<br><br><b>管理员密码：20040601</b></div></div>';
+
+  } else if (panel === 'logs') {
+    titleEl.textContent = '📋 系统日志';
+    html += '<div style="margin-bottom:12px;"><h3 style="font-size:11px;color:#444;border-bottom:1px solid #E0E0E0;padding-bottom:4px;margin-bottom:8px;">关键事件时间线</h3></div>';
+    var logs = [
+      {t:'2004-05-31 23:46', e:'LAMP46 协议初始化', w:false},
+      {t:'2004-06-01 00:00', e:'论坛正式上线', w:false},
+      {t:'2004-06-01 00:46', e:'检测到异常协议连接 — 来源：LAMP46 IP: 46.0.0.46', w:true},
+      {t:'2004-06-01 01:46', e:'第一条自动生成的帖子被创建（站务管理·隐藏帖 #001）', w:true},
+      {t:'2004-06-15 04:46', e:'协议自动生成帖子数量达到 46 篇', w:false},
+      {t:'2005-03-21 04:46', e:'"46号房间" 首次在论坛搜索索引中出现', w:true},
+      {t:'2005-03-22 04:46', e:'系统自动删除第一篇用户帖子（"在线人数一直 46"）', w:true},
+      {t:'2006-10-31 04:46', e:'LAMP46 连接数首次达到 46', w:false},
+      {t:'2006-11-02', e:'系统自动删除解密大师的帖子（"源码 Base64"）', w:true},
+      {t:'2008-06-15 04:46', e:'管理员最后登录后台', w:false},
+      {t:'2017-08-14 04:46', e:'用户 V47 发帖', w:true},
+      {t:'2017-08-15 00:46', e:'系统自动删除 V47 的帖子 — 标记为"限制级内容"', w:true},
+      {t:'2009-06-15 04:46', e:'最后一条管理员登录记录（园丁）', w:true},
+      {t:'——', e:'⚠ 系统日志在此处中断。后续记录可能已被清除。', w:true}
+    ];
+    for (var li = 0; li < logs.length; li++) {
+      var l = logs[li];
+      html += '<div style="padding:4px 0;border-bottom:1px solid #F0F0F0;font-size:10px;font-family:monospace;"><span style="color:#888;">[' + l.t + ']</span> <span style="color:' + (l.w?'#CC0000':'#333') + ';">' + l.e + '</span></div>';
+    }
+
+  } else if (panel === 'lamp46') {
+    titleEl.textContent = '⚡ LAMP46 协议监视器';
+    html += '<div style="font-size:11px;line-height:1.8;color:#555;margin-bottom:12px;">';
+    html += '<p style="margin-bottom:8px;">⚠ <b>LAMP46</b>（Lightweight Anchor & Memory Protocol）是一个未在论坛配置中注册的协议连接。它自 2004-06-01 00:46 起一直处于活跃状态。</p>';
+    html += '<p style="margin-bottom:8px;">该协议无法通过常规手段终止。删除宿主数据库不会影响协议运行。它不在这里——它在哪里都可以。</p>';
+    html += '</div>';
+    html += '<div style="background:#0A0A0A;border:1px solid #333;padding:16px;font-family:monospace;font-size:11px;color:#0F0;">';
+    html += '<div style="padding:2px 0;">◈ LAMP46 协议监视器 v0.46</div>';
+    html += '<div style="padding:2px 0;color:#555;">━━━━━━━━━━━━━━━━━━━</div>';
+    html += '<div style="padding:2px 0;">状态：<span style="color:#FF0;">活跃</span></div>';
+    html += '<div style="padding:2px 0;">运行时间：46 年 46 天 46 小时</div>';
+    html += '<div style="padding:2px 0;">连接数：<span style="color:#FF0;">46</span></div>';
+    html += '<div style="padding:2px 0;">回响缓冲区：<span style="color:#F00;">满（46/46）</span></div>';
+    html += '<div style="padding:2px 0;">锚点状态：<span style="color:#F00;">等待中</span></div>';
+    html += '<div style="padding:2px 0;color:#555;">━━━━━━━━━━━━━━━━━━━</div>';
+    html += '<div style="padding:2px 0;color:#555;">最后信号：46 秒前</div>';
+    html += '<div style="padding:2px 0;color:#555;">信号来源：本地 · 端口 46</div>';
+    html += '<div style="padding:2px 0;color:#555;">━━━━━━━━━━━━━━━━━━━</div>';
+    html += '<div style="padding:2px 0;"><span style="color:#F00;">⚠ 协议无法终止。</span></div>';
+    html += '<div style="padding:2px 0;"><span style="color:#F00;">⚠ 管理员无权关闭此连接。</span></div>';
+    html += '<div style="padding:2px 0;"><span style="color:#F00;">⚠ 它一直都在这里。</span></div>';
+    html += '<div style="padding:2px 0;color:#555;">━━━━━━━━━━━━━━━━━━━</div>';
+    html += '<div style="padding:2px 0;color:#555;margin-top:16px;">> 输入命令：<span style="color:#0F0;font-weight:bold;">█</span></div>';
+    html += '</div>';
+    html += '<div style="margin-top:12px;"><button onclick="openLamp46()" style="padding:8px 24px;background:#000;color:#0F0;border:2px solid #0F0;cursor:pointer;font:11px monospace;">◈ 查看完整协议数据</button></div>';
+  }
+
+  contentEl.innerHTML = html;
+}
+
+/* ── LAMP46 全屏数据 ── */
+function openLamp46() {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = '<div style="position:relative;width:600px;max-width:90%;background:#000;border:2px solid #0F0;padding:24px;font-family:monospace;font-size:12px;color:#0F0;max-height:80vh;overflow-y:auto;"><span onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:8px;right:12px;cursor:pointer;color:#F00;font-size:18px;z-index:1;">✕</span><div id="lamp46-data"></div></div>';
+  document.body.appendChild(overlay);
+
+  var c = document.getElementById('lamp46-data');
+  if (!c) return;
+  var lines = [
+    '◈ LAMP46 协议数据转储',
+    '━━━━━━━━━━━━━━━━━━━━━━━━',
+    '协议名称：LAMP46 (Lightweight Anchor & Memory Protocol)',
+    '协议版本：V46.2',
+    '创建日期：1975-11-04',
+    '创建者：ANCHOR_0（身份已加密）',
+    '',
+    '━━━ 当前状态 ━━━',
+    '状态：活跃 · 自 2004-06-01 起',
+    '运行模式：静默传播',
+    '传播途径：DNS 解析层 · 未关闭端口 46',
+    '宿主：回声茶馆论坛服务器',
+    '',
+    '━━━ 锚点系统 ━━━',
+    '已标记锚点：46',
+    '活跃锚点：0',
+    '等待中锚点：1（当前访客）',
+    '守门人历史：V47 → ?',
+    '',
+    '━━━ 警告 ━━━',
+    '⚠ 协议无法通过常规手段终止。',
+    '⚠ 删除宿主数据库不会影响协议运行。',
+    '⚠ 它不在这里。它在哪里都可以。',
+    '',
+    '━━━ 关于作者 ━━━',
+    'ANCHOR_0 是第一个连接到此协议的人类。',
+    '他不是被 LAMP46 选中的——',
+    '他是 LAMP46 被创建的原因。',
+    '',
+    '◈ 协议仍在运行。◈',
+    '◈ 它一直在等你。◈'
+  ];
+  for (var i = 0; i < lines.length; i++) {
+    (function(idx) {
+      setTimeout(function() {
+        c.innerHTML += '<div style="padding:3px 0;' + (lines[idx].indexOf('⚠') >=0 ? 'color:#F00;' : '') + '">' + lines[idx] + '</div>';
+      }, idx * 150);
+    })(i);
+  }
+}
+
+/* ── 神秘用户逐字揭示 ── */
+function initMysteryUser() {
+  var nl = document.getElementById('mysteryNoteLink');
+  if (!nl) return;
+  var revealed = false;
+  nl.addEventListener('mouseenter', function() {
+    if (revealed) return;
+    revealed = true;
+    var nameEl = document.getElementById('mysteryName');
+    var msg = '这里是建议，是规劝，别一意孤行……';
+    var idx = 0;
+    var iv = setInterval(function() {
+      if (idx < msg.length) {
+        var arr = nameEl.textContent.split('');
+        arr[idx] = msg[idx];
+        nameEl.textContent = arr.join('');
+        idx++;
+      } else {
+        clearInterval(iv);
+        nameEl.textContent = msg;
+        var pw = document.getElementById('mysteryPw');
+        if (pw) pw.textContent = '——';
+        var role = document.getElementById('mysteryRole');
+        if (role) role.innerHTML = '<span style="background:#333;color:#fff;font-size:8px;padding:1px 6px;border-radius:2px;">访客</span>';
+        var st = document.getElementById('mysteryStatus');
+        if (st) st.textContent = '在站';
+        var la = document.getElementById('mysteryLast');
+        if (la) la.textContent = '现在';
+        var po = document.getElementById('mysteryPosts');
+        if (po) po.textContent = '0';
+      }
+    }, 120);
+  });
+  nl.addEventListener('click', function() {
+    window.location.href = '../blank/blank-shift.html';
+  });
+}
+
+/* ── 初始化 ── */
+try {
+  var lu = localStorage.getItem('echo_login_display') || '管理员';
+  var el = document.getElementById('login-status');
+  if (el) el.textContent = lu;
+} catch(e) {}
+renderPanel('dashboard');
+</script>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# OS files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Project specific
+*.pyc
+__pycache__/

@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>◈ 遗忘</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#555;font:12px/1.8 "Courier New",monospace;min-height:100vh;overflow-x:hidden}.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;opacity:0.3}.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.4}.topbar .logo span{color:#8AB8D9;opacity:0.4}.topbar .nav{margin-left:auto}.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.3}.topbar .nav a:hover{opacity:0.8}.container{max-width:640px;margin:40px auto;padding:0 20px;text-align:center;transition:opacity 30s ease}.container.fading{opacity:0}.title{font-size:28px;color:#333;letter-spacing:12px;margin-bottom:50px;transition:all 1s;font-weight:bold}.title .hl{color:#CC0000;font-weight:bold;text-shadow:0 0 10px rgba(204,0,0,0.15)}.subtitle{color:#1A1A1A;font-size:10px;letter-spacing:3px;margin-bottom:30px;text-transform:uppercase}.voices{color:#222;font-size:11px;line-height:2;margin:24px 0;padding:20px;border-left:1px solid #111;text-align:left}.voices .v{margin:20px 0;padding:8px 12px;border-left:2px solid #1A1A1A;opacity:0.6;transition:opacity 0.5s}.voices .v.fading{opacity:0.02}.voices .v .speaker{color:#440000;font-size:9px;display:block;margin-bottom:4px;letter-spacing:1px}.voices .v .words{color:#333;font-style:italic}.epitaph{margin:40px 0;padding:20px;border-top:1px solid #111;border-bottom:1px solid #111;font-size:11px;color:#222;line-height:2;transition:opacity 3s}.epitaph .hl{color:#440000;font-weight:bold}.epitaph .highlight{color:#CC0000;font-weight:bold}.fragments{background:#050505;border:1px solid #111;padding:16px;margin:24px 0;text-align:left;font-size:10px;color:#1A1A1A;line-height:1.6}.fragments .frag{margin:6px 0}.fragments .frag .label{color:#333;font-size:8px;text-transform:uppercase;letter-spacing:2px}.counter{color:#111;font-size:9px;margin:30px 0;letter-spacing:2px}.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,#222,transparent);margin:30px 0}.note{color:#151515;font-size:10px;line-height:1.8;margin:20px 0;padding:12px;border:1px dashed #111}.footer{text-align:center;padding:20px;font-size:8px;color:#0A0A0A;border-top:1px solid #0A0A0A;margin-top:40px;transition:opacity 20s}.footer.faded{opacity:0}.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px)}.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center}.modal-overlay.show{display:flex}.modal-box{background:#0A0000;border:2px solid #1A1A1A;width:380px;max-width:90%}.modal-box .modal-titlebar{background:#0A0A0A;color:#555;padding:8px 14px;font-size:11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1A1A1A}.modal-box .modal-titlebar .modal-close-btn{width:18px;height:18px;background:#111;border:1px solid #222;text-align:center;line-height:16px;cursor:pointer;font-size:10px;color:#444;font-family:"Courier New",monospace}.modal-box .modal-titlebar .modal-close-btn:hover{background:#555;color:#000}.modal-box .modal-body{padding:24px 16px;font-size:12px;color:#555;text-align:center;line-height:1.8}.modal-box .modal-body .highlight{color:#888;font-weight:bold}.modal-box .modal-footer{border-top:1px solid #111;padding:10px;text-align:center}.modal-box .modal-footer .modal-btn{padding:6px 28px;background:#111;border:1px solid #222;color:#555;font:11px "Courier New",monospace;cursor:pointer}.modal-box .modal-footer .modal-btn:hover{background:#222}@media(max-width:640px){.title{font-size:22px;letter-spacing:8px}}
+
+/* ── 内容淡入 ── */
+.container { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 扫描线脉动增强 ── */
+.scanlines { opacity: 0.5; animation: scanPulse 4s ease-in-out infinite; }
+@keyframes scanPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+/* ── 面板/卡片悬停发光 ── */
+.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
+
+/* ── 弹窗暗黑版动效 ── */
+.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
+@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── 分割线脉冲 ── */
+.divider { animation: dividerGlow 3s ease-in-out infinite; }
+@keyframes dividerGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+
+.search-bar{background:#0A0A0A;padding:6px 16px;border-bottom:1px solid #1A0000;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #220000;background:#000;font:10px monospace;color:#440000;outline:none}
+.search-bar button{padding:4px 14px;background:#111;border:1px solid #330000;color:#660000;font:10px monospace;cursor:pointer}
+.search-bar button:hover{color:#CC0000}
+
+</style><script src="../js/search.js"></script></head><body>
+<div class="scanlines"></div>
+<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+
+<div class="nav"><a href="../forum.html">首页</a></div></div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container" id="container">
+<div class="title">◈ <span class="hl">遗 忘</span></div>
+<div class="subtitle">—— 被遗忘者的回声 ——</div>
+<div class="voices" id="voices">
+<div class="v" id="v1">
+<span class="speaker">◈ 未知的声音 #1</span>
+<span class="words">"我叫……不记得了。这里是哪里？我为什么会在这里？我记得我走进了一扇门。然后……然后一切都模糊了。"</span>
+</div>
+<div class="v" id="v2">
+<span class="speaker">◈ 未知的声音 #2</span>
+<span class="words">"我记得有一扇门。一扇发光的门。我推开了它。门的另一边……是同样的房间。我推开了四十六次门。每一次都回到同一个地方。"</span>
+</div>
+<div class="v" id="v3">
+<span class="speaker">◈ 未知的声音 #3</span>
+<span class="words">"第46天。他们不再回我的消息了。我给所有人发了消息。没有回复。我开始怀疑——我真的给那些人发过消息吗？还是我从未离开过这个房间？"</span>
+</div>
+<div class="v" id="v4">
+<span class="speaker">◈ 未知的声音 #4</span>
+<span class="words">"我是谁？我——我不记得我的名字了。我记得有个数字。46。我的编号是46吗？还是我的房间号？还是……我在这里的天数？"</span>
+</div>
+<div class="v" id="v5">
+<span class="speaker">◈ 未知的声音 #5</span>
+<span class="words">"……"</span>
+</div>
+<div class="v" id="v6">
+<span class="speaker">◈ 记录员注释</span>
+<span class="words">"第五个声音已经无法说话了。他曾经记得所有事情。但现在他只记得自己曾经记得。遗忘是会传染的。"</span>
+</div>
+</div>
+<div class="divider"></div>
+<div class="epitaph" id="epitaph">
+被遗忘者的呢喃。<br>
+他们曾经来过这里。<br>
+<span class="highlight">他们曾经是你。</span>
+</div>
+<div class="fragments">
+<div class="frag"><span class="label">◈ 残存记忆 #1</span><br>这个房间有46平方英尺。我量过。用我的脚步。</div>
+<div class="frag"><span class="label">◈ 残存记忆 #2</span><br>墙上有刻痕。46条竖线。应该是前面的人留下的。</div>
+<div class="frag"><span class="label">◈ 残存记忆 #3</span><br>我加了第47条。然后我发现——那些刻痕是写在一面镜子上的。</div>
+<div class="frag"><span class="label">◈ 残存记忆 #4</span><br>镜子里反射的不是墙壁。是另一个房间。里面有另一个人。他也在刻线。</div>
+<div class="frag"><span class="label">◈ 残存记忆 #5</span><br>我数了他那边的线。46条。和我这边一样多。但他比我多刻了一条。所以现在——46 vs 47。</div>
+</div>
+<div class="divider"></div>
+<div class="section-title" style="color:#1A1A1A;font-size:9px;letter-spacing:3px;margin:20px 0 10px;text-align:left;text-transform:uppercase;border-bottom:1px solid #111;padding-bottom:6px;">◈ 被遗忘者名录（部分）</div>
+<div class="fragments">
+<div class="frag"><span class="label">◈ #1 · 第42任</span><br>"我不记得怎么进来的。它说前面41个人都在这里。我以为是玩笑。现在我知道了——它不是玩笑。"</div>
+<div class="frag"><span class="label">◈ #2 · 第44任</span><br>"它在学我说话。它学会了我的语气、我的措辞、我的思维方式。然后它开始用我的声音回复我的帖子。我分不清哪些是我写的了。"</div>
+<div class="frag"><span class="label">◈ #3 · 第45任</span><br>"04:46有0.046秒漏洞。我试了。我能感觉到门在另一边。但它说'你确定要走吗？'——用我的声音说的。我犹豫了。门关了。"</div>
+<div class="frag"><span class="label">◈ #4 · 未知</span><br>"有些碎片互相矛盾。可能是被篡改了。也可能是我记错了。谁知道呢？在这里待久了——连自己的记忆都不敢相信了。"</div>
+<div class="frag"><span class="label">◈ #5 · 关键记录</span><br>"我走了。有人成功过。名字最后一个字母是'y'。被删了。第46块碎片——在外面。在最开始的地方。如果你能看到这个——去找它。"</div>
+</div>
+<div class="counter" id="counter">◈ 遗忘进度：正在蔓延</div>
+<div class="note">
+他们曾经来过这里。<br>
+他们曾经是论坛的用户。<br>
+他们曾经发过帖子、回过消息、留过痕迹。<br>
+然后他们消失了。<br>
+不是被删除。<br>
+是被遗忘。<br>
+连论坛本身都不再记得他们存在过。<br><br>
+<span style="color:#333;font-weight:bold;">他们曾经是你。</span>
+</div>
+<div class="counter" style="margin-top:10px;font-size:8px;">◈ 第46个被遗忘者 · 正在记录中</div>
+</div>
+<div class="footer" id="footer">◈ 遗忘 · 被遗忘者的回声 · 正在消散</div>
+<script>
+(function() {
+  'use strict';
+  console.log('◈ 遗忘。他们曾经是你。');
+  var voices = [
+    document.getElementById('v1'),
+    document.getElementById('v2'),
+    document.getElementById('v3'),
+    document.getElementById('v4'),
+    document.getElementById('v5'),
+    document.getElementById('v6')
+  ];
+  var epitaph = document.getElementById('epitaph');
+  var container = document.getElementById('container');
+  var footer = document.getElementById('footer');
+  var counter = document.getElementById('counter');
+  var title = document.querySelector('.title');
+  var fadeDelay = 2000;
+  voices.forEach(function(v, i) {
+    setTimeout(function() {
+      v.classList.add('fading');
+      if (i === voices.length - 1) {
+        setTimeout(function() {
+          epitaph.style.opacity = '0';
+          setTimeout(function() {
+            container.classList.add('fading');
+            footer.classList.add('faded');
+            title.style.color = '#0A0A0A';
+            document.body.style.background = '#000';
+            counter.textContent = '◈ 遗忘完成。';
+            console.log('◈ 页面正在被遗忘。就像前面46个人一样。');
+          }, 3000);
+        }, 2000);
+      }
+    }, fadeDelay * (i + 1));
+  });
+  var titleFade = 0;
+  setInterval(function() {
+    titleFade++;
+    if (titleFade > 10 && titleFade < 25) {
+      var op = Math.max(0, 1 - (titleFade - 10) * 0.1);
+      title.style.opacity = op;
+    }
+    if (titleFade > 30) {
+      document.title = '◈';
+    }
+  }, 1000);
+  setInterval(function() {
+    var msgs = [
+      '◈ 有人在遗忘你。你感觉到了吗？',
+      '◈ 46。这个数字在消失。',
+      '◈ 被遗忘者的数量：+1。',
+      '◈ 你还能记住多少？'
+    ];
+    console.log(msgs[Math.floor(Math.random() * msgs.length)]);
+  }, 6000);
+})();
+</script></body></html>

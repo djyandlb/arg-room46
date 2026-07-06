@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在公司楼下遇到一只流浪猫 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 5px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 6px; align-items: center; justify-content: flex-start; }
+.search-bar input { width: 220px; padding: 4px 8px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 4px 14px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 版块 ── */
+.category { background: #fff; border: 1px solid #C0C0C0; margin-bottom: 8px; animation: fadeIn 0.4s ease-out; }
+.category-header { background: #1A4A70; color: #fff; padding: 6px 12px; font: bold 11px Verdana; letter-spacing: 1px; display: flex; justify-content: space-between; }
+.category-header .count { font-weight: normal; font-size: 10px; color: #8AB8D9; }
+.category.archived { opacity: 0.65; }
+
+/* ── 帖子行 ── */
+.thread-row { display: flex; align-items: center; padding: 6px 12px; border-bottom: 1px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+.thread-row:last-child { border-bottom: none; }
+.thread-row:hover { background: #F0F6FF; transform: translateX(2px); }
+.thread-row .icon { width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; font-size: 10px; text-align: center; line-height: 20px; border: 1px solid #D0D0D0; transition: transform 0.2s; }
+.thread-row:hover .icon { transform: scale(1.15); }
+.thread-row .icon.pin { background: #FFF8E0; border-color: #E0C800; }
+.thread-row .icon.hot { background: #FFE8E8; border-color: #E0A0A0; color: #CC0000; }
+.thread-row .icon.normal { background: #E8F0FF; border-color: #A0C0E0; }
+.thread-row .icon.lock { background: #E8E8E8; border-color: #C0C0C0; color: #999; }
+.thread-row .main { flex: 1; min-width: 0; }
+.thread-row .main .title { font-size: 12px; color: #0000CC; }
+.thread-row:hover .main .title { text-decoration: underline; }
+.thread-row .main .title .badge { font-size: 9px; padding: 1px 5px; margin-right: 4px; font-weight: bold; }
+.thread-row .main .title .badge.pin { background: #FFF8E0; color: #A08600; }
+.thread-row .main .title .badge.hot { background: #FFE0E0; color: #CC0000; }
+.thread-row .main .meta { font-size: 10px; color: #888; margin-top: 1px; }
+.thread-row .stat { text-align: center; margin: 0 12px; flex-shrink: 0; min-width: 40px; }
+.thread-row .stat .num { font-size: 11px; font-weight: bold; color: #444; }
+.thread-row .stat .label { font-size: 9px; color: #999; }
+.thread-row .last { font-size: 10px; color: #888; text-align: right; flex-shrink: 0; min-width: 90px; }
+.thread-row .last .author { color: #0000CC; }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .timeline { margin: 16px 0; padding: 0; list-style: none; font-size: 10px; color: #888; line-height: 1.8; }
+.box .timeline li { padding: 4px 0; border-bottom: 1px dotted #E8E8E8; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+  .thread-row { padding: 4px 8px; flex-wrap: wrap; }
+  .thread-row .last { min-width: 60px; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="#">生活笔记</a> › 在公司楼下遇到一只流浪猫
+  </div>
+
+  <div class="thread-card">
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">普</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">普通上班族</span>
+          <span>#1 · 2006-09-15 18:32</span>
+        </div>
+        <div class="body">
+          <p>今天下班又加班到七点半，走出公司大门的时候天已经差不多黑了。我低着头往地铁站走，走到花坛那边的时候，听见一声很轻的"喵"。声音不大，但是在傍晚安静的马路上听得特别清楚。</p>
+          <p>我停下来找了找，看到花坛冬青丛边上蹲着一只橘色的猫。路灯还没完全亮起来，天色是那种深蓝和橘黄混在一起的颜色，猫的毛色在这种光线下看起来暖暖的。一开始我以为是附近谁家养的跑出来了，但它看到我停下脚步，犹豫了一下，居然走过来了。走得很慢，尾巴尖微微翘着，到我脚边的时候先用鼻子碰了碰我的鞋尖，然后整个身体蹭了上来。</p>
+          <p>我蹲下来，它就绕着我转圈，一边转一边蹭。毛有点干，背上有一小块打结了，肚子那里的毛也不太干净，但整体来说还算精神。我伸手试了试让它闻，它闻了两下就用脑袋顶我的手指，喉咙里发出咕噜咕噜的声音。</p>
+          <p>翻了翻包，只有一根火腿肠——上午便利店买的，本来打算当下午茶，结果忙起来忘了吃。掰成小段放在地上，它低头闻了闻，然后大口大口地吃起来，吃得狼吞虎咽的，中间还噎了一下。应该是饿了很久吧。我蹲在那儿看着它吃，心里说不出的滋味。</p>
+
+          <div class="img-ph">📷 [img/orange-cat-flowerbed.jpg] — 公司楼下花坛边的橘色流浪猫，埋头在吃地上的火腿肠碎块，夕阳从侧后方照在它身上，毛色泛着温暖的光泽，背景是写字楼灰色的外墙和行道树的阴影</div>
+
+          <p>保安大叔从门卫室探出头来，说："喂它哪？这猫在这边转悠了快两个月了，也不知道是走丢的还是本来就流浪的。前阵子下雨天躲在咱们门卫室门口，我让它进来了会儿。挺亲人的，肯定是家猫跑出来的。"我问大叔这猫怎么过冬，大叔说去年冬天它不知道怎么熬过来的，反正看着是瘦了一圈。</p>
+          <p>我又蹲了一会儿，直到猫把地上的火腿肠渣都舔干净了。它舔了舔嘴，抬头看我，琥珀色的眼睛在暮色里亮亮的。我站起来准备走，它跟着我走了几步，然后停住了，坐在花坛边上看着我走远。我回头看了它三次，它一直坐在那儿。</p>
+          <p>回家的地铁上我一直在想它。晚上躺在床上也在想。翻来覆去的。</p>
+        </div>
+        <div class="sig">—— 普通上班族 · 又活过了一天 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-card" style="margin-top:8px;">
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">普</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">普通上班族</span>
+          <span>#2 · 2006-09-16 20:15</span>
+        </div>
+        <div class="body">
+          <p>今天特地去便利店买了一包伟嘉猫粮——小袋的，最便宜的那种，我不知道流浪猫吃什么牌子的好，先试试。还买了个一次性盘子。</p>
+          <p>下班的时候天还亮着，忐忑了一整天怕它不在。走出大门往花坛那边一看——它在。趴在冬青丛下面的阴影里，像一个橘色的毛团。我叫了一声"咪咪"，它耳朵动了一下，抬起头看我，然后站起来伸了个懒腰——前爪伸得长长的，嘴巴张得圆圆的——然后慢悠悠地走过来了。</p>
+          <p>我把猫粮倒进一次性盘子里，它低头吃了几口，抬头看我一眼，又低头吃。这次不像昨天那么急了，细嚼慢咽的。我蹲在旁边看它吃，旁边路过一个同事，问我什么时候养猫了，我说不是我的，是流浪猫。同事说哦了一声走了。小橘——对，我决定叫它小橘了——完全没被影响，专心吃它的饭。</p>
+          <p>吃了大概一半就不吃了，开始洗脸。两只爪子轮着舔湿了蹭脸，特别认真的样子。然后它走到我脚边，咕咚一下倒下去，翻了肚皮。我愣了一下，然后伸手轻轻地摸了摸它的肚子，它用两只前爪抱住我的手，不重，就轻轻抱着，后腿还在蹬空气。</p>
+          <p>我坐了大概二十分钟，就蹲在花坛边沿上，一直摸它。秋天的傍晚有风，但不太冷。小橘的毛摸起来软软的，肚子上的毛有点脏，但还是软软的。</p>
+          <p>走的时候它又在花坛边坐着看我走远。我今天没回头，我怕一回就不想走了。</p>
+        </div>
+        <div class="sig">—— 普通上班族 · 又活过了一天 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-card" style="margin-top:8px;">
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">普</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">普通上班族</span>
+          <span>#3 · 2006-09-22 21:00</span>
+        </div>
+        <div class="body">
+          <p>喂小橘有一个礼拜了。现在每天下班去花坛已经成了习惯，包里永远揣着一小袋猫粮。</p>
+          <p>它也形成了生物钟，每天下午那个点就在花坛边等着。我走出大门，总能看见一个橘色的影子蹲在冬青丛旁边。有时候它在打盹，听到我的脚步声就醒了；有时候它在看地上的落叶或者飞的虫子，看到我来了就跑过来。</p>
+          <p>它越来越信任我了。现在会主动跳上我的膝盖——我是说如果我坐在花坛边沿上，它会先闻闻我的裤腿，然后前爪搭上来，试探一下，然后整个身体蜷在我腿上，缩成一个圆圆的橘色球，咕噜咕噜的。有一次它趴在我腿上睡着了，我动都不敢动，就在那坐了四十分钟，天都黑了。</p>
+          <p>有个好笑的插曲。前天喂它的时候，隔壁写字楼的一只白猫也跑过来了。白猫躲在远处不敢靠近，小橘看见了，耳朵往后压了一下，然后慢吞吞地走过去——不是跑，是那种很沉的走法——白猫看了它一眼就走了。小橘回来继续吃饭，表情很淡定。保安大叔看到了笑着说："这猫把这块儿当自己地盘了。"</p>
+          <p>我突然意识到它是有领地的。它选择了我公司楼下的花坛作为它的据点，每天在这里等我。这个认知让我既高兴又有点沉——好像有一个生命在指望着我。</p>
+        </div>
+        <div class="sig">—— 普通上班族 · 又活过了一天 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-card" style="margin-top:8px;">
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">普</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">普通上班族</span>
+          <span>#4 · 2006-09-25 19:44</span>
+        </div>
+        <div class="body">
+          <p>今天在想要不要收养小橘。</p>
+          <p>这个念头从上周就开始冒出来了，每天晚上都想。越想越认真，越想越纠结。</p>
+          <p>好的方面：小橘很亲人，性格好，适应能力强，而且已经信任我了。冬天快来了，北京冬天零下十几度，花坛边根本待不住人，何况一只猫。保安大叔说去年冬天特别冷的时候，这只猫不知道躲哪儿去了，好几天没见着——他也不知道它怎么活下来的。想到这里我心里就发紧。</p>
+          <p>不好的方面：我租的房子，一居室，房东平时不太管但合同上写了不能养宠物。我每天早出晚归，经常加班到八九点，回家了也就是倒头睡觉。我不确定我能不能照顾好它。去医院打疫苗多少钱？万一病了怎么办？要绝育吗？猫需不需要人陪？我一问三不知。</p>
+          <p>在网上查了好多关于养猫的资料，越查越觉得自己准备不足。说猫需要稳定的环境，需要陪伴，需要爬架，需要定期体检。我连自己都养得勉勉强强。</p>
+          <p>但如果不收养它，冬天怎么办？能怎么办？</p>
+          <p>我坐在地铁上想了很久，周围的人都在低头看手机，没人知道我在为一只橘色的流浪猫发愁。</p>
+        </div>
+        <div class="sig">—— 普通上班族 · 又活过了一天 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-card" style="margin-top:8px;">
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">普</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">普通上班族</span>
+          <span>#5 · 2006-09-28 22:10</span>
+        </div>
+        <div class="body">
+          <p>今天小橘没来。</p>
+          <p>我六点四十出的公司大门，天已经黑了。走到花坛那边，没有橘色的影子。我等了一会儿，叫了几声，没有回应。我以为它来晚了，就在花坛边坐着等。</p>
+          <p>等了半个小时，没有来。</p>
+          <p>我问保安大叔，大叔说今天白天就没看见它。我说会不会出事了，大叔说猫嘛，有时候就是会跑远几天，过阵子就回来了。我说真的吗，大叔说不一定。</p>
+          <p>我绕着公司那栋楼走了一圈，又扩大范围走到隔壁写字楼和后面的居民区，边走边叫"小橘"，没有回应。路上的行人都看我，我也不管了。</p>
+          <p>找了大概一个小时，没找到。</p>
+          <p>回到家我又在想要不要收养它——想了一路，现在还在想——但如果它不回来了，想什么都没用了。</p>
+          <p>明天我会再去的。带着猫粮。希望它在。</p>
+        </div>
+        <div class="sig">—— 普通上班族 · 又活过了一天 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reply-form">
+    <textarea placeholder="写下你的回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;"></textarea>
+    <button class="btn" onclick="replyCheck()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+  </div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box" style="background:#F0F0F0;border:3px solid #0D3050;width:340px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3);">
+    <div class="modal-titlebar" style="background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+}
+function replyCheck() {
+  var u = localStorage.getItem('echo_login_user');
+  if (u) {
+    showModal('✅', '<b>回复已发送</b><br><br>✅ 你的回复已成功提交。<br>管理员审核后将会显示。');
+  } else {
+    showModal('🔒', '<b>请先登录</b><br><br>只有注册用户才能回复。<br><a href="login.html" style="color:#0000CC;">前往登录→</a>');
+  }
+}
+</script>
+</body>
+</html>

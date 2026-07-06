@@ -1,0 +1,441 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周末做了红烧排骨！超级成功 · 回声茶馆</title>
+<style>
+/* ═════════════════════════════════════════
+   表论坛统一 CSS · 千禧年 Y2K 论坛风格
+   包含所有UI组件 + 动效
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 12px/1.6 Verdana, "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #F0F0F0 0%, #E8ECF0 100%); color: #333; min-height: 100vh; }
+a { color: #0000CC; text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #0D3050; color: #fff; }
+
+/* ── 顶栏 ── */
+.topbar { background: #0D3050; padding: 6px 16px; display: flex; align-items: center; gap: 24px; border-bottom: 2px solid #0A2440; flex-wrap: wrap; }
+.topbar .logo { font: bold 18px "Times New Roman", serif; color: #FFD700; letter-spacing: 2px; cursor: pointer; text-shadow: 1px 1px 0 #000; animation: logoGlow 3s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { text-shadow: 1px 1px 0 #000, 0 0 0 rgba(255,215,0,0); } 50% { text-shadow: 1px 1px 0 #000, 0 0 6px rgba(255,215,0,0.3); } }
+.topbar .logo span { color: #8AB8D9; }
+.topbar .nav { display: flex; gap: 2px; }
+.topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
+.topbar .nav a:hover { color: #fff; text-decoration: underline; }
+.topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
+.topbar .user-info a { color: #8AB8D9; }
+.topbar .user-info a:hover { color: #fff; }
+
+/* ── 搜索栏 ── */
+.search-bar { background: #F0F2F5; padding: 10px 16px; border-bottom: 1px solid #C0C0C0; display: flex; gap: 8px; align-items: center; }
+.search-bar input { flex: 1; max-width: 460px; padding: 5px 10px; border: 1px solid #A0A0A0; font: 11px Verdana, sans-serif; background: #fff; transition: border 0.3s; }
+.search-bar input:focus { border-color: #0D3050; outline: none; }
+.search-bar button { padding: 5px 16px; background: #0D3050; color: #fff; border: 1px solid #0A2440; cursor: pointer; font: 11px Verdana, sans-serif; transition: all 0.2s; }
+.search-bar button:hover { background: #1A4A70; transform: scale(1.02); }
+
+/* ── 搜索历史 ── */
+.search-history {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  max-height: 65vh;
+  overflow-y: auto;
+  background: #F8F8F0;
+  border: 1px solid #D0C8A0;
+  padding: 7px 12px;
+  font: 10px Verdana;
+  display: none;
+  z-index: 999;
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;transform:none;width:auto;margin:8px 16px;max-height:none;z-index:auto}
+}
+}
+@media(max-width:768px){
+  .search-history{position:relative;left:auto;top:auto;width:auto;margin:8px 16px;max-height:none;z-index:auto;box-shadow:none}
+}
+.search-history h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.search-history .entry { color: #666; padding: 2px 0; border-bottom: 1px dotted #E8E0D0; }
+.search-history .entry .keyword { color: #333; font-weight: bold; }
+.search-history .entry .found { color: #8B0000; }
+
+/* ── 容器 ── */
+.container { max-width: 920px; margin: 0 auto; padding: 8px 16px; animation: fadeIn 0.4s ease-out; ;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 面包屑 ── */
+.breadcrumb { font-size: 10px; color: #888; margin-bottom: 8px; padding: 4px 0; }
+.breadcrumb a { color: #0000CC; }
+
+/* ── 统计横幅 ── */
+.stats-banner { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-bottom: 8px; font: 10px Verdana; color: #666; text-align: center; }
+.stats-banner b { color: #333; }
+.stats-banner .highlight { color: #8B0000; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── 帖子卡片 ── */
+.thread-card { background: #fff; border: 1px solid #C0C0C0; animation: fadeIn 0.4s ease-out; }
+.post { padding: 14px 18px; border-bottom: 1px solid #E8E8E8; display: flex; gap: 12px; }
+.post:last-child { border-bottom: none; }
+.post .avatar { width: 44px; height: 44px; background: #E0E4E8; border: 1px solid #D0D0D0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; transition: transform 0.2s; }
+.post:hover .avatar { transform: scale(1.05); }
+.post .content { flex: 1; min-width: 0; }
+.post .content .header { display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-bottom: 4px; }
+.post .content .header .author { font-weight: bold; color: #0000CC; font-size: 11px; }
+.post .content .body { font-size: 12px; line-height: 1.7; }
+.post .content .body p { margin-bottom: 8px; }
+.post .content .body .code-box { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 10px 12px; font-family: monospace; font-size: 10px; margin: 8px 0; color: #555; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+.post .content .sig { margin-top: 8px; padding-top: 6px; border-top: 1px dotted #E0E0E0; font-size: 10px; color: #BBB; }
+
+/* ── 回复区 ── */
+.reply-form { padding: 12px 18px; background: #F8F8F8; border-top: 1px solid #E8E8E8; }
+.reply-form textarea { width: 100%; min-height: 50px; padding: 8px; border: 1px solid #D0D0D0; font: 11px Verdana, sans-serif; transition: border 0.3s; }
+.reply-form textarea:focus { border-color: #0D3050; outline: none; }
+.reply-form .btn { margin-top: 6px; padding: 4px 20px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana, sans-serif; cursor: pointer; transition: all 0.2s; }
+.reply-form .btn:hover { background: #E0E0E0; border-color: #808080; transform: scale(1.02); }
+.reply-form .btn:disabled { background: #E8E8E8; color: #999; border-color: #D0D0D0; cursor: not-allowed; transform: none; }
+
+/* ── 图片占位 ── */
+.img-ph { background: #F4F4F0; border: 1px solid #E0E0E0; padding: 12px; text-align: center; margin: 8px 0; font-size: 10px; color: #999; }
+
+/* ── 功能框（登录/注册/FAQ用）── */
+.box { background: #fff; border: 1px solid #C0C0C0; padding: 24px; margin-bottom: 12px; animation: fadeIn 0.4s ease-out; }
+.box h2 { font-size: 14px; color: #0D3050; border-bottom: 1px solid #E0E0E0; padding-bottom: 8px; margin-bottom: 16px; }
+.box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; color: #666; }
+.box .note { background: #F8F8F0; border: 1px solid #E0D8C0; padding: 12px; margin: 12px 0; font-size: 11px; color: #8B7355; line-height: 1.6; }
+
+/* ── 弹窗系统 ── */
+.modal-overlay, .settings-overlay, .confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show, .settings-overlay.show, .confirm-overlay.show { display: flex; }
+.modal-overlay.show .modal-box, .settings-overlay.show .settings-box, .confirm-overlay.show .confirm-box { animation: modalPop 0.25s ease-out; }
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box, .settings-box, .confirm-box { background: #F0F0F0; border: 3px solid #0D3050; width: 340px; max-width: 90%; box-shadow: 4px 4px 12px rgba(0,0,0,0.3); font-family: Verdana, sans-serif; }
+.modal-box .modal-titlebar, .settings-box .modal-titlebar, .confirm-box .modal-titlebar { background: #0D3050; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.modal-box .modal-titlebar .modal-close-btn, .settings-box .modal-titlebar .modal-close-btn, .confirm-box .modal-titlebar .modal-close-btn { width: 16px; height: 16px; background: #C0C0C0; border: 1px solid #A0A0A0; text-align: center; line-height: 14px; cursor: pointer; font-size: 10px; color: #333; font-family: Verdana; }
+.modal-box .modal-titlebar .modal-close-btn:hover, .settings-box .modal-titlebar .modal-close-btn:hover, .confirm-box .modal-titlebar .modal-close-btn:hover { background: #CC0000; color: #fff; }
+.modal-box .modal-body, .settings-box .modal-body, .confirm-box .modal-body { padding: 20px 16px; font-size: 11px; line-height: 1.6; color: #333; text-align: center; min-height: 60px; }
+.modal-box .modal-footer, .settings-box .modal-footer, .confirm-box .modal-footer { border-top: 1px solid #D0D0D0; padding: 8px; text-align: center; }
+.modal-box .modal-footer .modal-btn, .settings-box .modal-footer .modal-btn, .confirm-box .modal-footer .modal-btn { padding: 4px 24px; background: #D0D0D0; border: 2px solid #A0A0A0; font: 11px Verdana; cursor: pointer; transition: all 0.2s; }
+.modal-box .modal-footer .modal-btn:hover, .settings-box .modal-footer .modal-btn:hover, .confirm-box .modal-footer .modal-btn:hover { background: #E0E0E0; border-color: #808080; }
+
+/* ── 右下角广告 ── */
+.ad-corner { position: fixed; bottom: 16px; right: 16px; width: 240px; z-index: 999; border: 2px solid #C0C0C0; background: #FFFFF0; font-family: Verdana, sans-serif; box-shadow: 3px 3px 8px rgba(0,0,0,0.2); }
+.ad-corner .ad-close { position: absolute; top: -10px; right: -10px; width: 20px; height: 20px; background: #E0E0E0; border: 1px solid #A0A0A0; border-radius: 10px; text-align: center; line-height: 18px; font-size: 10px; cursor: pointer; color: #666; }
+.ad-corner .ad-close:hover { background: #CC0000; color: #fff; }
+.ad-corner .ad-body { padding: 16px; text-align: center; }
+.ad-corner .ad-body .ad-visitor { font-size: 14px; font-weight: bold; color: #CC0000; margin-bottom: 6px; }
+.ad-corner .ad-body .ad-user { font-size: 11px; color: #333; margin-bottom: 8px; }
+.ad-corner .ad-body .ad-user em { color: #006600; font-style: normal; font-weight: bold; }
+.ad-corner.hidden { display: none; }
+@media (max-width: 640px) { .ad-corner { display: none; } }
+
+/* ── 页脚 ── */
+.page-footer { text-align: center; padding: 20px 0; font-size: 10px; color: #999; border-top: 1px solid #D0D0D0; margin-top: 16px; }
+.page-footer .diamond { color: #CCC; letter-spacing: 3px; }
+.page-footer .disclaimer { margin-top: 8px; font-size: 9px; color: #B0B0B0; }
+
+/* ── 通用按钮禁用 ── */
+.btn-disabled { width: 100%; padding: 10px; background: #E0E0E0; color: #999; border: 1px solid #C0C0C0; font: 11px Verdana; text-align: center; cursor: not-allowed; margin-top: 16px; }
+
+/* ── 推荐帖子 ── */
+.recommended { background: #F8F8F8; border: 1px solid #D0D0D0; padding: 8px 12px; margin-top: 8px; font: 10px Verdana; color: #666; }
+.recommended h3 { font-size: 11px; color: #8B7355; margin-bottom: 4px; border-bottom: 1px solid #E0D8C0; padding-bottom: 4px; }
+.recommended .rec-item { padding: 3px 0; border-bottom: 1px dotted #E8E0D0; }
+.recommended .rec-item:last-child { border-bottom: none; }
+.recommended .rec-item .rec-title { color: #0000CC; }
+.recommended .rec-item .rec-author { color: #BBB; }
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .container { padding: 4px 8px; }
+  .post { padding: 10px 12px; gap: 8px; }
+  .post .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { gap: 8px; padding: 4px 8px; }
+  .topbar .logo { font-size: 14px; }
+  .topbar .nav a { font-size: 10px; margin: 0 4px; }
+  .search-bar { padding: 6px 8px; flex-wrap: wrap; }
+  .search-bar input { max-width: 100%; }
+}
+</style>
+<script src="../js/search.js"></script>
+</head>
+<body>
+
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="rules.html">版规</a>
+    <a href="faq.html">帮助</a>
+    <a href="register.html">注册</a>
+  </div>
+  <div class="user-info">
+    <span id="login-status">访客</span>
+    <a href="login.html" id="login-link" style="color:#8AB8D9;text-decoration:none;font-size:10px;margin-left:4px;">[登录]</a>
+    <span id="logout-link" style="display:none;margin-left:4px;">
+      <a href="#" onclick="doLogout()" style="color:#CC8888;text-decoration:none;font-size:10px;">[退出]</a>
+    </span>
+    <span style="margin:0 4px;color:#4A6A85;">|</span>
+    <span onclick="showSettings()" style="cursor:pointer;font-size:11px;" title="设置">⚙️</span>
+  </div>
+</div>
+
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
+
+<!-- ── 搜索历史 ── -->
+<div class="search-history" id="search-history">
+  <h3>📋 搜索记录</h3>
+  <div id="search-history-list"></div>
+</div>
+
+<!-- ── 主体内容 ── -->
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="../forum.html">回声茶馆</a> › <a href="../forum.html">闲聊茶馆</a> › 周末做了红烧排骨！超级成功
+  </div>
+
+  <div class="stats-banner">
+    🍳 本版共 <b>1,047</b> 个主题 · <b>8,462</b> 篇帖子 · 在线会员 <span class="highlight"><b>12</b></span> 人
+  </div>
+
+  <div class="thread-card">
+    <!-- ── 主帖：小厨娘 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E8D8C8;">厨</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">小厨娘</span>
+          <span style="color:#CC8800;">★ 美食达人</span>
+          <span>#1 · 2005-06-18 14:30</span>
+        </div>
+        <div class="body">
+          <p>周末闲来无事，尝试了一个新学的红烧排骨做法。没想到第一次做就大获成功，颜色红亮味道绝了！赶紧来茶馆分享一下心得。</p>
+
+          <p>先说步骤吧：</p>
+          <p><b>第一步，焯水要冷水下锅</b>——这个真的很关键，冷水下锅才能把血水逼出来，排骨才不会有腥味。水开后煮个两三分钟，捞出来冲洗干净就行。</p>
+          <p><b>第二步，炒糖色要用小火慢炒</b>——锅里放一点点油，加入冰糖，小火慢慢炒化。一定要有耐心，炒到冒泡变成琥珀色就赶紧下排骨翻炒，不然就苦了。我第一次炒糖色的时候手忙脚乱差点翻车，还好这次稳住了。</p>
+          <p>第三步，加调料——生抽两勺、老抽一勺上色、料酒一勺去腥、姜片葱段八角桂皮香叶，再加开水没过排骨。</p>
+          <p><b>第四步，炖的时候加一勺醋</b>——这是我从一个老厨师那儿学来的技巧，醋可以软化肉质，还能去腥增香，完全不用担心会有酸味，炖的过程中就挥发掉了。</p>
+          <p>小火慢炖四十分钟，最后大火收汁——那个颜色红亮得跟外面卖的图片一样，香气飘得整个屋子都是。</p>
+
+          <div class="img-ph">📷 [img/ribs-final-dish.jpg] — 红烧排骨成品特写，深红褐色的酱汁裹着每一块肋排，表面泛着油亮的光泽，撒着翠绿的葱花和白芝麻，白色瓷盘衬托下色泽诱人，背景有虚化的厨房灶台</div>
+
+          <p>总结几个关键点：<b>选肋排最好吃</b>、<b>糖色是灵魂</b>、<b>收汁要大火快炒</b>、<b>最后撒葱花和白芝麻点缀</b>。大家有空一定要试试，比点外卖强太多了。</p>
+        </div>
+        <div class="sig">—— 唯有美食不可辜负 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 吃货一号回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E0D8D0;">吃</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">吃货一号</span>
+          <span>#2 · 2005-06-18 15:00</span>
+        </div>
+        <div class="body">
+          <p>哇看起来好好吃！求蹭饭！我最喜欢红烧排骨了，你用的什么牌子的酱油？</p>
+          <p>我也试过做，但总是做不出那种红亮的颜色，是不是糖色没炒好？还是老抽的问题？我用的好像是海天的老抽，颜色一直上不去。</p>
+          <p>求楼主解答，我也想像你一样做出那种饭店级别的红烧排骨。</p>
+        </div>
+        <div class="sig">—— 吃饭不积极，脑子有问题 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 咸鱼一条回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D8E0D8;">咸</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">咸鱼一条</span>
+          <span>#3 · 2005-06-18 16:20</span>
+        </div>
+        <div class="body">
+          <p>周末我煮了包泡面。看着你的红烧排骨，手里的康师傅红烧牛肉面突然不香了。</p>
+          <p>不过说真的，能做出这种水平的红烧排骨，没个几年功力搞不定吧？那个糖色看着就很正宗，我自己试过一次全糊了，锅都刷了半天。</p>
+          <p>楼主是厨师吗？还是在饭店干过？这水平不开店可惜了。</p>
+        </div>
+        <div class="sig">—— 咸鱼也要有梦想 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 小厨娘再次回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#E8D8C8;">厨</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">小厨娘</span>
+          <span style="color:#CC8800;">★ 美食达人</span>
+          <span>#4 · 2005-06-18 17:00</span>
+        </div>
+        <div class="body">
+          <p>哈哈谢谢夸奖。我不是厨师啦，就是平时喜欢研究做菜，周末没事就在厨房捣鼓。</p>
+          <p>给大家分享几个小技巧：</p>
+          <p><b>焯水要冷水下锅</b>——用热水的话表面蛋白瞬间凝固，血水就封在里面出不来了。</p>
+          <p><b>糖色要用小火慢炒</b>——大火必糊，没有捷径，就是小火慢慢熬，看到冒细密小泡变琥珀色就立刻下排骨。</p>
+          <p><b>炖的时候加一勺醋</b>——相信我，出锅后完全吃不出酸味，但肉会特别软烂入味。</p>
+          <p>吃货一号问酱油的问题——我用的是李锦记的精选生抽加老抽组合，老抽不要放太多，半勺到一勺就够了，主要是调色用的，生抽才是主力。</p>
+          <p>大家做成功了记得来帖子下面交作业呀。</p>
+        </div>
+        <div class="sig">—— 唯有美食不可辜负 ——</div>
+      </div>
+    </div>
+
+    <!-- ── 深海鱼回复 ── -->
+    <div class="post">
+      <div class="avatar" style="background:#D0E0D8;">深</div>
+      <div class="content">
+        <div class="header">
+          <span class="author">深海鱼</span>
+          <span>#5 · 2005-06-18 19:30</span>
+        </div>
+        <div class="body">
+          <p>虽然我不做饭，但看到这个帖子心情莫名好了起来。暖暖的，像周末午后的阳光照在厨房里那种感觉。</p>
+          <p>论坛里需要更多这种烟火气的帖子。逛论坛不就是图个热闹和人情味吗。</p>
+        </div>
+        <div class="sig">—— 深海鱼 · 潜泳中 ——</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 回复表单 ── -->
+  <div class="thread-card" style="margin-top:8px;">
+    <div class="reply-form">
+      <textarea placeholder="写下你的回复…" style="width:100%;min-height:50px;padding:8px;border:1px solid #D0D0D0;font:11px Verdana,sans-serif;"></textarea>
+      <button class="btn" onclick="replyCheck()" style="margin-top:6px;padding:4px 20px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana,sans-serif;cursor:pointer;">回复</button>
+    </div>
+  </div>
+
+  <!-- ── 推荐帖子 ── -->
+  <div class="recommended">
+    <h3>📌 推荐阅读</h3>
+    <div class="rec-item"><span class="rec-title">今天做了芒果布丁，一次成功</span> <span class="rec-author">by 小厨娘</span></div>
+    <div class="rec-item"><span class="rec-title">教大家做最简单的蛋炒饭</span> <span class="rec-author">by 美食猎人</span></div>
+    <div class="rec-item"><span class="rec-title">有没有人试过空气炸锅做鸡翅？</span> <span class="rec-author">by 吃货一号</span></div>
+    <div class="rec-item"><span class="rec-title">烘焙新手的第一款蛋糕：戚风</span> <span class="rec-author">by 甜蜜蜜</span></div>
+  </div>
+
+</div>
+
+<!-- ── 页脚 ── -->
+<div class="page-footer">
+  <div class="diamond">◈ ◈ ◈</div>
+  <div style="margin-top:4px;">
+    回声茶馆 · 建于 2004 年 · 由 phpBB 2.0 驱动
+  </div>
+  <div class="disclaimer">
+    ⚠ 本网站为 ARG（替代现实游戏）作品。<br>
+    所有人物、事件、组织、地点均为虚构，与现实世界无关。
+  </div>
+</div>
+
+<!-- ── 弹窗系统 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆</span>
+      <span class="modal-close-btn" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon" id="modal-icon">📌</div>
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 确认弹窗 ── -->
+<div class="confirm-overlay" id="modal-confirm">
+  <div class="confirm-box">
+    <div class="modal-titlebar">
+      <span>回声茶馆 · 确认</span>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:28px;margin-bottom:8px;">⚠️</div>
+      <div id="modal-confirm-text">确认操作？</div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px;justify-content:center;">
+      <button class="modal-btn" onclick="confirmResult(false)" style="background:#D0D0D0;">取消</button>
+      <button class="modal-btn" onclick="confirmResult(true)" style="background:#CC0000;color:#fff;">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── 弹窗函数 ── */
+var confirmCallback = null;
+function showModal(icon, text) {
+  document.getElementById('modal-icon').textContent = icon || '📌';
+  document.getElementById('modal-text').innerHTML = text;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function showConfirm(text, callback) {
+  document.getElementById('modal-confirm-text').innerHTML = text;
+  document.getElementById('modal-confirm').classList.add('show');
+  confirmCallback = callback;
+}
+function confirmResult(result) {
+  document.getElementById('modal-confirm').classList.remove('show');
+  if (result && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+function showSettings() {
+  showModal('⚙️',
+    '<b style="font-size:13px;">设置</b><br><br>' +
+    '• 当前状态：<span id="modal-login-status">未登录</span><br>' +
+    '• 论坛版本：2.0.46<br>' +
+    '• 最后维护：2009-06-15<br><br>' +
+    '<button onclick="clearMemory()" style="padding:6px 20px;background:#CC0000;color:#fff;border:none;cursor:pointer;font:11px Verdana;margin-top:6px;">🗑️ 清除记忆（重新开始）</button>'
+  );
+}
+function clearMemory() {
+  showConfirm('确定要清除所有记忆吗？这将删除所有搜索记录和游戏进度。<br><br>这个操作<b>不可撤销</b>。', function() {
+    localStorage.clear();
+    showModal('🗑️', '记忆已清除。<br><br>你什么也不记得了。<br>就像第一次打开这个页面时一样。');
+    var ls = document.getElementById('login-status');
+    if (ls) ls.textContent = '访客';
+    var ll = document.getElementById('login-link');
+    if (ll) { ll.textContent = '[登录]'; ll.href = 'surface/login.html'; }
+    var lo = document.getElementById('logout-link');
+    if (lo) lo.style.display = 'none';
+  });
+}
+function doLogout() {
+  localStorage.removeItem('echo_login_user');
+  localStorage.removeItem('echo_login_role');
+  localStorage.removeItem('echo_login_display');
+  var ls = document.getElementById('login-status');
+  if (ls) { ls.textContent = '访客'; ls.style.color = '#7A9BB5'; }
+  var ll = document.getElementById('login-link');
+  if (ll) { ll.style.display = 'inline'; ll.textContent = '[登录]'; ll.href = 'login.html'; }
+  var lo = document.getElementById('logout-link');
+  if (lo) lo.style.display = 'none';
+  showModal('👋', '已退出登录。<br><br>再见。');
+}
+function replyCheck() {
+  showModal('📝', '回复功能已关闭。<br><br>这条帖子已经沉了很久了，<br>新建的回复没有人会看到。');
+}
+</script>
+
+</body>
+</html>

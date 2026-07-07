@@ -3,184 +3,203 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Base64 解码器 · 回声茶馆 · V4cXy</title>
 <style>
+/* ═════════════════════════════════════════
+   Y2K 论坛风格 · Base64 解码教程页
+   与回声茶馆主站风格统一
+   ═════════════════════════════════════════ */
+
+/* ── 全局重置 ── */
 *{margin:0;padding:0;box-sizing:border-box}
-body{font:13px/1.8 "Courier New",monospace;background:#0A0A0A;color:#AAA;min-height:100vh;overflow-x:hidden}
-::selection{background:#00CC00;color:#0A0A0A}
-::-webkit-scrollbar{width:6px;background:#0A0A0A}
-::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#555}
+body{font:12px/1.6 Verdana,"Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#F0F0F0 0%,#E8ECF0 100%);color:#333;min-height:100vh;overflow-x:hidden}
+a{color:#0000CC;text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:#0D3050;color:#fff}
 
-/* 顶部导航 */
-.topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;position:sticky;top:0;z-index:1000}
-.topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;user-select:none}
+/* ── 顶栏 ── */
+.topbar{background:#0D3050;padding:6px 16px;display:flex;align-items:center;gap:24px;border-bottom:2px solid #0A2440;position:sticky;top:0;z-index:1000;flex-wrap:wrap}
+.topbar .logo{font:bold 18px "Times New Roman",serif;color:#FFD700;letter-spacing:2px;cursor:pointer;text-shadow:1px 1px 0 #000}
 .topbar .logo span{color:#8AB8D9}
-.topbar .nav{margin-left:auto}
-.topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;margin:0 8px;transition:color 0.2s}
-.topbar .nav a:hover{color:#fff}
+.topbar .nav{display:flex;gap:2px}
+.topbar .nav a{color:#A0C8E0;font-size:11px;margin:0 10px;transition:color 0.2s}
+.topbar .nav a:hover{color:#fff;text-decoration:underline}
 
-/* 页面布局 */
-.container{max-width:760px;margin:0 auto;padding:24px 20px}
+/* ── 搜索栏 ── */
+.search-bar{background:#F0F2F5;padding:10px 16px;border-bottom:1px solid #C0C0C0;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:460px;padding:5px 10px;border:1px solid #A0A0A0;font:11px Verdana,sans-serif;background:#fff;transition:border 0.3s}
+.search-bar input:focus{border-color:#0D3050;outline:none}
+.search-bar button{padding:5px 16px;background:#0D3050;color:#fff;border:1px solid #0A2440;cursor:pointer;font:11px Verdana,sans-serif;transition:all 0.2s}
+.search-bar button:hover{background:#1A4A70}
 
-/* 标题 */
-h1{color:#00CC00;font-size:18px;margin-bottom:4px;letter-spacing:2px}
-h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacing:1px}
+/* ── 容器 ── */
+.container{max-width:960px;margin:0 auto;padding:8px 16px;animation:fadeIn 0.4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* 区块 */
-.section{background:#111;border:1px solid #222;padding:20px;margin-bottom:20px;border-radius:2px;position:relative}
-.section h3{color:#00CC00;font-size:11px;margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;padding-bottom:6px;border-bottom:1px solid #1A1A1A}
+/* ── 面包屑 / 标题区 ── */
+.breadcrumb{font-size:10px;color:#888;margin-bottom:8px;padding:4px 0}
+.breadcrumb a{color:#0000CC}
+.page-title{font-size:14px;color:#0D3050;margin-bottom:2px;padding:6px 0 2px}
+.page-sub{font-size:10px;color:#888;margin-bottom:12px;font-weight:normal}
 
-/* 编码块 */
-.code-block{background:#0D0D0D;border:1px solid #2A2A2A;padding:16px;font-size:14px;color:#888;word-break:break-all;margin-bottom:12px;font-family:"Courier New",monospace;line-height:1.8;position:relative;overflow-x:auto}
-.code-block::before{content:"▸ 编码内容";position:absolute;top:-8px;left:12px;background:#111;padding:0 8px;font-size:8px;color:#444;letter-spacing:1px}
-.code-block .comment-mark{color:#333}
-.code-block .b64-char{color:#8AB8D9;letter-spacing:0.5px}
-.code-block .eq-sign{color:#555}
+/* ── 内容面板 ── */
+.section{background:#fff;border:1px solid #C0C0C0;padding:18px;margin-bottom:12px;animation:fadeIn 0.4s ease-out}
+.section h3{font-size:11px;color:#0D3050;padding-bottom:6px;margin-bottom:14px;border-bottom:1px solid #E0E0E0;letter-spacing:1px}
 
-/* 编码分析 */
-.analysis-row{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0;padding:10px;background:#0A0A0A;border:1px solid #1A1A1A;font-size:10px;color:#555;font-family:"Courier New",monospace}
+/* ── 编码块 ── */
+.code-block{background:#F4F4F0;border:1px solid #E0E0E0;padding:14px 16px;font-size:12px;color:#555;word-break:break-all;margin-bottom:12px;font-family:monospace;line-height:1.8;position:relative;overflow-x:auto}
+.code-block::before{content:"HTML 注释内容";position:absolute;top:-8px;left:12px;background:#fff;padding:0 8px;font-size:8px;color:#999;letter-spacing:1px}
+.code-block .comment-mark{color:#AAA}
+.code-block .b64-char{color:#0D3050;font-weight:bold;letter-spacing:0.5px}
+.code-block .eq-sign{color:#CCC}
+
+/* ── 编码分析 ── */
+.analysis-row{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0;padding:8px 10px;background:#F8F8F8;border:1px solid #E8E8E8;font-size:10px;color:#666}
 .analysis-row .char-box{display:inline-flex;flex-direction:column;align-items:center;padding:2px 1px;min-width:18px}
-.analysis-row .char-box .char-top{color:#444;font-size:8px}
-.analysis-row .char-box .char-b64{color:#8AB8D9;font-size:10px}
+.analysis-row .char-box .char-top{color:#BBB;font-size:8px}
+.analysis-row .char-box .char-b64{color:#0D3050;font-size:10px}
+.analysis-row .label{color:#999;margin-right:8px}
+.analysis-row .sep{color:#DDD;margin:0 8px}
+.analysis-row .highlight-val{color:#0D3050;font-weight:bold}
 
-/* 解码步骤 */
-.step-line{color:#555;font-size:11px;padding:5px 0;margin:2px 0;padding-left:8px;border-left:2px solid #1A1A1A;transition:all 0.2s}
-.step-line .step-icon{display:inline-block;width:18px;color:#444}
-.step-line.done{color:#00CC00;border-left-color:#00CC00;background:rgba(0,204,0,0.03)}
-.step-line.active{color:#CCCC00;border-left-color:#CCCC00;background:rgba(204,204,0,0.04);animation:blink 1s infinite}
-.step-line .step-detail{color:#666;font-size:10px;display:block;padding-left:22px;margin-top:1px}
-.step-line.done .step-detail{color:#446644}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+/* ── 解码步骤 ── */
+.step-line{color:#666;font-size:11px;padding:6px 0;margin:3px 0;padding-left:10px;border-left:3px solid #E0E0E0;transition:all 0.2s}
+.step-line .step-icon{display:inline-block;width:20px;color:#BBB}
+.step-line.done{color:#0D3050;border-left-color:#0D3050;background:#F0F6FF}
+.step-line.active{color:#CC6600;border-left-color:#CC6600;background:#FFF8F0;animation:stepBlink 1s infinite}
+.step-line .step-detail{color:#999;font-size:10px;display:block;padding-left:22px;margin-top:2px;line-height:1.5}
+.step-line.done .step-detail{color:#7788AA}
+@keyframes stepBlink{0%,100%{opacity:1}50%{opacity:0.5}}
 
-/* 解码中间过程展示 */
-.intermediate-box{background:#0A0A0A;border:1px solid #1A1A1A;padding:12px;margin:12px 0;font-size:10px;color:#555;font-family:"Courier New",monospace;line-height:1.7}
-.intermediate-box .interm-title{color:#444;font-size:9px;margin-bottom:6px;letter-spacing:1px}
-.intermediate-box .interm-row{padding:2px 0;color:#666}
-.intermediate-box .interm-row .highlight-b64{color:#8AB8D9}
-.intermediate-box .interm-row .highlight-dec{color:#00CC00}
+/* ── 解码中间过程展示 ── */
+.intermediate-box{background:#F8F8F8;border:1px solid #E0E0E0;padding:12px 14px;margin:12px 0;font-size:10px;color:#666;font-family:monospace;line-height:1.7}
+.intermediate-box .interm-title{color:#999;font-size:9px;margin-bottom:6px;letter-spacing:1px}
+.intermediate-box .interm-row{padding:3px 0;color:#888}
+.intermediate-box .interm-row .highlight-b64{color:#0D3050;font-weight:bold}
+.intermediate-box .interm-row .highlight-dec{color:#006600;font-weight:bold}
+.intermediate-box .interm-row .label-dim{color:#BBB}
 
-/* 结果框 */
-.result-box{background:#0A1A0A;border:2px solid #00CC00;padding:24px 20px;text-align:center;margin:16px 0;position:relative;overflow:hidden}
-.result-box::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,rgba(0,204,0,0.05) 0%,transparent 70%);pointer-events:none}
-.result-box .label{color:#666;font-size:10px;margin-bottom:8px;letter-spacing:3px;text-transform:uppercase}
-.result-box .result-en{font-size:24px;font-weight:bold;color:#00CC00;margin-bottom:6px;letter-spacing:1px;text-shadow:0 0 10px rgba(0,204,0,0.25);font-family:"Courier New",monospace}
-.result-box .result-zh{font-size:14px;color:#00CC00;opacity:0.8;letter-spacing:1px}
-.result-box .result-sub{color:#006600;font-size:10px;margin-top:10px;letter-spacing:1px;opacity:0.6}
-.result-box .divider{height:1px;background:#1A3A1A;margin:12px auto;width:60%}
+/* ── 结果框 ── */
+.result-box{background:#F8F8F0;border:2px solid #D0C8A0;padding:24px 20px;text-align:center;margin:16px 0;position:relative}
+.result-box .label{color:#8B7355;font-size:10px;margin-bottom:10px;letter-spacing:3px}
+.result-box .result-en{font-size:22px;font-weight:bold;color:#8B0000;margin-bottom:8px;letter-spacing:1px}
+.result-box .result-zh{font-size:14px;color:#555;letter-spacing:1px}
+.result-box .result-sub{color:#AAA;font-size:10px;margin-top:10px;letter-spacing:1px}
+.result-box .divider{height:1px;background:#E0D8C0;margin:12px auto;width:60%}
 
-/* 上下文线索 */
-.context-area{background:#0A0A0A;border:1px solid #1A1A1A;padding:18px;margin:16px 0;border-left:3px solid #003300;position:relative}
+/* ── 上下文线索 ── */
+.context-area{background:#F8F8F0;border:1px solid #E0D8C0;padding:18px;margin:16px 0;border-left:3px solid #8B7355;position:relative}
 .context-area p{color:#666;font-size:12px;line-height:2;margin:8px 0;text-indent:2em}
 .context-area p .highlight{color:#CC0000;font-weight:bold}
-.context-area p .glow{color:#00CC00;font-weight:bold}
-.context-area .sig{text-align:right;color:#333;font-size:10px;margin-top:12px;border-top:1px solid #1A1A1A;padding-top:8px;letter-spacing:1px}
+.context-area p .glow{color:#006600;font-weight:bold}
+.context-area .sig{text-align:right;color:#C0B090;font-size:10px;margin-top:12px;border-top:1px solid #E0D8C0;padding-top:8px;letter-spacing:1px}
 
-/* Base64 教学 */
-.tutorial-box{background:#0D0D0D;border:1px solid #222;padding:18px;margin:16px 0;font-size:11px;color:#666;line-height:1.9}
-.tutorial-box h4{color:#00CC00;font-size:11px;margin-bottom:8px;margin-top:16px;letter-spacing:1px}
+/* ── Base64 教学 ── */
+.tutorial-box{padding:4px 0;font-size:11px;color:#666;line-height:1.9}
+.tutorial-box h4{font-size:12px;color:#0D3050;margin-bottom:6px;margin-top:16px;letter-spacing:0.5px;border-bottom:1px dotted #E0E0E0;padding-bottom:3px}
 .tutorial-box h4:first-child{margin-top:0}
 .tutorial-box p{margin:6px 0;text-indent:2em}
-.tutorial-box code{background:#1A1A1A;color:#8AB8D9;padding:1px 6px;font-size:10px;font-family:"Courier New",monospace;border:1px solid #2A2A2A}
-.tutorial-box .example-box{background:#0A0A0A;border:1px solid #1A1A1A;padding:10px 14px;margin:8px 0;font-size:10px;font-family:"Courier New",monospace;color:#666;line-height:1.6}
-.tutorial-box .example-box .eg-comment{color:#333}
-.tutorial-box .example-box .eg-b64{color:#8AB8D9}
-.tutorial-box .example-box .eg-result{color:#00CC00}
-.tutorial-box .tip{background:#0A1A0A;border-left:2px solid #00CC00;padding:8px 14px;margin:8px 0;font-size:10px;color:#888}
-.tutorial-box .tip strong{color:#00CC00}
+.tutorial-box code{background:#F0F0F0;color:#0D3050;padding:1px 6px;font-size:10px;font-family:monospace;border:1px solid #E0E0E0}
+.tutorial-box .example-box{background:#F4F4F0;border:1px solid #E0E0E0;padding:10px 14px;margin:8px 0;font-size:10px;font-family:monospace;color:#666;line-height:1.6}
+.tutorial-box .example-box .eg-comment{color:#AAA}
+.tutorial-box .example-box .eg-b64{color:#0D3050;font-weight:bold}
+.tutorial-box .example-box .eg-result{color:#006600;font-weight:bold}
+.tutorial-box .tip{background:#F8F8F0;border-left:2px solid #D0C8A0;padding:8px 14px;margin:8px 0;font-size:10px;color:#777;line-height:1.6}
+.tutorial-box .tip strong{color:#0D3050}
 .tutorial-box ul{margin:6px 0 6px 20px;list-style:none}
 .tutorial-box ul li{padding:3px 0;position:relative}
-.tutorial-box ul li::before{content:"▸";color:#004400;position:absolute;left:-14px}
+.tutorial-box ul li::before{content:"›";color:#C0C0C0;position:absolute;left:-14px;font-weight:bold}
 
-/* 解码日志 */
-.decode-log{background:#080808;border:1px solid #1A1A1A;padding:14px;margin:16px 0;font-size:10px;color:#444;font-family:"Courier New",monospace;line-height:1.7;max-height:220px;overflow-y:auto}
+/* ── 解码日志 ── */
+.decode-log{background:#F8F8F8;border:1px solid #E0E0E0;padding:12px 14px;margin:16px 0;font-size:10px;color:#888;font-family:monospace;line-height:1.7;max-height:220px;overflow-y:auto}
 .decode-log .log-line{padding:1px 0}
-.decode-log .log-line .log-time{color:#2A2A2A}
-.decode-log .log-line .log-ok{color:#006600}
-.decode-log .log-line .log-warn{color:#665500}
+.decode-log .log-line .log-time{color:#CCC}
+.decode-log .log-line .log-ok{color:#336633}
+.decode-log .log-line .log-warn{color:#997700}
 
-/* 进度条 */
-.progress-bar{height:2px;background:#1A1A1A;margin-bottom:16px;border-radius:1px;overflow:hidden}
-.progress-bar .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#003300,#00CC00);transition:width 0.5s;border-radius:1px}
+/* ── 进度条 ── */
+.progress-bar{height:4px;background:#E0E0E0;margin-bottom:16px;border-radius:2px;overflow:hidden;border:1px solid #D0D0D0}
+.progress-bar .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#0D3050,#4A8AB8);transition:width 0.5s;border-radius:1px}
 
-/* 导航链接 */
-.nav-links{margin-top:24px;padding:14px 0;border-top:1px solid #222;font-size:11px;display:flex;flex-wrap:wrap;gap:8px}
-.nav-links a{color:#555;text-decoration:none;margin-right:16px;transition:color 0.2s}
-.nav-links a:hover{color:#00CC00}
-.nav-links a.link-warn{color:#883333}
+/* ── 导航链接 ── */
+.nav-links{margin-top:12px;padding:12px 0;border-top:1px solid #E0E0E0;font-size:11px;display:flex;flex-wrap:wrap;gap:8px}
+.nav-links a{color:#0000CC;text-decoration:none;margin-right:16px;transition:color 0.2s}
+.nav-links a:hover{text-decoration:underline}
+.nav-links a.link-warn{color:#CC3333}
 .nav-links a.link-warn:hover{color:#CC0000}
 
-/* 页脚 */
-.page-footer{text-align:center;padding:16px;font-size:9px;color:#333;border-top:1px solid #1A1A1A;margin-top:24px;line-height:2}
-.page-footer .disclaimer{color:#444;letter-spacing:1px}
-.page-footer .footer-sig{color:#1A1A1A;font-size:8px;margin-top:4px}
+/* ── 页脚 ── */
+.page-footer{text-align:center;padding:20px 0;font-size:10px;color:#999;border-top:1px solid #D0D0D0;margin-top:16px;line-height:1.8}
+.page-footer .disclaimer{color:#BBB;font-size:9px}
+.page-footer .footer-sig{color:#CCC;font-size:8px;margin-top:4px}
 
-/* 模态框 */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+/* ── 模态框 ── */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:9999;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal-box{background:#111;border:2px solid #2A2A2A;padding:0;width:400px;max-width:92%;box-shadow:0 0 40px rgba(0,0,0,0.9)}
-.modal-box .modal-titlebar{background:#0D3050;color:#fff;padding:10px 14px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
-.modal-box .modal-titlebar .modal-close-btn{width:20px;height:20px;background:#2A2A2A;text-align:center;line-height:18px;cursor:pointer;font-size:10px;color:#888;border-radius:2px;transition:all 0.2s}
+.modal-overlay.show .modal-box{animation:modalPop 0.25s ease-out}
+@keyframes modalPop{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box{background:#F0F0F0;border:3px solid #0D3050;width:380px;max-width:90%;box-shadow:4px 4px 12px rgba(0,0,0,0.3)}
+.modal-box .modal-titlebar{background:#0D3050;color:#fff;padding:6px 10px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+.modal-box .modal-titlebar .modal-close-btn{width:16px;height:16px;background:#C0C0C0;border:1px solid #A0A0A0;text-align:center;line-height:14px;cursor:pointer;font-size:10px;color:#333;font-family:Verdana;transition:all 0.2s}
 .modal-box .modal-titlebar .modal-close-btn:hover{background:#CC0000;color:#fff}
-.modal-box .modal-body{padding:28px 18px;font-size:12px;color:#AAA;text-align:center;line-height:1.9}
-.modal-box .modal-footer{border-top:1px solid #222;padding:10px;text-align:center}
-.modal-box .modal-footer .modal-btn{padding:7px 28px;background:#2A2A2A;border:1px solid #444;color:#AAA;font:11px "Courier New",monospace;cursor:pointer;transition:all 0.2s}
-.modal-box .modal-footer .modal-btn:hover{background:#3A3A3A;color:#fff}
+.modal-box .modal-body{padding:20px 16px;font-size:11px;line-height:1.6;color:#333;text-align:center;min-height:60px}
+.modal-box .modal-footer{border-top:1px solid #D0D0D0;padding:8px;text-align:center}
+.modal-box .modal-footer .modal-btn{padding:4px 24px;background:#D0D0D0;border:2px solid #A0A0A0;font:11px Verdana;cursor:pointer;transition:all 0.2s}
+.modal-box .modal-footer .modal-btn:hover{background:#E0E0E0;border-color:#808080}
 
-/* 解码步骤的详细子步骤 */
+/* ── 子步骤 ── */
 .sub-steps{padding-left:22px;margin:4px 0}
-.sub-steps .sub-step{font-size:10px;color:#444;padding:1px 0;transition:color 0.2s}
-.sub-steps .sub-step.done{color:#666}
+.sub-steps .sub-step{font-size:10px;color:#BBB;padding:1px 0;transition:color 0.2s}
+.sub-steps .sub-step.done{color:#888}
 
-/* 响应式 */
+/* ── 面板分割线脉冲 ── */
+@keyframes dividerGlow{0%,100%{opacity:0.4}50%{opacity:0.8}}
+
+/* ── 响应式 ── */
 @media(max-width:640px){
-.container{padding:16px 12px}
+.container{padding:4px 8px}
+.section{padding:12px}
 .result-box .result-en{font-size:18px;letter-spacing:0}
-.section{padding:14px}
-.code-block{font-size:12px}
+.code-block{font-size:11px}
+.topbar{gap:8px;padding:4px 8px}
+.topbar .logo{font-size:14px}
+.topbar .nav a{font-size:10px;margin:0 4px}
+.search-bar{padding:6px 8px;flex-wrap:wrap}
+.search-bar input{max-width:100%}
 }
 @media(max-width:400px){
 .result-box .result-en{font-size:15px}
 .code-block{font-size:10px}
 }
-
-/* ── 内容淡入 ── */
-.container { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ── 面板/卡片悬停发光 ── */
-.post-row:hover, .panel:hover, .thread-card:hover { box-shadow: 0 0 6px rgba(139,0,0,0.2); }
-
-/* ── 弹窗暗黑版动效 ── */
-.modal-overlay.show .modal-box { animation: modalFade 0.3s ease-out; }
-@keyframes modalFade { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-/* ── 分割线脉冲 ── */
-.divider { animation: dividerGlow 3s ease-in-out infinite; }
-@keyframes dividerGlow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-
-
-.search-bar{background:#0D0D0D;padding:8px 16px;border-bottom:1px solid #222;display:flex;gap:8px;align-items:center}
-.search-bar input{flex:1;max-width:360px;padding:4px 8px;border:1px solid #333;background:#0A0A0A;font:10px monospace;color:#AAA;outline:none}
-.search-bar input:focus{border-color:#00CC00}
-.search-bar button{padding:4px 14px;background:#222;border:1px solid #444;color:#AAA;font:10px monospace;cursor:pointer}
-.search-bar button:hover{background:#333;color:#00CC00}
-
 </style>
 <script src="../js/search.js"></script>
 </head>
 <body>
 
-<!-- 顶部导航 -->
-<div class="topbar"><div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+<!-- ── 顶栏 ── -->
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('../forum.html')">◈ <span>回声</span>茶馆</div>
+  <div class="nav">
+    <a href="../forum.html">首页</a>
+    <a href="../surface/rules.html">版规</a>
+    <a href="../surface/faq.html">帮助</a>
+  </div>
+</div>
 
-<div class="nav"><a href="../forum.html">首页</a></div></div>
-<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
-
+<!-- ── 搜索栏 ── -->
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索帖子、版块或用户…">
+  <button id="search-btn">搜索</button>
+</div>
 
 <div class="container">
 
+<!-- 面包屑 -->
+<div class="breadcrumb">
+  <a href="../forum.html">回声茶馆</a> › 解码终端 › Base64 解码器
+</div>
+
 <!-- 标题区 -->
-<h1>◈ Base64 解码终端 v1.4</h1>
-<h2>检测到嵌入编码 · 来源：browser.html · 触发词：V4cXy</h2>
+<h1 class="page-title">◈ Base64 解码教程</h1>
+<p class="page-sub">检测到嵌入编码 · 来源：browser.html · 触发词：V4cXy</p>
 
 <!-- 进度条 -->
 <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -192,12 +211,12 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 <span class="comment-mark">&lt;!-- </span><span class="b64-char">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span><span class="comment-mark"> --&gt;</span>
 </div>
 <div class="analysis-row">
-<span style="color:#333;margin-right:8px">字符分析：</span>
+<span class="label">字符分析：</span>
 <span>总长 48 字符 · Base64 字符集匹配 100%</span>
-<span style="color:#333;margin:0 8px">|</span>
-<span>末尾填充：<span style="color:#555">无</span></span>
-<span style="color:#333;margin:0 8px">|</span>
-<span>编码模式：<span style="color:#8AB8D9">标准 Base64</span></span>
+<span class="sep">|</span>
+<span>末尾填充：<span class="highlight-val">无</span></span>
+<span class="sep">|</span>
+<span>编码模式：<span class="highlight-val">标准 Base64</span></span>
 </div>
 </div>
 
@@ -227,21 +246,21 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 <div class="intermediate-box" id="intermediate-box" style="display:none;">
 <div class="interm-title">▸ 解码中间状态</div>
 <div class="interm-row">
-<span style="color:#333">原始 Base64：</span>
+<span class="label-dim">原始 Base64：</span>
 <span class="highlight-b64">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span>
 </div>
 <div class="interm-row">
-<span style="color:#333">去除填充后：</span>
+<span class="label-dim">去除填充后：</span>
 <span class="highlight-b64">VjQ3IGxlZnQgeW91IGEgY2x1ZS4gU2VhcmNoICJWNENYeS4i</span>
-<span style="color:#444">（无填充字符）</span>
+<span class="label-dim">（无填充字符）</span>
 </div>
 <div class="interm-row">
-<span style="color:#333">解码字节流：</span>
-<span style="color:#555">56 6a 51 33 ... 53 34 69</span>
-<span style="color:#444">（十六进制）</span>
+<span class="label-dim">解码字节流：</span>
+<span style="color:#AAA">56 6a 51 33 ... 53 34 69</span>
+<span class="label-dim">（十六进制）</span>
 </div>
 <div class="interm-row">
-<span style="color:#333">ASCII 输出：</span>
+<span class="label-dim">ASCII 输出：</span>
 <span class="highlight-dec">V47 left you a clue. Search "V4cXy".</span>
 </div>
 </div>
@@ -327,7 +346,7 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 <!-- 隐藏线索提示 -->
 <div class="section">
 <h3>🔍 线索链分析</h3>
-<div class="tutorial-box" style="border-left:2px solid #003300">
+<div class="tutorial-box" style="border-left:2px solid #8B7355;padding-left:14px;margin-left:2px">
 <h4>当前线索状态</h4>
 <p>本页面是回声茶馆 ARG 解谜链中的一环。以下是已知的线索链条：</p>
 <ul>
@@ -355,7 +374,7 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 
 <!-- 页脚 -->
 <div class="page-footer">
-<div class="disclaimer">⚠ ARG 解谜游戏 · 回声茶馆 · Base64 解码终端 v1.4</div>
+<div class="disclaimer">⚠ ARG 解谜游戏 · 回声茶馆 · Base64 解码教程 v2.0</div>
 <div class="footer-sig">「信息总在表面之下。继续挖掘。」—— 解码器日志 2024</div>
 </div>
 
@@ -363,7 +382,7 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 <div class="modal-overlay" id="modal-overlay">
 <div class="modal-box">
 <div class="modal-titlebar">
-<span>◈ 终端消息</span>
+<span>◈ 系统消息</span>
 <span class="modal-close-btn" onclick="closeModal()">✕</span>
 </div>
 <div class="modal-body"><div id="modal-text">消息</div></div>
@@ -427,10 +446,15 @@ h2{color:#666;font-size:11px;font-weight:normal;margin-bottom:28px;letter-spacin
 
   // 页面加载完成的额外提示
   setTimeout(function() {
-    console.log('%c◈ 回声茶馆终端 · Base64 解码器 v1.4', 'color: #00CC00; font-size: 14px; font-weight: bold');
-    console.log('%c◈ 提示：触发词 V4cXy 可能在其他地方有用途', 'color: #666; font-size: 11px');
-    console.log('%c◈ 提示：查看页面源码（Ctrl+U）可能发现更多隐藏信息', 'color: #666; font-size: 11px');
+    console.log('%c◈ 回声茶馆 · Base64 解码教程', 'color: #0D3050; font-size: 14px; font-weight: bold');
+    console.log('%c◈ 提示：触发词 V4cXy 可能在其他地方有用途', 'color: #888; font-size: 11px');
+    console.log('%c◈ 提示：查看页面源码（Ctrl+U）可能发现更多隐藏信息', 'color: #888; font-size: 11px');
   }, 200);
+
+  // 初始化搜索功能
+  if (typeof initSearch === 'function') {
+    initSearch();
+  }
 })();
 
 // 模态框函数

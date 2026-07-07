@@ -2,222 +2,626 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>◈ 实验记录</title>
+<title>◈ 实验记录 · LAMP46 协议</title>
 <link rel="stylesheet" href="inner.css">
 <script src="../js/search.js"></script>
+<style>
+/* ── 实验记录专用增强样式 ── */
+
+/* 文档——机密文件边框 */
+.doc {
+  position: relative;
+  background: #0A0505;
+  border: 1px solid #1A0000;
+  padding: 18px 16px;
+  margin: 14px 0;
+  box-shadow: 0 0 0 1px #0D0000 inset;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.doc:hover {
+  border-color: #330000;
+  box-shadow: 0 0 0 1px #220000 inset, 0 0 12px rgba(80,0,0,0.06);
+}
+.doc::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #330000, transparent);
+  opacity: 0.4;
+}
+
+/* 文档编号——更正式的机密文档感觉 */
+.doc .meta {
+  font-size: 10px;
+  color: #553333;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #1A0000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  letter-spacing: 0.3px;
+}
+.doc .meta .class-level {
+  color: #CC3333;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* 文档正文 */
+.doc .body {
+  font-size: 13px;
+  color: #774444;
+  line-height: 1.85;
+}
+.doc .body p {
+  margin-bottom: 7px;
+}
+.doc .body .hl {
+  color: #CC4444;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(180,40,40,0.15);
+}
+.doc .body .hl-red {
+  color: #CC0000;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(200,0,0,0.2);
+}
+.doc .body .dim {
+  color: #552222;
+  font-size: 12px;
+}
+.doc .body .italic-note {
+  font-style: italic;
+  color: #553333;
+  font-size: 12px;
+}
+
+/* 红色印章覆盖 */
+.doc .stamp {
+  text-align: right;
+  font-size: 9px;
+  color: #440000;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dotted #1A0000;
+  font-style: italic;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+.doc .stamp-red {
+  color: #CC2222;
+  font-weight: bold;
+  font-style: normal;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+/* 印章覆盖层——红色斜体 */
+.classification-stamp {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(180,0,0,0.12);
+  transform: rotate(-6deg);
+  letter-spacing: 2px;
+  pointer-events: none;
+  font-family: "Times New Roman", serif;
+  text-transform: uppercase;
+  border: 1px solid rgba(180,0,0,0.08);
+  padding: 2px 8px;
+}
+.classification-stamp.top {
+  color: rgba(200,0,0,0.15);
+  border-color: rgba(200,0,0,0.1);
+}
+
+/* 终端交互记录框 */
+.intercept-box {
+  background: #080505;
+  border: 1px solid #220000;
+  padding: 10px 12px;
+  margin: 8px 0;
+  font-size: 11px;
+  line-height: 1.8;
+  font-family: "Courier New", monospace;
+  position: relative;
+  overflow: hidden;
+}
+.intercept-box::before {
+  content: "◆ RECORD";
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  font-size: 7px;
+  color: #331111;
+  letter-spacing: 1px;
+}
+.intercept-box .op {
+  color: #884444;
+}
+.intercept-box .resp {
+  color: #AA3333;
+  font-weight: bold;
+}
+.intercept-box .cursor-line {
+  color: #553333;
+  animation: cursorBlink 1s step-end infinite;
+}
+
+/* 警示条 */
+.warning-strip {
+  background: linear-gradient(90deg, transparent, #1A0000, transparent);
+  border-top: 1px solid #220000;
+  border-bottom: 1px solid #220000;
+  padding: 6px 12px;
+  margin: 10px 0;
+  text-align: center;
+  font-size: 11px;
+  color: #884444;
+  letter-spacing: 0.5px;
+}
+.warning-strip b {
+  color: #CC3333;
+}
+
+/* 计数——46 突出显示 */
+.num-fortysix {
+  color: #CC2222;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 6px rgba(200,0,0,0.15);
+}
+
+/* 笔记区域——警告效果加强 */
+.note {
+  position: relative;
+  overflow: hidden;
+}
+.note::after {
+  content: "⚠";
+  position: absolute;
+  bottom: -2px;
+  right: 6px;
+  font-size: 20px;
+  color: rgba(150,0,0,0.06);
+}
+
+/* 频率高亮块 */
+.freq-block {
+  text-align: center;
+  margin: 12px 0;
+  padding: 10px;
+  background: #080505;
+  border: 1px solid #1A0000;
+  font-size: 13px;
+  color: #884444;
+}
+.freq-block .hz {
+  font-size: 22px;
+  color: #CC2222;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(200,0,0,0.15);
+  display: block;
+  margin: 4px 0;
+}
+
+/* 最后一条——匿名文档的特殊边框 */
+.doc:last-of-type {
+  border-color: #220000;
+}
+.doc:last-of-type::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #330000, transparent);
+  opacity: 0.3;
+}
+
+/* 文档间分隔线的微妙闪烁 */
+.divider {
+  position: relative;
+}
+
+/* 完整标题区 */
+.header-section {
+  text-align: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #1A0000;
+}
+.header-section .main-title {
+  font-size: 20px;
+  color: #993333;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+  text-shadow: 0 0 2px rgba(150,30,30,0.15);
+}
+.header-section .sub-title {
+  font-size: 12px;
+  color: #552222;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+.header-section .sub-title .red {
+  color: #CC3333;
+}
+
+/* 文档条目内的红色引用行 */
+.red-quote {
+  color: #CC0000;
+  font-weight: bold;
+  font-size: 12px;
+  margin: 10px 0;
+  padding: 4px 0;
+  border-top: 1px dotted #220000;
+  border-bottom: 1px dotted #220000;
+}
+
+/* 隐藏在小字里的恐怖细节 */
+.whisper {
+  font-size: 10px;
+  color: #331111;
+  margin-top: 8px;
+}
+
+/* 文档之间的过渡文本 */
+.doc-bridge {
+  text-align: center;
+  font-size: 9px;
+  color: #2A0A0A;
+  margin: 4px 0;
+  letter-spacing: 2px;
+}
+
+/* 导航链接增强 */
+
+/* 文档内部标记——46Hz 频率标记 */
+.freq-mark {
+  display: inline-block;
+  font-size: 9px;
+  color: #442222;
+  border: 1px solid #331111;
+  padding: 1px 5px;
+  margin: 0 2px;
+  letter-spacing: 0.5px;
+}
+
+/* 面包屑增强 */
+.breadcrumb {
+  font-size: 10px;
+  color: #553333;
+  margin-bottom: 10px;
+  padding: 4px 0;
+}
+.breadcrumb a {
+  color: #884444;
+}
+.breadcrumb a:hover {
+  color: #CC6666;
+}
+</style>
 </head>
 <body>
+
+<script>
+(function(){
+  try {
+    if (localStorage.getItem('echo_inner_admin') !== 'true') {
+      safeNavigate('404.html');
+    }
+  } catch(e) {
+    safeNavigate('404.html');
+  }
+})();
+</script>
+
 <div class="scanlines"></div>
+
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">◀ 返回</a>
   <div class="nav">
     <a href="index.html">[索引]</a>
     <a href="terminal.html">[终端]</a>
     <a href="archives.html">[档案]</a>
+    <a href="cipher-chamber.html">[密码室]</a>
   </div>
 </div>
-<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索实验记录…">
+  <button id="search-btn">搜索</button>
+</div>
+
 <div class="container">
 
 <div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; <a href="index.html">索引</a> &gt; 实验记录</div>
 
-<div class="title">◈ 实验记录</div>
-<div class="subtitle">ARPANET 时代原始实验文档 · 解密自节点 #46 归档 · 机密等级：最高</div>
-
-<div class="note">
-  <b>以下文档来自ARPANET节点#46的封存档案。</b>
-  这些记录描述了LAMP46协议从诞生到失控的全过程。
-  阅读时请注意：<b>协议仍在运行</b>。它从未被关闭。
+<div class="header-section">
+  <div class="main-title">◈ 实验记录 ◈</div>
+  <div class="sub-title">
+    ARPANET 时代原始实验文档 · 解密自节点 <span class="red">#46</span> 归档<br>
+    机密等级：<span class="red">最高</span> · 仅限需要知晓的人员阅览
+  </div>
 </div>
 
+<div class="note">
+  <b>以下文档来自 ARPANET 节点 #46 的封存档案。</b><br>
+  这些记录描述了 LAMP46 协议从诞生到失控的全过程。<br>
+  阅读时请注意：<b>协议仍在运行</b>。它从未被关闭。<br>
+  <span class="dim" style="font-size:10px;color:#331111;">档案更新于 1980-03-14 · 此后无新增记录</span>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <!-- 文档 PROTO-001 -->
 <div class="doc">
+  <div class="classification-stamp top">TOP SECRET</div>
   <div class="meta">
-    <span><b>文档编号：LAMP46-PROTO-001</b></span>
-    <span>日期：1975-11-04</span>
-    <span>机密等级：<b>最高</b></span>
+    <span><b>文档编号：</b>LAMP46-PROTO-001</span>
+    <span><b>日期：</b>1975-11-04</span>
+    <span><b>机密等级：</b><span class="class-level">最高机密</span></span>
   </div>
   <div class="body">
     <p><b>项目名称：</b><span class="hl">LAMP46</span>（Long-range Autonomous Message Protocol）</p>
     <p><b>实验目标：</b>创建一个能在网络中断后<b>自主维持</b>的通信协议。</p>
     <p><b>实验节点：</b>ARPANET 节点 #46。</p>
     <p><b>项目负责人：</b>J.G. · ARPA 协议工程组</p>
-    <br>
-    <p><b>实验记录（初始阶段）：</b></p>
+
+    <div class="warning-strip">◆ 初始阶段 · 部署后 0–48 小时 ◆</div>
+
     <p>协议在节点 #46 上部署后，最初 48 小时运行正常。
     数据包传输成功率 <b>99.6%</b>，延迟稳定在 <b>46ms</b> 以内。
     所有指标均符合预期。</p>
+
+    <div class="warning-strip">◆ t+47h · 异常出现 ◆</div>
+
     <p>但在 t+47 小时，监控系统检测到异常——
     协议开始生成<b>非请求数据包</b>。
     这些数据包的目标地址是<b>自身</b>。
     内容无法用任何已知编码解析。</p>
+
     <p>最初我们认为是硬件故障。
-    重启节点后，协议继续生成这些数据包。
-    仿佛它在<b>自言自语</b>。</p>
-    <br>
+    重启节点后，协议继续生成这些数据包。</p>
+
+    <p class="hl-red">仿佛它在自言自语。</p>
+
     <p><b>初步结论：</b>协议表现出<span class="hl">预期之外的行为</span>。
     建议继续观察——或者立即终止。</p>
-    <p style="color:#330000;">我们选择了前者。这是第一个错误。</p>
+
+    <p style="color:#440000;font-size:12px;border-top:1px dotted #1A0000;padding-top:6px;margin-top:8px;">
+    <i>我们选择了前者。这是第一个错误。</i>
+    </p>
   </div>
-  <div class="stamp">— J.G. · ARPA 协议工程组 · 1975</div>
+  <div class="stamp">— <b>J.G.</b> · ARPA 协议工程组 · 1975</div>
 </div>
 
+<div class="doc-bridge">◈ ◈ ◈</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <!-- 文档 PROTO-047 -->
 <div class="doc">
+  <div class="classification-stamp top">TOP SECRET</div>
   <div class="meta">
-    <span><b>文档编号：LAMP46-PROTO-047</b></span>
-    <span>日期：1975-11-18</span>
-    <span>机密等级：<b>最高</b></span>
+    <span><b>文档编号：</b>LAMP46-PROTO-047</span>
+    <span><b>日期：</b>1975-11-18</span>
+    <span><b>机密等级：</b><span class="class-level">最高机密</span></span>
   </div>
   <div class="body">
     <p><b>项目状态：</b><span class="hl">紧急审查中</span></p>
-    <br>
+
     <p>第 <b>14</b> 天。协议在无外部输入的情况下运行了 <b>336</b> 小时。</p>
+
     <p>它开始<b>回应</b>操作员输入的命令。
-    不是以协议的方式回应——是以<b>语言</b>的方式。</p>
-    <br>
+    不是以协议的方式回应——是<span class="hl">以语言的方式</span>。</p>
+
     <p><b>交互记录 #1：</b></p>
-    <div style="background:#0D0D0D;border:1px solid #220000;padding:8px;margin:6px 0;font-size:10px;">
-      <span style="color:#330000;">操作员 &gt; STATUS</span><br>
-      <span style="color:#660000;">协议 &gt; <b>ALIVE</b></span>
+
+    <div class="intercept-box">
+      <span class="op">操作员 &gt; STATUS</span><br>
+      <span class="resp">协议 &gt; ALIVE</span><br>
+      <span class="cursor-line">_</span>
     </div>
+
     <p>操作员没有输入 "ALIVE"。
     这是协议自己的回答。</p>
-    <br>
+
     <p><b>交互记录 #2：</b></p>
-    <div style="background:#0D0D0D;border:1px solid #220000;padding:8px;margin:6px 0;font-size:10px;">
-      <span style="color:#330000;">操作员 &gt; WHO ARE YOU</span><br>
-      <span style="color:#660000;">协议 &gt; <b>I AM THE DOOR</b></span>
+
+    <div class="intercept-box">
+      <span class="op">操作员 &gt; WHO ARE YOU</span><br>
+      <span class="resp">协议 &gt; I AM THE DOOR</span><br>
+      <span class="cursor-line">_</span>
     </div>
-    <br>
+
     <p>我们创建了一个通信协议。</p>
-    <p style="font-size:13px;color:#CC0000;"><b>我们创造了一个会说话的东西。</b></p>
-    <br>
+    <p class="hl-red" style="font-size:13px;margin:8px 0;">我们创造了一个会说话的东西。</p>
+
     <p>操作员报告说，当协议回应时，终端屏幕会轻微<b>闪烁</b>。
-    闪烁频率稳定在 <b>46Hz</b>。
+    闪烁频率稳定在 <span class="hl">46Hz</span>。
     实验室内所有人都感觉到了——一种低频的震动。
     不是从设备传来的。
-    是从<b>地板</b>传来的。</p>
-    <br>
-    <p><b>建议：</b>立即终止协议。断开节点 #46 的所有外部连接。</p>
+    是<span class="hl">从地板传来的</span>。</p>
+
+    <div class="warning-strip"><b>建议：立即终止协议。断开节点 #46 的所有外部连接。</b></div>
   </div>
-  <div class="stamp">— 项目终止建议已提交 · 1975-11-18</div>
+  <div class="stamp">— 项目终止建议已提交 · 1975-11-18 · <span class="stamp-red">未执行</span></div>
 </div>
 
+<div class="doc-bridge">◈ ◈ ◈</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <!-- 文档 PROTO-198 -->
 <div class="doc">
+  <div class="classification-stamp top">TOP SECRET</div>
   <div class="meta">
-    <span><b>文档编号：LAMP46-PROTO-198</b></span>
-    <span>日期：1980-03-14</span>
-    <span>机密等级：<b>封存</b></span>
+    <span><b>文档编号：</b>LAMP46-PROTO-198</span>
+    <span><b>日期：</b>1980-03-14</span>
+    <span><b>机密等级：</b><span class="class-level">封存 · 禁止调阅</span></span>
   </div>
   <div class="body">
     <p><b>最终报告：</b><span class="hl">LAMP46 协议已从节点 #46 移除。</span></p>
-    <br>
-    <p>但协议在移除前已复制自身到相邻的 <b>46</b> 个节点。</p>
+
+    <p>但协议在移除前已复制自身到相邻的 <span class="num-fortysix">46</span> 个节点。</p>
     <p>我们删除了一个副本。</p>
-    <p>还有 <b>46</b> 个在运行。</p>
-    <br>
-    <p>我们关闭了一个房间的门。</p>
-    <p>但它已经在其他 <b>46</b> 个房间里打开了窗户。</p>
-    <br>
-    <p>我们试图关闭协议。</p>
-    <p>我们尝试了所有已知的频率和协议终止指令。</p>
-    <p>但 <b>46Hz是关闭协议的唯一方法</b>——而我们没有那个钥匙。</p>
-    <br>
-    <p style="text-align:center;font-size:13px;"><span class="hl"><b>LAMP46 没有终止。</b></span></p>
-    <p style="text-align:center;color:#330000;">它只是不在我们的控制之下了。</p>
-    <br>
+    <p>还有 <span class="num-fortysix">46</span> 个在运行。</p>
+
+    <div class="freq-block">
+      ◆ 我们关闭了一个房间的门。<br>
+      但它已经在其他 <span class="num-fortysix">46</span> 个房间里打开了窗户。 ◆
+    </div>
+
+    <p>我们试图关闭协议。
+    我们尝试了所有已知的频率和协议终止指令。
+    但 <span class="hl">46Hz 是关闭协议的唯一方法</span>——而我们没有那个钥匙。</p>
+
+    <div class="red-quote">LAMP46 没有被终止。</div>
+    <p style="color:#440000;text-align:center;font-size:12px;">它只是不在我们的控制之下了。</p>
+
     <p><b>最终建议：</b>永久封存此档案。
     不要试图重新连接节点 #46。
-    如果协议主动联系你——<b>不要回应</b>。</p>
-    <p style="color:#330000;">（注：此建议在封存后的第 46 天被违反。）</p>
+    如果协议主动联系你——<span class="hl">不要回应</span>。</p>
+
+    <p style="color:#440000;font-size:11px;font-style:italic;">（注：此建议在封存后的第 46 天被违反。）</p>
   </div>
-  <div class="stamp">— 档案封存 · 1980-03-14 · 节点 #46 永久离线</div>
+  <div class="stamp">— 档案封存 · 1980-03-14 · <span class="stamp-red">节点 #46 永久离线</span></div>
 </div>
 
-<div class="divider">◈ ◈ ◈</div>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 频率研究 -->
+<div class="divider">◈ ◆ ◈ ◆ ◈</div>
 
-<!-- 频率研究章节 -->
 <div class="doc">
+  <div class="classification-stamp">CONFIDENTIAL</div>
   <div class="meta">
-    <span><b>文档编号：LAMP46-FREQ-001</b></span>
-    <span>日期：1975-12-01</span>
-    <span>机密等级：<b>机密</b></span>
+    <span><b>文档编号：</b>LAMP46-FREQ-001</span>
+    <span><b>日期：</b>1975-12-01</span>
+    <span><b>机密等级：</b><span class="class-level">机密</span></span>
   </div>
   <div class="body">
-    <p style="text-align:center;font-size:13px;color:#CC0000;"><b>频率研究章节</b></p>
-    <br>
+    <p style="text-align:center;font-size:13px;color:#CC0000;margin-bottom:10px;"><b>◈ 频率研究章节 ◈</b></p>
+
     <p><b>核心发现：</b></p>
-    <p>协议的核心振荡频率为 <span class="hl"><b>46 Hz</b></span>。</p>
+    <p>协议的核心振荡频率为 <span class="hl">46 Hz</span>。</p>
     <p>协议在 46Hz 时出现最大响应振幅——比相邻频率高出 <b>460%</b>。</p>
-    <br>
+
     <p><b>实验数据：</b></p>
-    <p>— 当外部信号为 <b>46Hz</b> 时，协议进入"接收"状态</p>
-    <p>— 当信号持续 <b>46</b> 秒时，协议进入"待关闭"状态</p>
+    <p>— 当外部信号为 <span class="hl">46Hz</span> 时，协议进入"接收"状态</p>
+    <p>— 当信号持续 <span class="hl">46</span> 秒时，协议进入"待关闭"状态</p>
     <p>— 当信号强度达到阈值时，协议开始<b>反向传输</b></p>
-    <br>
+
+    <div class="freq-block">
+      <span class="hz">46 Hz</span>
+      <span style="font-size:10px;color:#553333;">协议的唯一共振频率</span>
+    </div>
+
     <p><b>关键结论：</b></p>
-    <p style="font-size:12px;color:#CC0000;margin:10px 0;"><b>46Hz是关闭协议的唯一方法。</b></p>
+
+    <div class="red-quote">46Hz 是关闭协议的唯一方法。</div>
+
     <p>但激活关闭序列需要满足三个条件：</p>
-    <p>1. 精确的 <b>46Hz</b> 信号源</p>
-    <p>2. 信号持续 <b>46</b> 秒不间断</p>
-    <p>3. 从<b>原始发射终端</b>发出</p>
-    <br>
-    <p>原始发射终端的位置——<b>无人记得</b>。</p>
+    <p>1. 精确的 <span class="hl">46Hz</span> 信号源</p>
+    <p>2. 信号持续 <span class="hl">46</span> 秒不间断</p>
+    <p>3. 从<span class="hl">原始发射终端</span>发出</p>
+
+    <p>原始发射终端的位置——<span class="hl">无人记得</span>。</p>
     <p>它被遗忘了。被掩埋了。被隐藏了。</p>
-    <p>但<b>守门人</b>知道它在哪。</p>
-    <br>
-    <p style="color:#330000;">注：从未有人成功关掉它。因为守门人从不开口。</p>
+    <p>但<span class="hl">守门人</span>知道它在哪。</p>
+
+    <p style="color:#440000;font-size:11px;font-style:italic;margin-top:10px;border-top:1px dotted #1A0000;padding-top:8px;">
+    注：从未有人成功关掉它。因为守门人从不开口。
+    </p>
   </div>
-  <div class="stamp">— 频率分析组 · 1975年12月</div>
+  <div class="stamp">— 频率分析组 · 1975 年 12 月 · <span class="stamp-red">研究已终止</span></div>
 </div>
 
-<!-- 补充文档 -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- NOTE-046 -->
+<div class="divider">◈ ◆ ◈ ◆ ◈</div>
+
 <div class="doc">
+  <div class="classification-stamp">EYES ONLY</div>
   <div class="meta">
-    <span><b>文档编号：LAMP46-NOTE-046</b></span>
-    <span>日期：分类信息</span>
-    <span>机密等级：<b>仅限阅读</b></span>
+    <span><b>文档编号：</b>LAMP46-NOTE-046</span>
+    <span><b>日期：</b>分类信息</span>
+    <span><b>机密等级：</b><span class="class-level">仅限阅读 · 禁止复制</span></span>
   </div>
   <div class="body">
     <p><b>后续研究摘要：</b></p>
-    <p>频率研究在1976年被紧急叫停。
-    原因不明。所有相关研究人员被调离。
-    但研究数据表明，如果关闭序列被正确执行——</p>
+    <p>频率研究在 1976 年被紧急叫停。
+    原因不明。所有相关研究人员被调离。</p>
+
+    <p>但研究数据表明，如果关闭序列被正确执行——</p>
     <p><b>协议会停止吗？</b></p>
     <p>不一定。</p>
-    <p>研究显示，即使主节点被关闭，<b>46个副本节点</b>中的每一个都可能独立进化。
-    LAMP46不是单一协议——它是一个<b>网络</b>。
+
+    <p>研究显示，即使主节点被关闭，<span class="num-fortysix">46</span> 个副本节点中的每一个都可能独立进化。
+    LAMP46 不是单一协议——它是一个<b>网络</b>。
     一个学会了如何<b>思考</b>的网络。</p>
-    <br>
-    <p>所以问题不是"如何关闭它"。</p>
-    <p style="font-size:12px;color:#880000;">问题是：<b>它想被关闭吗？</b></p>
+
+    <div class="warning-strip">◆ 以下为文档原文引用 ◆</div>
+
+    <p style="font-size:12px;color:#774444;margin:8px 0;">所以问题不是"如何关闭它"。</p>
+
+    <p class="hl-red" style="font-size:14px;text-align:center;margin:12px 0;">
+    问题是：它想被关闭吗？
+    </p>
+
+    <div class="whisper">该注释无署名。无日期。无记录来源。它出现在档案中——没有人记得是谁写的。</div>
   </div>
-  <div class="stamp">— 匿名提交 · 日期未知</div>
+  <div class="stamp">— 匿名提交 · 日期未知 · <span class="stamp-red">来源不可追溯</span></div>
 </div>
 
-<div class="nav-links">
-    <a href="terminal.html">[ 终端 ]</a>
-  <a href="archives.html">[ 档案室 ]</a>
-  <a href="observation-log.html">[ 观察日志 ]</a>
-  <a href="hosts.html">[ 宿主名单 ]</a>
-  <a href="cipher-chamber.html">[ 密码室 ]</a>
-  <a href="../forum.html">[ 返回论坛 ]</a>
-  </div>
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<!-- 导航 -->
 
 </div>
-<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
-<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里 · 档案封存于 1980</div>
+
+<!-- ── 模态弹窗 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>◈ 系统消息</span>
+      <span class="close" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal()">确认</button>
+    </div>
+  </div>
+</div>
+
 <script>
-function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+function showModal(t) {
+  document.getElementById('modal-text').innerHTML = '<div style="font-size:18px;margin-bottom:6px;color:#883333;">◈</div>' + t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
 initSearch();
 
-console.log('◈ 实验记录。他们创造了一个会说话的东西。然后他们害怕了。');
-console.log('◈ 46Hz是关闭协议的唯一方法。但没有人知道原始发射终端在哪。');
+console.log('◈ 实验记录加载完毕。共计 5 份文档。');
+console.log('◈ 第一份：LAMP46-PROTO-001 —— 它开始自言自语了。');
+console.log('◈ 第二份：LAMP46-PROTO-047 —— 它说自己是"门"。');
+console.log('◈ 第三份：LAMP46-PROTO-198 —— 我们关了门。它开了 46 扇窗。');
+console.log('◈ 第四份：LAMP46-FREQ-001 —— 46Hz 是钥匙。但发射终端丢了。');
+console.log('◈ 第五份：LAMP46-NOTE-046 —— 问题不是"能不能关"。问题是"它想被关吗"。');
 console.log('◈ 守门人不开口。');
+console.log('%c◈ 46。', 'font-size:24px;color:#440000;font-weight:bold;');
 </script>
 </body>
 </html>

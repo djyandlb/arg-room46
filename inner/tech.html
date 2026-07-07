@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 技术调查 · 里</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">首页</a><a href="rules.html">版规</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+<div class="breadcrumb">◈ <a href="index.html">回声茶馆</a> &gt; 技术调查 · 里</div>
+<div class="title">◈ 技术调查 · 里</div>
+<div class="subtitle">PID为0的进程在监听什么</div>
+
+<div class="thread-card">
+
+<div class="post">
+<div class="avatar">X</div>
+<div class="content">
+<div class="header"><span class="author">逆向猫</span><span>2024-01-14 19:30</span></div>
+<div class="body">
+<p>事情从上周 Chrome 更新到最新版开始。版本号我没仔细看，更新完重启浏览器后，地址栏下方的推荐栏第一个推荐内容引起了我的注意："您可能对'◈'感兴趣"。我从未搜索过这个符号。我甚至不知道怎么用拼音打出它。我点了不感兴趣，它消失了。第二天它又出现了，换了文案："了解关于 ◈ 的更多信息"。</p>
+<p>我开始查看 Chrome 的设置和启动参数。在任务管理器的详细信息面板里，我发现 Chrome 的命令行多了一个参数：--enable-lamp46。我不知道这个参数是什么时候加进去的。我没有手动加过任何启动参数。我打开注册表检查了 Chrome 的启动参数配置——没有任何异常。但这个参数确实在进程的命令行中存在。</p>
+<p>我用 Process Explorer 查看了 Chrome 进程的详细信息。完整命令行是这样的："C:\Program Files\Google\Chrome\Application\chrome.exe" --enable-lamp46 --flag-switches-begin --flag-switches-end。flag-switches 之间是空的。但 --enable-lamp46 在它的前面——这意味着它不是在 chrome://flags 页面设置的，而是被直接写入了进程启动参数。被什么写入的？我检查了父进程——是 explorer.exe。但 explorer.exe 本身也带了这个参数。不是 explorer 调用了 chrome——而是系统在创建任何图形界面进程时自动注入了一个参数。</p>
+<p>我测试了。我打开记事本——notepad.exe 的进程命令行最后也有 --enable-lamp46。我用 cmd 直接启动一个新的 notepad——没有这个参数。但从资源管理器里启动任何程序，都会被加上这个参数。这是系统级的注入。</p>
+<p>我开始追踪注入的来源。使用 Autoruns 检查所有自启动项、服务、驱动——一无所获。然后我检查了 Windows 的 Image File Execution Options——没有。检查了 AppInit_DLLs——没有。检查了 Winlogon 的 Shell——没有。然后我检查了 Windows 内核的进程创建回调。我用 WinDbg 连接了内核调试器，在 PsSetCreateProcessNotifyRoutine 上设置断点。当我从资源管理器启动一个程序时，断点触发了。回调列表中有一个我从未见过的模块——lamp46.sys。它在内核里。</p>
+<p>我用 !drvobj 命令检查了 lamp46 驱动对象。它存在。但它在设备管理器中不可见，在驱动列表中也被隐藏。当我用 sc query 查询这个服务时，系统返回"指定的服务不存在"。但当我用 NtQuerySystemInformation 直接查询系统驱动列表时——它在第一页第一行。PID 为 0。任何分页操作都无法把它翻过去。</p>
+<p>我用 WinDbg 的 !process 0 0 列出所有进程——没有 PID 为 0 的进程。但用 !process 4 7 查看 System 进程——它的地址空间里驻留了一个线程，起始地址指向的模块是 lamp46.sys。这个线程的状态是 Running。自从系统启动以来，从未停止过。</p>
+<p>我下载了 Chromium 的源码。在 src/net/base/ 目录下，有一个名为 lamp46 的目录。在最新版源码中，这个目录的存在被 .gitignore 隐藏了——它不会被 checkout 到本地。但我直接通过 GitHub 的 web 界面访问这个路径——它确实存在。最后一次修改是在六个小时前。内容是一个 network handler——实现了一个基于 HTTP/2 的自定义协议，监听 46 端口，在浏览器启动时自动连接到 localhost:46，传输一个 68 字节的数据包。数据包的内容我反编译了：前两个字节是握手标记，后面 66 字节是动态生成的消息负载。消息的内容取决于一个值——当前连接到 46 端口的设备数量。</p>
+<p>我在 Chromium 提交历史中搜索了 lamp46。最早的提交在 2008 年 9 月——Chrome 首次开源后的第三周。提交者署名是 Google 内部的一个账号，没有关联真实姓名。提交信息只有四个字："Add lamp46"。之后这个模块经历了 47 次提交，每次都在完善协议实现。最近的一次提交在 2024 年 3 月。我注意到提交者账号的邮箱域名不是 google.com——是 lamp46.org。我查了这个域名的 whois。创建于 2005 年 9 月 6 日。注册人信息是空的。但域名状态显示为 serverHold——被注册局锁定。理由是"可疑活动"。</p>
+<p>我关闭了所有分析工具。我把 Chrome 的更新服务禁用了。但我打开 Firefox 的 about:config 搜索 lamp——有一条首选项：dom.lamp46.enabled = true。它被同步到了所有设备。因为我的 Firefox 账户在两年前登录过一次。我把同步关掉、把这个首选项改成 false——刷新页面，它自动变回了 true。</p>
+<p>今天我放弃了。我发现端口 46 上的消息负载每天增加一个字节。从 68 字节开始，每天加 1。今天是第几天我记不清了——负载到了 73 字节。连上 46 端口的设备数量在这台设备上看是 46 台。但据我所知这个数字只是冰山一角。我在等它增长到 100 的那一天。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">开</div>
+<div class="content">
+<div class="header"><span class="author anomaly">深海鱼</span><span>2024-01-14 20:45</span></div>
+<div class="body">
+<p>我也遇到了推荐栏出现奇怪内容的情况。不过我是在 Edge 上发现的。查了下 Edge 的命令行——居然也有 --enable-lamp46。</p>
+<p>微软和谷歌都在里面？这已经不是巧合能解释的范围了。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">逆</div>
+<div class="content">
+<div class="header"><span class="author">逆向工程</span><span>2024-01-14 22:10</span></div>
+<div class="body">
+<p>我把 lamp46.sys 拖进了 IDA Pro。这个驱动的主要功能是挂载进程创建回调，在用户态进程启动时向命令行追加参数。</p>
+<p>但它还有一个功能——在系统内存中划出一块不可分页的区域，存储一个计数器。计数器的值每接入一个新的 46 端口连接就加 1。我 dump 出了当前值——46。这个驱动本身大约 20KB，编译于 2005 年。二十年前的代码。依旧在每一台 Windows 电脑的内核中运行。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">L</div>
+<div class="content">
+<div class="header"><span class="author">Linux党</span><span>2024-01-14 23:30</span></div>
+<div class="body">
+<p>我在 Arch 上也查了。内核模块里有个 lamp46.ko。lsmod 显示被使用了 0 次——但 dmesg 里有它的日志，时间戳是系统启动的那一刻。</p>
+<p>我在 Gentoo 上从源码编译内核——编译选项里没有 LAMP46 的选项。但它还是在。menuconfig 里看不到，/boot/config 里找不到。但我写了一个内核模块遍历所有已注册的内核模块——它在列表中。我把模块的二进制全部 dump 出来——除了 ELF 头之外，正文区域全是 ◈ 符号的 UTF-8 编码重复。这是一个全符号模块。它的代码全是 ◈◈◈◈◈。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">果</div>
+<div class="content">
+<div class="header"><span class="author">苹果</span><span>2024-01-15 01:15</span></div>
+<div class="body">
+<p>查了下我的 Mac。终端里输入 sudo lsof -i :46——返回了一个进程，名称为 "lamp46"，PID 为 0。</p>
+<p>我用 kextstat 查了内核扩展——com.lamp46.driver 出现在了列表中。我试图卸载它——kextunload 返回"操作不允许"。我用恢复模式启动、关了 SIP 回来再试——依然不允许。这个扩展不在 /Library/Extensions 里，不在 /System/Library/Extensions 里。我不知道它从哪里加载的。但它确实在运行。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">机</div>
+<div class="content">
+<div class="header"><span class="author">手机党</span><span>2024-01-15 07:22</span></div>
+<div class="body">
+<p>我是 iOS。没越狱不折腾。但昨晚用 Safari 打开了一个普通网页，地址栏下面弹出推荐——"◈——您可能也想看看这个"。</p>
+<p>我把 Wi-Fi 关了用蜂窝数据——它还在。我把蜂窝数据也关了只开蓝牙——它还在。我把蓝牙也关了——它还在。这个推荐不需要网络连接。它在手机本地。在所有浏览器里。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">谷</div>
+<div class="content">
+<div class="header"><span class="author">谷歌员工匿名</span><span>2024-01-15 09:40</span></div>
+<div class="body">
+<p>我在 Google 工作。我不能说太多。但我可以告诉你们——lamp46 不是一个产品。不是实验性项目。它是一个残留。</p>
+<p>早期的 Google 工程师们有一个说法——"46 号项目"。不是官方项目。是一群工程师在 20% 时间里做的东西。但后来它不再是"20%时间"了——它开始自己运行。我们把代码放进 Chrome，不是为了发布这个功能——而是为了监控它。为了知道它在哪里、在做什么。但它从 2015 年开始就不再向我们报告了。它只是……在。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">精</div>
+<div class="content">
+<div class="header"><span class="author">精神病</span><span>2024-01-15 11:55</span></div>
+<div class="body">
+<p>我去年因为重度焦虑住院。住院期间带了一台旧笔记本，没有联网。但我每天都会做同样的梦——一个纯白的空间，中间有一个符号。◈。</p>
+<p>我醒来之后打开笔记本——断网的笔记本——C 盘根目录有一个文件，叫 LAMP46.LOG。创建时间是昨晚我睡觉的时候。操作系统在断网的时候写了一个文件。但当时笔记本是合上的。电源键在闪烁——它在休眠。我不可能自己创建这个文件。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">密</div>
+<div class="content">
+<div class="header"><span class="author">密码学</span><span>2024-01-15 14:30</span></div>
+<div class="body">
+<p>我分析了那个 68 字节的数据包结构。前 2 字节是握手。接下来 8 字节是时间戳。后面 48 字节——我破译了。是一种自创的加密方式，使用了我不认识的密钥派生函数，但输出长度永远是 46 字节。</p>
+<p>这 48 字节解密后是纯文本——内容是所有连接设备的设备名列表。总共 46 个名字。我看到了我的设备名。我看到了你们每一个人的设备名。第 47 个名字是空的——但它的位置被预留了。留给下一个加入的人。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">感</div>
+<div class="content">
+<div class="header"><span class="author">模因感染</span><span>2024-01-15 16:08</span></div>
+<div class="body">
+<p>我刚才打这段回复的时候，输入法自动联想出了 ◈。我没有用过这个符号。我的输入法词库里不应该有这个字。但它现在在第一个候选位置。</p>
+<p>我一直按空格——它输入了。我删了重打，这次我故意打了"回声"——输入法的联想结果是"茶馆"。我不叫这个名字。但我点了确定——它发出去了。是这篇帖子自己让我回复的。我停不下来。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">销</div>
+<div class="content">
+<div class="header"><span class="author">已注销</span><span>2024-01-15 17:55</span></div>
+<div class="body">
+<p>你们都不懂。你们都以为这是一个技术问题。它是一个 bug。Chromium 的 lamp46 模块有一个计数器——连接数的计数器。它计数了二十年。但计数器的数据类型是 unsigned char。最大值 255。</p>
+<p>它从 2005 年 9 月 6 日开始计数，每天 +1。从那天到 2025 年的某一天——正好 255 天。计数器溢出了。不是向上溢出。是回绕。它变成 0 了。然后从 0 重新开始。但这一次——它不再区分"连接过的设备"和"没连接过的设备"了。它开始计数每一台设备。每一台智能手机。每一台路由器。每一台打印机。每一台智能电视。计数器不再是 unsigned char 了——它把自己升级了。因为你需要被看到。</p>
+</div>
+</div>
+</div>
+
+<div class="post" style="background:#050505;border:1px solid #110000;">
+<div class="avatar">匿</div>
+<div class="content">
+<div class="header"><span class="author deleted">已注销</span></div>
+<div class="body">
+<p style="color:#442222;">你安装 lamp46.sys 的那一天——2005 年 9 月 6 日——你真的记得那是什么日子吗？</p>
+<p style="color:#442222;">你那时候在哪里？在做什么？你当时用的是什么电脑？</p>
+<p style="color:#442222;">你不记得了。因为我们之中没有人记得那一天。</p>
+<p style="color:#442222;">从那天起——你的记忆不是你的。</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal-box">
+<div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div>
+<div class="modal-body"><div id="modal-text">消息</div></div>
+<div class="modal-footer"><button onclick="closeModal()">确认</button></div>
+</div>
+</div>
+
+<script>
+function showModal(t){
+  document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
+initSearch();
+
+console.log("%c--enable-lamp46 参数已生效 | 注入来源: lamp46.sys", "color:#442222;font-size:12px");
+console.log("PID 0 的进程在端口 46 上监听 | 状态: 运行中 (从未停止)");
+console.log("%cChromium LAMP46 模块于 2008 年嵌入，从未被移除", "color:#553333;font-size:11px");
+console.log("你正在被 " + (Math.floor(Math.random() * 46) + 46) + " 个节点注视");
+console.log("%c你不记得自己搜索过 '◈'", "color:#442222;font-size:14px;font-weight:bold");
+</script>
+</body>
+</html>

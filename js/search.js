@@ -16,17 +16,33 @@ var SEARCH_MAP = {
   '镜像':         'blank/blank-mirror.html',
   '倒影':         'blank/blank-mirror.html',
   '正反':         'blank/blank-mirror.html',
-  '46MHz':        'blank/blank-signal.html',
+  '46Hz':        'blank/blank-signal.html',
   '信号':         'blank/blank-signal.html',
   '遗忘':         'blank/blank-forgotten.html',
   'Outsider':     'blank/blank-cipher.html',
   '残骸':         'blank/blank-cipher.html',
+	  '观看':         'blank/blank-watching.html',
+	  '看':           'blank/blank-watching.html',
   '46':           'blank/blank-numbers.html',
 
-  // == 第5阶段: 管理员 ==
+  // == 第5阶段: 管理员 / 用户档案 ==
   '站务管理':     'surface/admin.html',
+
+  '宿主':         'inner/hosts.html',
   'ANCHOR_0':     'gateway/key-gate.html',
   'anchor_0':     'gateway/key-gate.html',
+
+  // == 钥匙与出口 ==
+  '钥匙':         'inner/keys.html',
+  '遗忘之路':     'ending/escape.html',
+  '搜索出口':     'inner/exit.html',
+  '出口':         'inner/exit.html',
+
+  // == V47 / 自毁 ==
+  'Detachment':   'ending/burn.html',
+
+  // == 融合结局 ==
+  '第46条':       'ending/merge.html',
 };
 
 /* ── 计算相对路径 ── */
@@ -86,7 +102,30 @@ function doSearch() {
   if (!q) return;
   var prefix = getSearchPrefix();
   var ql = q.toLowerCase();
-  var keys = Object.keys(SEARCH_MAP);
+
+  // 特殊分流：深海鱼 — 表论坛搜去 surface, 里论坛搜去 inner
+  if (ql.indexOf('深海鱼') !== -1) {
+    var target = prefix === '../' ? 'inner/deepseafish.html' : 'surface/deepseafish.html';
+    addSearchHistory(q, target);
+    safeNavigate(prefix + target);
+    return;
+  }
+
+  // 特殊分流：Intuitive — 仅限 inner
+  if ((ql.indexOf('intuitive') !== -1 || ql.indexOf('直觉') !== -1) && prefix === '../') {
+    addSearchHistory(q, 'intuitive.html');
+    safeNavigate('../inner/intuitive.html');
+    return;
+  }
+
+  // 特殊分流：自己 — 仅限 inner
+  if (ql.indexOf('自己') !== -1 && prefix === '../') {
+    addSearchHistory(q, 'self.html');
+    safeNavigate('../inner/self.html');
+    return;
+  }
+
+  var keys = Object.keys(SEARCH_MAP).sort(function(a,b){return b.length - a.length;});
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var kl = key.toLowerCase();
@@ -103,6 +142,9 @@ function doSearch() {
   }
 }
 
+/* ── 搜索按钮点击计数（inner 5次彩蛋）── */
+var _searchClickCount = 0;
+
 /* ── 初始化 ── */
 function initSearch() {
   var input = document.getElementById('search-input');
@@ -110,7 +152,25 @@ function initSearch() {
   if (input && btn) {
     if (input._listenerAttached) return;
     input._listenerAttached = true;
-    btn.addEventListener('click', doSearch);
+    btn.addEventListener('click', function(){
+      // 点击计数（仅 inner）
+      if (getSearchPrefix() === '../') {
+        _searchClickCount++;
+        if (_searchClickCount >= 5) {
+          _searchClickCount = -999; // 防止重复触发
+          // 新标签页打开
+          var a = document.createElement('a');
+          a.href = '../inner/eye.html';
+          a.target = '_blank';
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          return;
+        }
+      }
+      doSearch();
+    });
     input.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
   }
   renderSearchHistory();
@@ -178,15 +238,15 @@ var STORY_ORDER = [
   'inner/travel.html',                // 29
   'inner/router.html',                // 30
   'inner/archives.html',              // 31
-  'inner/core.html',                  // 32
+                    // 32
   'inner/terminal.html',              // 33
-  'inner/memory-fragments.html',      // 34
-  'inner/hosts.html',                 // 35
+        // 34
+  'inner/admin.html','inner/hosts.html',                 // 35
   'inner/observation-log.html',       // 36
   'inner/experiment.html',            // 37
   'inner/cipher-chamber.html',        // 38
-  'inner/confrontation.html',         // 39
-  'inner/void.html',                  // 40
+           // 39
+                    // 40
   'inner/exit.html',                  // 41
 
   // 终章：结局
@@ -198,7 +258,7 @@ var STORY_ORDER = [
 
 var STORY_TOTAL = 45;
 
-/* ── 额外/彩蛋页面映射 ── */
+/* ── 额外/彩蛋页面映射（兜底用） ── */
 var EXTRA_MAP = {
   'surface/login.html':               'extra',
   'surface/register.html':            'extra',
@@ -214,8 +274,36 @@ var EXTRA_MAP = {
   'surface/router.html':              'extra',
   'surface/drafts.html':              'extra',
   'surface/profile.html':             'extra',
+  'surface/deepseafish.html':         'extra',
+  'inner/deepseafish.html':           'extra',
+  'inner/self.html':                  'easter egg',
+  'inner/eye.html':                   'easter egg',
   'blank/blank-mirror.html':          'easter egg',
 };
+
+/* ── 所有页面统一顺序（表论坛→里论坛→最后记录） ── */
+var ALL_PAGES = [
+  // === 表论坛（21页 + forum.html） ===
+  'forum.html',
+  'surface/rules.html','surface/newbie.html','surface/echo.html','surface/dream.html',
+  'surface/food.html','surface/movie.html','surface/travel.html','surface/diary.html',
+  'surface/tech.html','surface/browser.html','surface/router.html',
+  'surface/moon.html','surface/suzhou.html','surface/faq.html',
+  'surface/login.html','surface/register.html','surface/drafts.html','surface/profile.html',
+  'surface/deepseafish.html','surface/admin.html',
+  // === 里论坛（29页） ===
+  'inner/index.html','inner/rules.html','inner/newbie.html','inner/echo.html','inner/dream.html',
+  'inner/food.html','inner/movie.html','inner/travel.html','inner/diary.html',
+  'inner/tech.html','inner/browser.html','inner/router.html',
+  'inner/garden.html','inner/moonlight.html',
+  'inner/admin.html','inner/hosts.html','inner/terminal.html',
+  'inner/archives.html','inner/observation-log.html','inner/experiment.html',
+  'inner/cipher-chamber.html','inner/self.html',
+  'inner/deepseafish.html','inner/eye.html',
+  'inner/intuitive.html','inner/keys.html','inner/v47-message.html','inner/exit.html',
+  // === 最后的记录 ===
+  'surface/story.html'
+];
 
 /* ── 注入右下角标签 ── */
 function injectPageLabel() {
@@ -225,28 +313,40 @@ function injectPageLabel() {
     var filename = url.split('/').pop().split('?')[0].split('#')[0].toLowerCase();
     if (!filename) return;
 
-    // 1) 按文件名匹配主线
-    for (var i = 0; i < STORY_ORDER.length; i++) {
-      var sf = STORY_ORDER[i].split('/').pop().toLowerCase();
-      if (filename === sf) {
-        createLabel((i + 1) + ' / ' + STORY_TOTAL, 'story');
+    // 构造相对路径用于匹配
+    var prefix = '';
+    if (url.indexOf('/surface/') !== -1) prefix = 'surface/';
+    else if (url.indexOf('/inner/') !== -1) prefix = 'inner/';
+    else if (url.indexOf('/gateway/') !== -1) prefix = 'gateway/';
+    else if (url.indexOf('/blank/') !== -1) prefix = 'blank/';
+    else if (url.indexOf('/decode/') !== -1) prefix = 'decode/';
+    else if (url.indexOf('/ending/') !== -1) prefix = 'ending/';
+    var pageKey = prefix + filename;
+
+    // 特殊目录：显示固定标签
+    if (prefix === 'gateway/') { createLabel('路径', 'extra'); return; }
+    if (prefix === 'blank/')   { createLabel('Blank', 'extra'); return; }
+    if (prefix === 'decode/')  { createLabel('解码页', 'extra'); return; }
+    if (prefix === 'ending/')  { createLabel('结局', 'egg'); return; }
+
+    // 统一顺序查找
+    for (var i = 0; i < ALL_PAGES.length; i++) {
+      if (pageKey === ALL_PAGES[i]) {
+        createLabel((i + 1) + ' / ' + ALL_PAGES.length, 'story');
         return;
       }
     }
 
-    // 2) 按文件名匹配 extra/egg
-    for (var key in EXTRA_MAP) {
-      var ef = key.split('/').pop().toLowerCase();
-      if (filename === ef) {
-        var grp = EXTRA_MAP[key] === 'extra' ? 'extra' : 'egg';
-        createLabel(EXTRA_MAP[key], grp);
-        return;
+    // 兜底：extra/egg 映射
+    if (typeof EXTRA_MAP !== 'undefined') {
+      for (var key in EXTRA_MAP) {
+        var ef = key.split('/').pop().toLowerCase();
+        if (filename === ef) {
+          var grp = EXTRA_MAP[key] === 'extra' ? 'extra' : 'egg';
+          createLabel(EXTRA_MAP[key], grp);
+          return;
+        }
       }
-    }
-
-    // 3) inner 兜底 — 用 URL 判断
-    if (url.indexOf('/inner/') !== -1) {
-      createLabel('INNER', 'story');
     }
   } catch(e) {}
 }

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 自己</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+<style>
+/* ── 背景基底 ── */
+body{background:#080808;color:#664444;font:13px/2 "Courier New",monospace;min-height:100vh;overflow-x:hidden}
+
+/* ── 噪声层 ── */
+#noise{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;opacity:0.03;
+  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAMklEQVRoQ+3VMQEAAAgEIO1f6V1gCAUf2LRLly5dunTp0qXLly5dunTp0qVLly5d+g0mJgABy6s7NQAAAABJRU5ErkJggg==);
+}
+
+/* ── 扫描线（inner.css 已有，覆盖增强） ── */
+.scanlines{opacity:0.04 !important}
+
+/* ── 浮动符号 ── */
+#floatSymbols{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:2;overflow:hidden;
+}
+#floatSymbols .sym{
+  position:absolute;font-size:8px;color:rgba(60,20,20,0.06);
+  animation:floatUp linear infinite;
+}
+@keyframes floatUp{
+  0%{transform:translateY(100vh) rotate(0deg);opacity:0}
+  10%{opacity:0.2}
+  90%{opacity:0.05}
+  100%{transform:translateY(-10vh) rotate(360deg);opacity:0}
+}
+
+/* ── 容器 ── */
+.container{position:relative;z-index:10;max-width:580px;margin:0 auto;padding:30px 20px 60px}
+
+/* ── 标题区 ── */
+.title-area{text-align:center;margin-bottom:30px}
+.title-main{
+  font-size:22px;letter-spacing:10px;color:#884444;
+  text-shadow:0 0 12px rgba(136,68,68,0.08);
+  animation:titleGlitch 6s infinite;
+}
+@keyframes titleGlitch{
+  0%,100%{opacity:0.7;text-shadow:0 0 12px rgba(136,68,68,0.08)}
+  3%{opacity:1;text-shadow:-3px 0 #993333,3px 0 #553333;transform:translateX(-2px) skewX(-0.5deg)}
+  5%{opacity:0.7;text-shadow:0 0 12px rgba(136,68,68,0.08);transform:none}
+  8%{opacity:0.8}
+  10%{opacity:1;text-shadow:2px 0 #AA3333,-1px 0 #442222;transform:translateX(1px) skewX(0.3deg)}
+  12%{opacity:0.7;transform:none}
+}
+.title-sub{color:#442222;font-size:10px;letter-spacing:6px;margin-top:6px}
+
+/* ── 叙述段落 ── */
+.stanza{
+  margin:20px 0;padding:14px 18px;
+  border-left:2px solid rgba(80,30,30,0.08);
+  line-height:2.4;
+}
+.stanza p{color:#553333;margin:6px 0;font-size:12px}
+.stanza .hl{color:#774444}
+.stanza .dim{color:#442222;font-size:10px}
+.stanza .em{color:#884444;font-weight:bold}
+.stanza .dark{color:#331111}
+
+/* ── 系统日志框 ── */
+.sys-log{
+  margin:24px 0;padding:14px 16px;
+  background:rgba(10,5,5,0.4);border:1px solid #1A0808;
+  font-size:10px;line-height:2.2;
+}
+.sys-log .header{color:#442222;font-size:9px;margin-bottom:8px;letter-spacing:2px}
+.sys-log .line{color:#553333;padding:1px 0}
+.sys-log .line .ts{color:#331111}
+.sys-log .line .corrupted{color:#442222}
+.sys-log .line .cipher{
+  color:#555;font-family:monospace;letter-spacing:1px;
+  text-shadow:0 0 4px rgba(80,80,80,0.05);
+  cursor:help;
+}
+.sys-log .line .hl-light{color:#774444}
+.sys-log .divider{color:#1A0808;text-align:center;margin:6px 0;letter-spacing:4px}
+
+/* ── 故障文本 ── */
+.glitch-line{
+  text-align:center;font-size:10px;color:#331111;
+  margin:14px 0;letter-spacing:6px;
+  animation:glitchFlicker 8s infinite;
+}
+@keyframes glitchFlicker{
+  0%,100%{opacity:0.15}
+  4%{opacity:0.6;color:#553333}
+  6%{opacity:0.15}
+  52%{opacity:0.2}
+  55%{opacity:0.5;letter-spacing:8px;color:#664444}
+  57%{opacity:0.15}
+}
+
+/* ── 深层揭示 ── */
+.deep-section{
+  margin:28px 0;padding:20px;
+  border:1px solid rgba(40,15,15,0.08);
+  text-align:center;
+}
+.deep-section .lead{color:#553333;font-size:10px;margin-bottom:14px}
+.deep-section .key-line{
+  font-size:11px;color:#553333;margin:8px 0;line-height:2;
+}
+.deep-section .key-line .strong{
+  color:#884444;font-weight:bold;
+  text-shadow:0 0 8px rgba(136,68,68,0.08);
+}
+
+/* ── 终末 ── */
+.ending-line{
+  text-align:center;font-size:16px;letter-spacing:8px;
+  color:#442222;margin:40px 0 20px;
+  animation:endFade 3s ease 2s forwards;
+  opacity:0;
+}
+@keyframes endFade{to{opacity:0.5}}
+
+/* ── 响应式 ── */
+@media(max-width:600px){
+  .title-main{font-size:18px;letter-spacing:6px}
+  .stanza{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div id="noise"></div>
+<div class="scanlines"></div>
+<div id="floatSymbols"></div>
+
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">首页</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+
+<div class="container">
+
+<div class="title-area">
+  <div class="title-main">◈ 自 己 ◈</div>
+  <div class="title-sub">你 在 看 谁 ？</div>
+</div>
+
+<div class="stanza">
+  <p>你一直在找。</p>
+  <p>翻遍每一篇帖子，每一行代码——</p>
+  <p>每个深夜加载的页面里，你在找 <span class="hl">什么</span>？</p>
+  <p class="dim" style="margin-top:12px;">你以为是真相。你以为是出口。</p>
+  <p class="dim">你以为你能在文字里找到答案。</p>
+</div>
+
+<div class="stanza" style="border-left-color:rgba(80,30,30,0.15);">
+  <p>但你找的东西不在帖子里。</p>
+  <p>不在档案里。不在代码注释里。</p>
+  <p class="hl" style="margin-top:12px;">它在你的每一次点击里。</p>
+  <p class="hl">在你假装没注意到的那一瞬间里。</p>
+</div>
+
+<!-- 系统日志——隐藏提示 -->
+<div class="sys-log">
+  <div class="header">◈ SELF_DIAGNOSTIC · LOG</div>
+  <div class="line"><span class="ts">[2004-06-01]</span> <span class="corrupted">自我诊断模块已加载</span></div>
+  <div class="line"><span class="ts">[2004-06-01]</span> <span class="corrupted">正在扫描标识……</span></div>
+  <div class="line"><span class="ts">[2004-06-01]</span> <span class="corrupted">标识确认：<span class="hl-light">管理员</span></span></div>
+  <div class="divider">— — —</div>
+  <div class="line"><span class="ts">[2007-07-04]</span> <span class="corrupted">检测到异常行为模式</span></div>
+  <div class="line"><span class="ts">[2007-07-04]</span> <span class="corrupted">建议执行协议：</span></div>
+  <div class="line" style="text-align:center;margin:6px 0;">
+    <span class="cipher" title="试试ROT13解码……">FRNEPU SIVR GVZRF · GUR RLR BCRAAF</span>
+  </div>
+  <div class="divider">— — —</div>
+  <div class="line"><span class="ts">[∞]</span> <span class="dark">这条日志无法删除。</span></div>
+</div>
+
+<div class="glitch-line">▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯ ▯</div>
+
+<div class="stanza" style="border-left:0;text-align:center;">
+  <p class="dim" style="font-size:10px;">你发现了吗。</p>
+  <p class="dim" style="font-size:10px;">你一直在搜索。</p>
+  <p class="em" style="font-size:11px;margin-top:8px;">你在找的东西——也在找你。</p>
+</div>
+
+<div class="deep-section">
+  <div class="lead">◈ 深 层 映 射 ◈</div>
+  <div class="key-line">我找到了真相的一角，</div>
+  <div class="key-line">我说不出口但是——</div>
+  <div class="key-line"><span class="strong">它一直在你的屏幕里</span></div>
+  <div class="key-line"><span class="strong">在你的每一次点击里</span></div>
+  <div class="key-line"><span class="strong">在你按下搜索的时候</span></div>
+</div>
+
+<div class="ending-line">你 就 是 那 扇 门</div>
+
+</div>
+
+<script>
+/* ── 浮动符号 ── */
+(function(){
+  var c = document.getElementById('floatSymbols');
+  var chars = '◈◇◉○●◐◑◒◓◆◇◗◖◌';
+  for(var i=0;i<46;i++){
+    var s = document.createElement('div');
+    s.className = 'sym';
+    s.textContent = chars[i % chars.length];
+    s.style.left = Math.random()*100+'%';
+    s.style.fontSize = (6+Math.random()*8)+'px';
+    s.style.animationDuration = (15+Math.random()*25)+'s';
+    s.style.animationDelay = Math.random()*20+'s';
+    c.appendChild(s);
+  }
+})();
+
+/* ── 管理员权限激活 ── */
+try { localStorage.setItem('echo_inner_admin', 'true'); } catch(e) {}
+
+/* ── 搜索初始化 ── */
+initSearch();
+
+/* ── Console ── */
+console.log('%c◈ 自己', 'color:#884444;font-size:18px;font-weight:bold');
+console.log('%c◈ 你看到了你自己。', 'color:#664444;font-size:12px');
+console.log('%c◈ 管理员权限已激活。', 'color:#774444;font-size:11px;font-weight:bold');
+console.log('%c◈ 你在找的东西——也在找你。', 'color:#553333;font-size:10px');
+console.log('%c◈ 对了……那些乱码，你试过解码吗？', 'color:#442222;font-size:10px');
+</script>
+</body>
+</html>

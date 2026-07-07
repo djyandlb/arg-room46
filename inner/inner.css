@@ -42,6 +42,25 @@ a:hover{color:#CC6644;text-decoration:underline}
   box-shadow:0 1px 0 rgba(100,0,0,0.1) inset;
 }
 
+.topbar .back-btn{
+  display:inline-block;
+  padding:2px 10px;
+  margin-right:8px;
+  font:11px "Courier New",monospace;
+  color:#885555;
+  border:1px solid #331111;
+  background:#0D0808;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 0.2s;
+  line-height:1.6;
+}
+.topbar .back-btn:hover{
+  color:#CC7777;
+  border-color:#553333;
+  background:#1A0000;
+}
+
 .topbar .logo{
   font:bold 16px "Times New Roman",serif;
   color:#8B3A3A;
@@ -246,7 +265,7 @@ a:hover{color:#CC6644;text-decoration:underline}
 .post .content{flex:1;min-width:0}
 .post .content .header{display:flex;justify-content:space-between;font-size:11px;color:#553333;margin-bottom:4px}
 .post .content .header .author{color:#884444;font-weight:bold;font-size:12px}
-.post .content .header .author.anomaly{color:#CC3333}
+.post .content .header .author.anomaly{color:#CC3333;text-shadow:0 0 6px rgba(200,40,40,0.35),0 0 12px rgba(200,40,40,0.12)}
 .post .content .header .author.deleted{color:#442222;text-decoration:line-through;font-style:italic}
 .post .content .body{font-size:13px;line-height:1.8;color:#774444}
 .post .content .body p{margin-bottom:6px}
@@ -792,6 +811,14 @@ a:hover{color:#CC6644;text-decoration:underline}
 .system-header b{color:#884444}
 .system-header .blink{animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* ── 黑底黑字关键词（点击显示） ── */
+.clue{
+  color:#000;background:#000;cursor:pointer;padding:0 3px;border-radius:1px;
+  transition:color 0.3s,background 0.3s;
+}
+.clue.revealed{color:#fff}
+.clue:hover{background:#1A0A0A}
 
 /* ── 图片占位 ── */
 .img-placeholder{

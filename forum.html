@@ -25,6 +25,26 @@ a:hover { text-decoration: underline; }
 .topbar .nav { display: flex; gap: 2px; }
 .topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
 .topbar .nav a:hover { color: #fff; text-decoration: underline; }
+
+.topbar .back-btn{
+  display:inline-block;
+  padding:2px 10px;
+  margin-left:10px;
+  font:11px Verdana,sans-serif;
+  color:#A0C8E0;
+  border:1px solid #1A4A70;
+  background:#0D3050;
+  cursor:pointer;
+  text-decoration:none;
+  line-height:1.6;
+  transition:all 0.2s;
+}
+.topbar .back-btn:hover{
+  color:#fff;
+  border-color:#8AB8D9;
+  background:#1A4A70;
+}
+
 .topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
 .topbar .user-info a { color: #8AB8D9; }
 .topbar .user-info a:hover { color: #fff; }
@@ -186,12 +206,14 @@ a:hover { text-decoration: underline; }
 }
 </style>
 <script src="js/search.js"></script>
+<script src="js/endings.js"></script>
 </head>
 <body>
 
 <!-- ── 顶栏 ── -->
 <div class="topbar">
   <div class="logo" onclick="window.location.href='forum.html'">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
   <div class="nav">
     <a href="forum.html">首页</a>
     <a href="surface/rules.html">版规</a>
@@ -218,11 +240,11 @@ a:hover { text-decoration: underline; }
 </div>
 
 <!-- ── 广告弹窗 ── -->
-<div class="ad-corner" id="ad-corner" onclick="showModal('🎉','恭喜你！你是第 <b>46</b> 位访客！<br><br>奖品是一个被遗忘的账号：<br><b>用户名：</b>V47<br><b>密码：</b>********<br><br>（密码已过期 46 年）')">
+<div class="ad-corner" id="ad-corner" onclick="clickAd()">
   <div class="ad-close" onclick="event.stopPropagation();closeAd()">✕</div>
   <div class="ad-body">
     <div class="ad-visitor">🎉 第46位访客！</div>
-    <div class="ad-user">用户名：<em>V47</em></div>
+    <div class="ad-user" id="adUserLine"></div>
     <div class="ad-badge">点击领取您的专属奖品</div>
   </div>
 </div>
@@ -259,6 +281,16 @@ a:hover { text-decoration: underline; }
   </div>
   <div class="stat"><div class="num">46</div><div class="label">回复</div></div>
   <div class="last">2008-01-01<br><span class="author">好家伙</span></div>
+</div>
+
+<div class="thread-row" id="storyPost" style="display:none;" onclick="safeNavigate('surface/story.html')">
+  <div class="icon pin">📌</div>
+  <div class="main">
+    <div class="title"><span class="badge pin">置顶</span>【公告】回声茶馆 · 全记录</div>
+    <div class="meta" id="storyMeta">系统 · 等待解锁</div>
+  </div>
+  <div class="stat"><div class="num">—</div><div class="label">完整</div></div>
+  <div class="last">∞</div>
 </div>
 
 <div class="thread-row" onclick="window.location.href='surface/newbie.html'">
@@ -536,6 +568,28 @@ function doLogout() {
    forum.html 特有功能
    ═════════════════════════════════════════ */
 
+/* ── 广告乱码文本 ── */
+(function(){
+  var chars = '●○◘◙♦♣♠♤♧◐◑◒◓☻☺▲▼◄▌■█▬░▒▓▀▄▐▌';
+  var len = 12 + Math.floor(Math.random() * 8);
+  var txt = '';
+  for(var i=0;i<len;i++){
+    txt += chars[Math.floor(Math.random() * chars.length)];
+    if(i % 4 === 3) txt += ' ';
+  }
+  var el = document.getElementById('adUserLine');
+  if(el) el.innerHTML = 'ID: <em>' + txt + '</em>';
+  var modalUser = document.getElementById('adModalUser');
+  if(modalUser) modalUser.textContent = 'ANON_' + Math.random().toString(36).substr(2,8).toUpperCase();
+})();
+
+/* ── 广告点击 ── */
+function clickAd() {
+  var uid = document.getElementById('adModalUser');
+  var name = uid ? uid.textContent : 'ANON_UNKNOWN';
+  showModal('🎉', '恭喜你！你是第 <b>46</b> 位访客！<br><br>奖品是一个被遗忘的账号：<br><b>用户名：</b>' + name + '<br><b>密码：</b>********<br><br>（密码已过期 46 年）');
+}
+
 /* ── 控制台输出 ── */
 console.log('◈ 回声茶馆 · 论坛已加载');
 console.log('◈ 第46位访客：V47');
@@ -607,6 +661,25 @@ try {
       if (m) { e.preventDefault(); doNav(m[1]); }
     }
   });
+})();
+/* ── 结局追踪：显示置顶故事帖 ── */
+(function(){
+  try {
+    var unlocked = getEndings ? getEndings() : [];
+    var total = getEndingTotal ? getEndingTotal() : 5;
+    var count = unlocked.length;
+    var post = document.getElementById('storyPost');
+    var meta = document.getElementById('storyMeta');
+    if (!post || !meta) return;
+    if (count >= 1) {
+      post.style.display = '';
+      if (count >= total) {
+        meta.innerHTML = '系统 · 已完整解锁';
+      } else {
+        meta.innerHTML = '系统 · 结局解锁进度 ' + count + '/' + total;
+      }
+    }
+  } catch(e) {}
 })();
 </script>
 </body>

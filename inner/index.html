@@ -11,7 +11,8 @@
 
 <!-- ── 顶栏 ── -->
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='index.html'">◈ <span>回声</span>茶馆</div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
   <div class="nav">
     <a href="index.html">首页</a>
     <a href="rules.html">版规</a>
@@ -38,7 +39,7 @@
 <div class="panel">
 <div class="panel-header"><span>◈ 闲聊区</span><span class="count">今日 23 帖</span></div>
 
-<div class="post-row" onclick="window.location.href='rules.html'">
+<div class="post-row" onclick="safeNavigate('rules.html')">
   <div class="icon pin">📌</div>
   <div class="main">
     <div class="title"><span class="badge pin">置顶</span>【版规】回声茶馆发帖指南 · 里</div>
@@ -48,7 +49,7 @@
   <div class="last">2008-01-01<br><span class="author">好家伙</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='newbie.html'">
+<div class="post-row" onclick="safeNavigate('newbie.html')">
   <div class="icon normal">👋</div>
   <div class="main">
     <div class="title">萌新报道——你也是被回音引来的？</div>
@@ -58,7 +59,7 @@
   <div class="last">2004-06-05<br><span class="author">深海鱼</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='echo.html'">
+<div class="post-row" onclick="safeNavigate('echo.html')">
   <div class="icon anomaly">◈</div>
   <div class="main">
     <div class="title"><span style="color:#CC4444;">回音</span>——它在回答你。你确定要听吗？</div>
@@ -68,7 +69,7 @@
   <div class="last">∞<br><span class="author">◈</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='dream.html'">
+<div class="post-row" onclick="safeNavigate('dream.html')">
   <div class="icon anomaly">◈</div>
   <div class="main">
     <div class="title">第<b>46</b>天——你已经分不清梦和现实了</div>
@@ -78,7 +79,7 @@
   <div class="last">2007-07-04<br><span class="author">失眠患者_23</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='food.html'">
+<div class="post-row" onclick="safeNavigate('food.html')">
   <div class="icon normal">🍳</div>
   <div class="main">
     <div class="title">遗忘炖肉——食谱与配方</div>
@@ -88,7 +89,7 @@
   <div class="last">2005-06-13<br><span class="author">咸鱼一条</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='movie.html'">
+<div class="post-row" onclick="safeNavigate('movie.html')">
   <div class="icon normal">🎬</div>
   <div class="main">
     <div class="title">来推荐点冷门电影吧——那种看完会做噩梦的</div>
@@ -98,7 +99,7 @@
   <div class="last">2005-09-16<br><span class="author">影迷甲</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='travel.html'">
+<div class="post-row" onclick="safeNavigate('travel.html')">
   <div class="icon normal">📷</div>
   <div class="main">
     <div class="title">大理洱海——水底有什么东西在发光</div>
@@ -108,7 +109,7 @@
   <div class="last">2006-04-22<br><span class="author">旅行者</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='diary.html'">
+<div class="post-row" onclick="safeNavigate('diary.html')">
   <div class="icon anomaly">!</div>
   <div class="main">
     <div class="title">流浪猫——那里从来没有猫。你喂的是一团影子。</div>
@@ -123,7 +124,7 @@
 <div class="panel">
 <div class="panel-header"><span>◈ 技术角落</span><span class="count">今日 16 帖</span></div>
 
-<div class="post-row" onclick="window.location.href='browser.html'">
+<div class="post-row" onclick="safeNavigate('tech.html')">
   <div class="icon normal">💻</div>
   <div class="main">
     <div class="title">Chrome最近更新后——开始推荐一些你从未搜索过的东西</div>
@@ -133,7 +134,7 @@
   <div class="last">2008-03-22<br><span class="author">程序员小张</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='browser.html'">
+<div class="post-row" onclick="safeNavigate('browser.html')">
   <div class="icon anomaly">◈</div>
   <div class="main">
     <div class="title"><span style="color:#CC4444;">浏览器总自动打开陌生页面——标题是一个菱形符号</span></div>
@@ -143,7 +144,7 @@
   <div class="last">2006-10-31<br><span class="author">匿名用户</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='router.html'">
+<div class="post-row" onclick="safeNavigate('router.html')">
   <div class="icon normal">💻</div>
   <div class="main">
     <div class="title">路由器——信号穿过墙壁的时候，也会穿过你</div>
@@ -158,7 +159,7 @@
 <div class="panel">
 <div class="panel-header"><span>◈ 生活笔记</span><span class="count">今日 9 帖</span></div>
 
-<div class="post-row" onclick="window.location.href='garden.html'">
+<div class="post-row" onclick="safeNavigate('garden.html')">
   <div class="icon anomaly">◈</div>
   <div class="main">
     <div class="title">苏州园林——那些影子比游客多</div>
@@ -168,7 +169,7 @@
   <div class="last">∞<br><span class="author">快门工</span></div>
 </div>
 
-<div class="post-row" onclick="window.location.href='moonlight.html'">
+<div class="post-row" onclick="safeNavigate('moonlight.html')">
   <div class="icon anomaly">◈</div>
   <div class="main">
     <div class="title">月亮——它的背面比你想的更近</div>
@@ -233,7 +234,13 @@ function showModal(t, c){
   document.getElementById('modal-overlay').classList.add('show');
 }
 function showAdminMsg(){
-  showModal('◈ 管理终端', '权限验证失败。<br><br>你不是管理员。<br><span class="dim">——或者你不记得自己是了。</span>');
+  try {
+    if (localStorage.getItem('echo_inner_admin') === 'true') {
+      safeNavigate('admin.html');
+      return;
+    }
+  } catch(e) {}
+  showModal('◈ 管理终端', '权限验证失败。<br><br>你不是管理员。<br><span class="dim">——或者你不记得<span style="color:#AA4444;text-shadow:0 0 8px rgba(170,68,68,0.5),0 0 16px rgba(170,68,68,0.2);font-weight:bold;">自己</span>是了。</span>');
 }
 function closeModal(){
   document.getElementById('modal-overlay').classList.remove('show');

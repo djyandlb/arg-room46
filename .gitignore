@@ -1,13 +1,4 @@
-# OS files
-Thumbs.db
+node_modules/
 .DS_Store
-Desktop.ini
-
-# Editor files
-*.swp
-*.swo
-*~
-
-# Project specific
-*.pyc
-__pycache__/
+Thumbs.db
+check_braces.js

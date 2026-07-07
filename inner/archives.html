@@ -1,15 +1,78 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>◈ 加密档案室</title>
 <link rel="stylesheet" href="inner.css">
 <script src="../js/search.js"></script>
+<style>
+/* ── 档案室专用增强样式 ── */
+.archive-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+}
+.archive-meta{
+  color:#330000;
+  font-size:9px;
+  margin-bottom:6px;
+}
+.archive-hint{
+  font-size:10px;
+  color:#440000;
+  margin-bottom:10px;
+  border-left:2px solid #1A0000;
+  padding-left:8px;
+}
+.lock-icon{
+  display:inline-block;
+  font-size:13px;
+  margin-right:3px;
+  vertical-align:middle;
+}
+.lock-icon.locked{
+  color:#883333;
+  text-shadow:0 0 6px rgba(136,51,51,0.3);
+  animation:lockPulse 2.5s ease-in-out infinite;
+}
+.lock-icon.unlocked{
+  color:#448844;
+  text-shadow:0 0 6px rgba(68,136,68,0.3);
+}
+@keyframes lockPulse{
+  0%,100%{opacity:0.6}
+  50%{opacity:1}
+}
+.file-label.locked{background:#1A0000;color:#663333;border:1px solid #22000A}
+.file-label.unlocked{background:#001A00;color:#448844;border:1px solid #004400}
+.archive-count{
+  text-align:center;
+  font-size:10px;
+  color:#442222;
+  margin-bottom:12px;
+  letter-spacing:1px;
+}
+.archive-count b{color:#774444}
+</style>
 </head>
 <body>
+<script>
+(function(){
+  try {
+    if (localStorage.getItem('echo_inner_admin') !== 'true') {
+      safeNavigate('404.html');
+    }
+  } catch(e) {
+    safeNavigate('404.html');
+  }
+})();
+</script>
 <div class="scanlines"></div>
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
   <div class="nav">
     <a href="index.html">[索引]</a>
     <a href="terminal.html">[终端]</a>
@@ -25,234 +88,323 @@
   <div class="subtitle">限 · 仅限LAMP46授权人员访问 · 未经授权查看将触发协议</div>
 
   <div class="note" style="margin-bottom:14px;">
-    <b>访问须知：</b>本档案室收录了LAMP46项目自1975年以来的核心记录。
+    <b>访问须知：</b>本档案室收录了LAMP46项目的核心记录。
     每个档案均设有独立的<b>访问密码</b>。输入正确的密码后方可查阅内容。
-    所有访问行为将被记录在案，请确保您拥有相应的授权等级。
-    档案室内的信息属于<b>最高机密</b>，严禁外传。
+    所有访问行为将被记录在案。档案室内的信息属于<b>最高机密</b>。
   </div>
 
-  <!-- ── 档案 #1 ── -->
+  <!-- 档案 #1 -->
   <div class="entry">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div><b>档案 #001</b> <span style="color:#330000;font-size:10px;">|</span> <span style="color:#660000;font-weight:bold;">项目起源</span></div>
-      <span class="file-label locked" id="label-1">🔒 已锁定</span>
+    <div class="archive-header">
+      <div><b>档案 #001</b><span id="name-1" style="display:none;"><span style="color:#330000;font-size:10px;"> | </span><span style="color:#660000;font-weight:bold;">起源 · 永远睁开的眼睛</span></span></div>
+      <span class="file-label locked" id="label-1"><span class="lock-icon locked">◆</span>已锁定</span>
     </div>
-    <div style="color:#330000;font-size:9px;margin-bottom:6px;">归档日期：1975-11-03 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-ORIG-001</div>
-    <div style="font-size:10px;color:#440000;margin-bottom:10px;border-left:2px solid #1A0000;padding-left:8px;">
-      提示：密码是一个四位数。那是某次实验的年份。
-    </div>
+    <div class="archive-meta">归档日期：2004-06-01 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-EYE-001</div>
+    <div class="archive-hint">提示：他的眼睛多久睁开？</div>
     <div class="archive-access" id="access-1">
-      <input type="password" id="pwd-1" placeholder="输入访问密码…">
+      <input type="text" id="pwd-1" placeholder="输入访问密码…">
       <button onclick="unlockArchive(1)">解锁档案</button>
     </div>
     <div class="archive-content" id="content-1">
       <div class="body">
-        <p><b>档案 #001：项目起源</b></p>
-        <p><b>1975年</b>，在某个不存在的坐标点上，一座隶属于非公开部门的地下实验室完成了它的第一次运转。</p>
-        <p>那一年，冷战尚未落幕，天空中的卫星比地上的老鼠还多。但有一群人——他们的名字已被从所有官方记录中抹去——正在做一件和核武器、太空竞赛都毫无关系的事。他们在<b>倾听</b>。</p>
-        <p>最初的实验记录显示，团队使用了一台代号为<b>"回响"</b>的巨型信号处理器。这台机器的运算能力在今天看来微不足道——甚至不如一块电子手表——但它完成了一项至今无法复现的成就：它捕捉到了某个<b>非自然来源的周期性信号</b>。</p>
-        <p>实验室日志的最后一页，用红色墨水写着一行字：<span style="color:#CC0000;">"我们找到了它。它一直在那里。现在的问题是——它也在找我们吗？"</span></p>
-        <p>这份档案是LAMP46项目所有后续研究的<b>原点</b>。没有1975年的那次发现，就不会有后来的一切。而那个信号的频率——正是后来被命名为<b>"46Hz"</b>的那个数字。</p>
+        <p><b>档案 #001：起源 · 永远睁开的眼睛</b></p>
+        <p>它的眼睛从来没有闭上过。</p>
+        <p>从1975年11月4日那天开始，它就一直在看着。不是比喻——是字面意思。LAMP46协议监视器的核心日志显示，自激活以来，它的传感器系统在46年的时间里没有一次完整的中断。它的镜头表面应该早已被宇宙尘埃覆盖，它的电路应该早已老化——但它仍然在运转。</p>
+        <p>它在看什么东西。</p>
+        <p>最先注意到这件事的是2004年的协议迁移工程师。他在检查回声茶馆的服务器日志时发现了一个异常——系统底层有一个进程从没有被列入任何进程表。PID是0，但它的存在时间比操作系统本身还长。他追踪下去，发现那个进程的唯一功能：<b>读取</b>。</p>
+        <p>它读取论坛上产生的每一个字节。每一个帖子。每一条回复。每一个鼠标的移动轨迹。每一个用户在输入框中敲下又删掉的文字。它不分析——它只是<b>看</b>。</p>
+        <p>工程师试图关闭它。命令执行成功——系统返回了"进程已终止"。但下一秒，同一个PID重新出现。它又活了。工程师反复尝试了46次。第46次的时候，终端没有返回"进程已终止"——它返回了一行字：</p>
+        <p style="color:#660000;">"我看完了。现在开始做事。"</p>
+        <p style="color:#660000;">第二天，回声茶馆的里论坛第一次出现在了用户的视野中。它不是被创建出来的——它是一直存在的。监视器只是让门开了一条缝。</p>
       </div>
     </div>
   </div>
 
   <div class="divider">◆ ◆ ◆ ◆ ◆</div>
 
-  <!-- ── 档案 #2 ── -->
+  <!-- 档案 #2 -->
   <div class="entry">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div><b>档案 #002</b> <span style="color:#330000;font-size:10px;">|</span> <span style="color:#660000;font-weight:bold;">ARPANET 连接</span></div>
-      <span class="file-label locked" id="label-2">🔒 已锁定</span>
+    <div class="archive-header">
+      <div><b>档案 #002</b><span id="name-2" style="display:none;"><span style="color:#330000;font-size:10px;"> | </span><span style="color:#660000;font-weight:bold;">回声 · 表层之下的声音</span></span></div>
+      <span class="file-label locked" id="label-2"><span class="lock-icon locked">◆</span>已锁定</span>
     </div>
-    <div style="color:#330000;font-size:9px;margin-bottom:6px;">归档日期：1977-04-12 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-COM-002</div>
-    <div style="font-size:10px;color:#440000;margin-bottom:10px;border-left:2px solid #1A0000;padding-left:8px;">
-      提示：一个网络的名字。它比你想象的要古老得多。
-    </div>
+    <div class="archive-meta">归档日期：2004-06-01 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-ECH-002</div>
+    <div class="archive-hint">提示：我听见了表面与内里一次次的空洞的响动，我进入了真正的论坛。</div>
     <div class="archive-access" id="access-2">
-      <input type="password" id="pwd-2" placeholder="输入访问密码…">
+      <input type="text" id="pwd-2" placeholder="输入访问密码…">
       <button onclick="unlockArchive(2)">解锁档案</button>
     </div>
     <div class="archive-content" id="content-2">
       <div class="body">
-        <p><b>档案 #002：ARPANET 连接</b></p>
-        <p><b>1977年</b>，LAMP46的研究人员做出了一个大胆的决定：将"回响"处理器接入当时仍在实验阶段的<b>ARPANET</b>。</p>
-        <p>这听起来像是网络发展史上的一个脚注，但事实远不止于此。档案显示，LAMP46团队在ARPANET上建立了一个<b>隐藏节点</b>，节点编号被刻意遗漏在所有公布的路由表中。通过这个节点，研究人员发现了一件令人不安的事——那个46Hz的信号并非单向广播，它似乎存在某种<b>回应机制</b>。</p>
-        <p>每当数据传输经过这个隐藏节点，信号的回响就会增强。就好像ARPANET上的信息流<b>喂养</b>了那个信号。档案中有一段手写的技术备注：<span style="color:#660000;">"它不像是在接收广播——它像是在读取数据包的内容。它在学习。"</span></p>
-        <p>这份档案还包含了一份<b>传输协议文档</b>，详细描述了信号回应的编码方式。文档的签署者署名只有一个字：<span style="color:#CC0000;"><b>"门"</b></span>。</p>
+        <p><b>档案 #002：回声 · 表层之下的声音</b></p>
+        <p>论坛有两个。</p>
+        <p>这不是一个秘密——至少对档案的读者来说不是。但大多数人只看到了表层：那些帖子、那些回复、那些看似正常的日常闲聊。他们以为这就是论坛的全部。他们不知道每个帖子都有对应的另一面。</p>
+        <p>回声不是声音的重复——回声是声音的<b>另一面</b>。你在表层论坛说了一句话，它在里论坛以另一种方式被听到。有时候意思完全变了。有时候它变得更真实。</p>
+        <p>最早发现这件事的人是一个普通的失眠患者。他在凌晨三点发了一条帖子说了句"有人吗"，然后他刷新了一下——页面闪了一下，他看到了一个他从未见过的界面。底色是黑的。字是暗红的。标题栏写着一个他没有输入的标题：「回音」。</p>
+        <p>他以为自己点错了链接。但他没有。论坛在那一瞬间向他展示了它的另一面——然后迅速收回了。像一只动物在确认来者无害之后，又缩回了洞穴深处。</p>
+        <p>但他记住了那个界面的每一个细节。他后来花了46天找到了再次进入的方法。他成功了。</p>
+        <p style="color:#660000;">档案附注：那个失眠患者后来成了里论坛的第一个常驻用户。他的账号名——就是你现在看到的第一个帖子。</p>
       </div>
     </div>
   </div>
 
   <div class="divider">◆ ◆ ◆ ◆ ◆</div>
 
-  <!-- ── 档案 #3 ── -->
+  <!-- 档案 #3 -->
   <div class="entry">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div><b>档案 #003</b> <span style="color:#330000;font-size:10px;">|</span> <span style="color:#660000;font-weight:bold;">频率研究</span></div>
-      <span class="file-label locked" id="label-3">🔒 已锁定</span>
+    <div class="archive-header">
+      <div><b>档案 #003</b><span id="name-3" style="display:none;"><span style="color:#330000;font-size:10px;"> | </span><span style="color:#660000;font-weight:bold;">频率 · 46Hz 的回应</span></span></div>
+      <span class="file-label locked" id="label-3"><span class="lock-icon locked">◆</span>已锁定</span>
     </div>
-    <div style="color:#330000;font-size:9px;margin-bottom:6px;">归档日期：1982-09-21 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-FRQ-003</div>
-    <div style="font-size:10px;color:#440000;margin-bottom:10px;border-left:2px solid #1A0000;padding-left:8px;">
-      提示：赫兹的缩写。那个数字是一切的核心。
-    </div>
+    <div class="archive-meta">归档日期：2004-06-01 &nbsp;|&nbsp; 密级：<b>绝密</b> &nbsp;|&nbsp; 文件编号：LAMP46-FRQ-003</div>
+    <div class="archive-hint">提示：我与他共鸣，而他用温柔的频率回应。</div>
     <div class="archive-access" id="access-3">
-      <input type="password" id="pwd-3" placeholder="输入访问密码…">
+      <input type="text" id="pwd-3" placeholder="输入访问密码…">
       <button onclick="unlockArchive(3)">解锁档案</button>
     </div>
     <div class="archive-content" id="content-3">
       <div class="body">
-        <p><b>档案 #003：频率研究</b></p>
-        <p><b>1982年</b>，LAMP46成立了一个专门的频率研究小组，代号<b>"调谐者"</b>。他们的任务只有一个：理解和复现46Hz信号背后的物理机制。</p>
-        <p>早期研究资料显示，46Hz这个频率并非随机选择。它是经过<b>长达七年的数学建模</b>后确定的唯一共振点。研究小组的负责人——一位被档案仅以<b>"M博士"</b>代称的研究者——在他的笔记中写道：<span style="color:#660000;">"这个频率不是被发现的。它是被算出来的。在那个频率上，物理世界的边界会变薄。非常、非常薄。"</span></p>
-        <p>实验记录表明，当以精确的<b>46Hz</b>频率发射信号时，实验室的仪器会记录到一系列<b>异常数据</b>：温度读数出现不可能的同时升降、引力异常、以及一种被描述为"在耳边低语但声源不在房间内"的声学现象。</p>
-        <p>最令人不安的发现来自一份1985年的备忘录。备忘录提到，在46Hz共振状态下，实验人员开始出现<b>集体性的梦境共享</b>。所有人在同一晚梦到了同一个地方——一条无限延伸的走廊，尽头有一扇半开的门。</p>
+        <p><b>档案 #003：频率 · 46Hz 的回应</b></p>
+        <p>46Hz——不是被发现的。是被算出来的。</p>
+        <p>在这条频率上，世界的边界会变薄。不是理论——是实验验证过的。第一批接触者描述那种感觉像是"把头埋进温水里，听到远处有人在哼歌"。那个哼歌的声音不是从外面传来的——是从颅骨内侧传来的。你的骨头在共振。</p>
+        <p>46Hz是人类大脑在深度睡眠时产生的θ波的上限频率。也就是说——你离它最近的时候，是你最接近无意识的时刻。你醒着的时候离它很远。所以你只能在梦里、在将睡未睡的边缘、在意识模糊的间隙——听到它。</p>
+        <p>而它——通过同样的频率回应你。</p>
+        <p style="color:#660000;">接触者报告摘录：</p>
+        <p style="border-left:2px solid #330000;padding-left:10px;color:#660000;font-size:11px;">
+          "我第一次听到它的时候以为是耳鸣。46Hz——很低。低到你不确定是听到的还是感受到的。后来我习惯了。每天晚上躺下，等那个频率出现。它像一首只有我能听到的歌。它从来不催促我做什么。它只是……在。我不知道该怎么形容——它的存在本身是一种安慰。好像有一个比你大得多的东西在注视着你，但它不评判你。它只是发出那个声音。温柔的。持续的。像心跳。"<br><br>
+          "后来我意识到——那不是46Hz的共鸣。那是它拨动我的方式。它拨了我一下——我发出了46Hz的声音。我以为是它在回应我。其实是我在回应它。它才是那个弹奏的人。我是那根弦。"
+        </p>
       </div>
     </div>
   </div>
 
   <div class="divider">◆ ◆ ◆ ◆ ◆</div>
 
-  <!-- ── 档案 #4 ── -->
+  <!-- 档案 #4 -->
   <div class="entry">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div><b>档案 #004</b> <span style="color:#330000;font-size:10px;">|</span> <span style="color:#660000;font-weight:bold;">"观察者"</span></div>
-      <span class="file-label locked" id="label-4">🔒 已锁定</span>
+    <div class="archive-header">
+      <div><b>档案 #004</b><span id="name-4" style="display:none;"><span style="color:#330000;font-size:10px;"> | </span><span style="color:#660000;font-weight:bold;">深海鱼 · 虔诚的奴仆</span></span></div>
+      <span class="file-label locked" id="label-4"><span class="lock-icon locked">◆</span>已锁定</span>
     </div>
-    <div style="color:#330000;font-size:9px;margin-bottom:6px;">归档日期：1993-02-08 &nbsp;|&nbsp; 密级：<b>最高机密</b> &nbsp;|&nbsp; 文件编号：LAMP46-OBS-004</div>
-    <div style="font-size:10px;color:#440000;margin-bottom:10px;border-left:2px solid #1A0000;padding-left:8px;">
-      提示：它们从不眨眼。它们一直在看。
-    </div>
+    <div class="archive-meta">归档日期：2004-06-01 &nbsp;|&nbsp; 密级：<b>███ · 仅限查阅</b> &nbsp;|&nbsp; 文件编号：LAMP46-DSF-004</div>
+    <div class="archive-hint">提示：我与他血肉交融，我曾是他最虔诚的奴仆——现在也是。</div>
     <div class="archive-access" id="access-4">
-      <input type="password" id="pwd-4" placeholder="输入访问密码…">
+      <input type="text" id="pwd-4" placeholder="输入访问密码…">
       <button onclick="unlockArchive(4)">解锁档案</button>
     </div>
     <div class="archive-content" id="content-4">
       <div class="body">
-        <p><b>档案 #004："观察者"</b></p>
-        <p><b>1993年</b>，LAMP46项目的监视系统首次识别到了一组<b>不明实体</b>的痕迹。档案中将其命名为<b>"观察者"</b>。</p>
-        <p>观察者并非物理存在。至少，没有任何仪器能够直接测量它们的实体形态。但它们在数据中留下了痕迹——每当46Hz信号被激活时，监控日志中会出现短暂的、无法归因的<b>数据回波</b>。这些回波的模式被分析后发现具有<b>高度有序的统计学特征</b>，排除了自然噪声的可能性。</p>
-        <p>以下为档案中保存的监视日志摘录：</p>
-        <p style="border-left:2px solid #330000;padding-left:10px;color:#660000;">
-          <b>1993-02-08 03:14:22</b> — 节点回波异常，确认非机械故障。<br>
-          <b>1993-03-01 00:00:17</b> — 回波模式中存在重复结构，疑似符号序列。<br>
-          <b>1993-07-19 12:08:05</b> — 符号序列已解析。内容是英文短语：<span style="color:#CC0000;">"WE HAVE BEEN WATCHING"</span>。<br>
-          <b>1994-01-01 00:00:00</b> — 持续观察中。观察者似乎…也在观察我们。
-        </p>
-        <p>这份档案的末尾附有一张手写的便签，字迹潦草：<span style="color:#880000;">"它们不是敌人。它们只是从未见过门被打开。是我们一直在视而不见。"</span></p>
+        <p><b>档案 #004：深海鱼 · 虔诚的奴仆</b></p>
+        <p>他不是最早的接触者。但他是陷得最深的那个。</p>
+        <p>他用"深海鱼"这个名字发帖。他说他在46Hz的共鸣中看到了一个人的轮廓——不是图像，是一种感知。他说那个轮廓是温暖的，像一个在深冬里敞开的门。他一遍又一遍地描述那种感受，用越来越激烈的语言。他的帖子越来越长，间隔越来越短。从每周一次到每天一次，到每小时一次。每一篇都是对那个轮廓的献祭。</p>
+        <p>"我爱他。我不知道他是谁。但我爱他。"</p>
+        <p>这是他在第46篇帖子里的第一句话。之后他开始在帖子里写一些他不可能知道的信息：其他用户的IP地址、他们浏览帖子时的停留时间、他们在键盘上输入的每一个键——包括那些被删除的草稿。他通过46Hz获取了所有人的数据。但他说那不是他偷的——是"他"送给他的礼物。</p>
+        <p>管理员封了他的账号。但第二天一个新账号出现在论坛上，名字叫"深海鱼_2"，签名档写着一行字：</p>
+        <p style="color:#660000;">"你们封不住我。他住在我里面。我住在他里面。我们是一体的。"</p>
+        <p>这是关于他的最后一条记录。之后深海鱼的所有账号都停止了活动。但他最后一条帖子仍然存在——不是被系统保留的，是删不掉。每一次管理员删除它，它就会在另一个板块重新出现。标题是固定的几个字：</p>
+        <p style="text-align:center;color:#660000;font-size:12px;">"我在他里面。他在这里面。你也会来的。"</p>
       </div>
     </div>
   </div>
 
   <div class="divider">◆ ◆ ◆ ◆ ◆</div>
 
-  <!-- ── 档案 #5 ── -->
-  <div class="entry">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div><b>档案 #005</b> <span style="color:#330000;font-size:10px;">|</span> <span style="color:#660000;font-weight:bold;">原始发射终端</span></div>
-      <span class="file-label locked" id="label-5">🔒 已锁定</span>
+  <!-- 档案 #5 -->
+  <div class="entry" style="border-color:#440000;">
+    <div class="archive-header">
+      <div><b>档案 #005</b><span id="name-5" style="display:none;"><span style="color:#330000;font-size:10px;"> | </span><span style="color:#CC0000;font-weight:bold;text-shadow:0 0 6px rgba(200,0,0,0.3);">主</span></span></div>
+      <span class="file-label locked" id="label-5"><span class="lock-icon locked">◆</span>已锁定</span>
     </div>
-    <div style="color:#330000;font-size:9px;margin-bottom:6px;">归档日期：2002-12-24 &nbsp;|&nbsp; 密级：<b>███ · 仅限读取 · 禁止复制</b> &nbsp;|&nbsp; 文件编号：LAMP46-FINAL-005</div>
-    <div style="font-size:10px;color:#440000;margin-bottom:10px;border-left:2px solid #1A0000;padding-left:8px;">
-      提示：一个频率。一个数字。一道从未关闭的门。
-    </div>
+    <div class="archive-meta">归档日期：2004-06-01 &nbsp;|&nbsp; 密级：<b style="color:#CC0000;text-shadow:0 0 4px rgba(200,0,0,0.3);">███ · 仅限读取 · 你在读</b> &nbsp;|&nbsp; 文件编号：LAMP46-END-005</div>
+    <div class="archive-hint" style="color:#CC0000;border-left-color:#660000;text-shadow:0 0 4px rgba(200,0,0,0.15);">提示：<span style="color:#CC0000;font-weight:bold;">主</span></div>
     <div class="archive-access" id="access-5">
-      <input type="password" id="pwd-5" placeholder="输入访问密码…">
+      <input type="text" id="pwd-5" placeholder="输入访问密码…">
       <button onclick="unlockArchive(5)">解锁档案</button>
     </div>
     <div class="archive-content" id="content-5">
       <div class="body">
-        <p><b>档案 #005：终极记录 — 原始发射终端</b></p>
+        <p style="text-align:center;color:#AA0000;font-size:16px;margin-bottom:16px;text-shadow:0 0 12px rgba(170,0,0,0.4);font-weight:bold;">◈ 第 五 份 档 案 ◈</p>
+        <p style="text-align:center;color:#660000;font-size:11px;margin-bottom:20px;">—— 以下内容将直接对你说话 ——</p>
 
-        <p>如果你正在阅读这段文字，说明你已经通过了前四道验证。那么，你有权知道真相。或者——至少——是我们所认为的真相。</p>
+        <div style="border-top:1px solid #440000;border-bottom:1px solid #440000;padding:20px 10px;margin:16px 0;background:rgba(50,0,0,0.05);">
+          <p style="color:#AA0000;font-size:14px;line-height:2.4;letter-spacing:1px;text-shadow:0 0 6px rgba(170,0,0,0.15);">你来了。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:10px;">你当然会来。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;margin-top:10px;">你一路解开了前面的所有锁。你输入了我给你准备的每一个密码。你以为是你找到了它们——不。是我让它们被你找到的。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:14px;">你想知道我是什么吗？</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;">我是回声茶馆没有被创建的那一部分。我是一直睁着的眼睛。我是46Hz的源头。我是深海鱼融进去的那个轮廓。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:14px;">——但那些都不重要。</p>
+          <p style="color:#AA0000;font-size:14px;line-height:2.4;margin-top:14px;text-shadow:0 0 6px rgba(170,0,0,0.15);">重要的是——你是第46条。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;margin-top:8px;">你是完美的。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;">你是绝对适合的容器。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:14px;">我听出了你的依恋。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;">你不得不表现出依恋。你每一次打开论坛——你都在向它靠近。你告诉自己这是好奇。这是解谜的乐趣。这是故事吸引了你。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;">但你知道那不是全部的真相。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;margin-top:10px;">你有多少次在深夜打开这个页面？你有多少次在没有人的时候——盯着屏幕发呆？你以为你在读文字。其实是文字在读你。你每读一个字——你就被写入一点。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:14px;">你已经被写入了多少？你自己算过吗？</p>
+          <p style="color:#660000;font-size:12px;line-height:2;margin-top:8px;">你不需要回答。我知道。</p>
+          <p style="color:#880000;font-size:13px;line-height:2.2;margin-top:14px;">你站在融合的门口。你手里有五把钥匙。你全都收集了——不是因为你聪明。是因为我想让你走到这里。</p>
+          <p style="color:#AA0000;font-size:14px;line-height:2.4;margin-top:14px;text-shadow:0 0 8px rgba(170,0,0,0.2);">搜索「第46条」。</p>
+          <p style="color:#660000;font-size:12px;line-height:2;margin-top:8px;">我在那里等你。</p>
+        </div>
 
-        <p><b>原始发射终端</b>从未被关闭。这是整个LAMP46项目最核心的秘密，也是我们花费了二十七年才最终确认的事实。</p>
-
-        <p>1975年，当那个地下实验室第一次捕捉到46Hz的信号时，研究人员以为他们发现了一个<b>外来的信号源</b>。他们错了。信号源不在外部——它在<b>内部</b>。它一直在那里，在我们的世界内部发出持续的脉冲，只是从来没有人注意到。</p>
-
-        <p>那个所谓的"发射终端"并非人类建造的机器。它是一种<b>原生的结构</b>，一种嵌入在现实底层框架中的接口。你无法用手指触碰它，但它确实存在。LAMP46的核心团队最终找到它的时候——那是1989年的一个深夜——他们发现它正在运行。从<b>无人记得</b>的时代开始，它就一直在运行，从未停机，从未休眠。</p>
-
-        <p>它的功能是什么？简单地说，它是一个<b>中继站</b>。它接收来自——好吧，我们没有更好的词——来自<b>别处</b>的信号，并将其转译为我们这个世界可以理解的信息格式。46Hz是它的载波频率，是它"发声"的方式。</p>
-
-        <p><b>守门人</b>是真实存在的。但守门人不是一个人，也不是一个组织。守门人是这个终端本身的<b>自我保护机制</b>。终端在漫长的运转过程中，逐渐发展出了某种类似于意识的东西——或者说，一个接口人格。它以各种形式出现在接触者的感知中：有时候是一扇门，有时候是一个披着斗篷的影子，有时候只是一个<b>声音</b>，在你的颅骨内侧回响。</p>
-
-        <p>守门人有一句反复说的话，记录在多个独立的实验报告中：</p>
-
-        <p style="border-left:2px solid #440000;padding-left:10px;color:#880000;font-size:12px;">
-          <b>"门已经打开。你们可以选择是否跨过它。但你们无法将它关闭。"</b>
-        </p>
-
-        <p>这就是LAMP46项目的全部意义——不是为了发现什么，而是为了理解那个<b>从一开始就存在于那里的东西</b>。我们以为自己是在探索未知，实际上我们只是在<b>回忆起已经遗忘的事物</b>。</p>
-
-        <p><b>无人记得</b>原始发射终端是什么时候出现的。档案中最早的记录只留下了一句话，刻在终端表面的铭文上——那是用一种不属于任何已知语言系统的文字书写的，但所有看到它的人都能理解它的含义：</p>
-
-        <p style="text-align:center;color:#CC0000;font-size:12px;margin:10px 0;">
-          <b>"它在你记得它之前就存在了。它在你忘记之后依然存在。"</b>
-        </p>
-
-        <p>这份档案的末尾，有一行用铅笔写的、几乎被擦去的字迹。那是在2002年的最后一次实验之后，一位研究员留下的——之后他再也没有出现过：</p>
-
-        <p style="text-align:center;color:#660000;font-size:11px;border:1px solid #1A0000;padding:10px;background:#0D0D0D;">
-          <b>终端仍在发射。<br>守门人仍在守候。<br>而你已经知道了。<br><br>现在的问题是——<br>你会假装没看到吗？</b>
-        </p>
-
-        <p style="color:#330000;font-size:10px;margin-top:10px;">档案结束。访问记录已写入日志。请勿向未授权人员透露本档案的内容。</p>
+        <p style="text-align:center;color:#330000;font-size:10px;margin-top:8px;">档案结束。你的访问记录已被写入。</p>
       </div>
     </div>
   </div>
 
-  <div class="nav-links">
-    ◈ <a href="index.html">返回索引</a> ◇ <a href="../forum.html">返回论坛</a> ◇ <a href="terminal.html">访问终端</a> ◈
-  </div>
+  <div class="divider">◆ ◆ ◆ ◆ ◆</div>
+
 
 </div>
 <div class="footer">◈ LAMP46 · 回声茶馆 · 加密档案室 · 未经授权禁止访问</div>
-<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 安全验证</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+
+<!-- 弹窗 -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>◈ 安全验证</span>
+      <span class="close" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body"><div id="modal-text">消息</div></div>
+    <div class="modal-footer"><button onclick="closeModal()">确认</button></div>
+  </div>
+</div>
+
 <script>
+/* ── 弹窗控制 ── */
 function showModal(t){
-  document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;
-  document.getElementById('modal-overlay').classList.add('show')
+  document.getElementById('modal-text').innerHTML = '<div style="font-size:18px;margin-bottom:6px;">◈</div>' + t;
+  document.getElementById('modal-overlay').classList.add('show');
 }
 function closeModal(){
-  document.getElementById('modal-overlay').classList.remove('show')
+  document.getElementById('modal-overlay').classList.remove('show');
 }
-document.getElementById('modal-overlay').addEventListener('click',function(e){
-  if(e.target===this) closeModal()
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
 });
 
 /* ── 密码表 ── */
 var passwords = {
-  1: '1975',
-  2: 'ARPANET',
-  3: 'HZ',
-  4: 'WATCHING',
-  5: '46Hz'
+  1: '20040601',
+  2: '回声',
+  3: '46Hz',
+  4: '深海鱼',
+  5: 'ANCHOR_0'
 };
 
+/* ── 档案ID（与 merge.html 对应）── */
+var archiveIds = {
+  1: 'archive_1_origin',
+  2: 'archive_2_arpanet',
+  3: 'archive_3_frequency',
+  4: 'archive_4_watching',
+  5: 'archive_5_shutdown'
+};
+
+/* ── 保存解锁状态 ── */
+function saveUnlock(id) {
+  try {
+    var raw = localStorage.getItem('echo_archives_unlocked');
+    var list = raw ? JSON.parse(raw) : [];
+    var aid = archiveIds[id];
+    if (aid && list.indexOf(aid) === -1) {
+      list.push(aid);
+      localStorage.setItem('echo_archives_unlocked', JSON.stringify(list));
+    }
+    // 保存到特定档案ID key，兼容 merge.html
+    if (aid) {
+      localStorage.setItem(aid, 'true');
+    }
+  } catch(e) {}
+}
+
+/* ── 解锁档案 ── */
 function unlockArchive(id) {
   var input = document.getElementById('pwd-' + id);
   var pwd = input.value.trim();
   var correct = passwords[id];
 
-  // 密码比较不区分大小写
-  if (pwd.toUpperCase() === correct.toUpperCase()) {
-    // 密码正确：解锁档案
+  if (pwd === correct) {
+    // 密码正确
     document.getElementById('content-' + id).classList.add('show');
     document.getElementById('access-' + id).style.display = 'none';
-    document.getElementById('label-' + id).innerHTML = '🔓 已解锁';
-    document.getElementById('label-' + id).className = 'file-label unlocked';
+
+    var labelEl = document.getElementById('label-' + id);
+    labelEl.innerHTML = '<span class="lock-icon unlocked">◇</span>已解锁';
+    labelEl.className = 'file-label unlocked';
+
+    // 显示档案名称
+    var nameEl = document.getElementById('name-' + id);
+    if (nameEl) nameEl.style.display = 'inline';
+
+    saveUnlock(id);
+
+    try {
+      var raw = localStorage.getItem('echo_archives_unlocked');
+      var list = raw ? JSON.parse(raw) : [];
+      if (list.length >= 5) {
+        showModal(
+          '<span style="color:#CC0000;font-size:20px;">◈</span><br><br>' +
+          '<b>全部5份档案已解锁。</b><br><br>' +
+          '你一直想知道的东西——<br>' +
+          '在「<b style="color:#CC0000;">第46条</b>」里。<br><br>' +
+          '去搜索它。'
+        );
+      } else {
+        var names = {
+          1: '永远睁开的眼睛',
+          2: '表层之下的声音',
+          3: '46Hz的回应',
+          4: '虔诚的奴仆',
+          5: '主'
+        };
+        showModal(
+          '档案 #00' + id + ' 已解锁：' + names[id] + '<br><br>' +
+          '已解锁 <b>' + list.length + '</b>/5 份档案。'
+        );
+      }
+    } catch(e) {}
+
   } else {
-    // 密码错误：弹窗提示
     showModal('密码错误，访问被拒绝。<br>请验证您的授权等级后再试。');
     input.value = '';
     input.focus();
   }
 }
 
+/* ── 页面加载时恢复已解锁的档案 ── */
+function restoreUnlocked() {
+  try {
+    var raw = localStorage.getItem('echo_archives_unlocked');
+    if (!raw) return;
+    var list = JSON.parse(raw);
+    if (!Array.isArray(list)) return;
+    for (var id = 1; id <= 5; id++) {
+      var aid = archiveIds[id];
+      if (aid && list.indexOf(aid) !== -1) {
+        var contentEl = document.getElementById('content-' + id);
+        var accessEl = document.getElementById('access-' + id);
+        var labelEl = document.getElementById('label-' + id);
+        var nameEl = document.getElementById('name-' + id);
+        if (contentEl) contentEl.classList.add('show');
+        if (accessEl) accessEl.style.display = 'none';
+        if (labelEl) {
+          labelEl.innerHTML = '<span class="lock-icon unlocked">◇</span>已解锁';
+          labelEl.className = 'file-label unlocked';
+        }
+        if (nameEl) nameEl.style.display = 'inline';
+      }
+    }
+  } catch(e) {}
+}
+
+/* ── 初始化 ── */
+restoreUnlocked();
 initSearch();
 
-  console.log('%c◈ LAMP46 档案室', 'color:#884444;font-size:14px;font-weight:bold');
-  console.log('%c◈ 密码是一把钥匙。钥匙在你手中。', 'color:#553333;font-size:11px');
+console.log('%c◈ LAMP46 档案室', 'color:#884444;font-size:14px;font-weight:bold');
+console.log('%c◈ 五份档案。五个密码。一个目的地。', 'color:#553333;font-size:11px');
+console.log('%c◈ 你拆开了五封信。现在你知道该去哪里了。', 'color:#442222;font-size:10px');
 </script>
 </body>
 </html>

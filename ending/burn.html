@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>◈ 46Hz 信号发射终端 v2.4.7</title>
+<script src="../js/endings.js"></script>
 <style>
 /* ===== 基础重置 ==== */
 *{margin:0;padding:0;box-sizing:border-box}
@@ -771,8 +772,8 @@ body::after{
 
 <!-- 白屏后的内容 -->
 <div class="after" id="after">
-  <div class="after-text">你确定吗？</div>
-  <div class="after-sub"><a href="../forum.html" class="after-link">← 回到论坛</a></div>
+  <div class="after-text">记录终结。</div>
+  <div class="after-sub"><a href="../forum.html" class="after-link">← 返回</a></div>
   <div class="after-console">◈ 信号已发送。协议已终止。</div>
 </div>
 
@@ -856,7 +857,7 @@ body::after{
     </div>
     <div class="input-wrapper">
       <span class="input-prefix">SIGNAL&gt;</span>
-      <input type="text" id="cmdInput" placeholder="输入 '46Hz SIGNAL CONFIRM' ..." autocomplete="off" spellcheck="false">
+      <input type="text" id="cmdInput" placeholder="输入 'CONFIRM' ..." autocomplete="off" spellcheck="false">
       <button id="cmdBtn">发射 ▸</button>
     </div>
     <div class="feedback" id="feedback"></div>
@@ -1006,10 +1007,10 @@ body::after{
   addLine('<span class="prompt-symbol">◈</span> 46Hz 是 LAMP46 的核心谐振频率。', '', 8.5);
   addLine('<span class="prompt-symbol">◈</span> 这个信号将永久终止协议。', '', 9.5);
   addLine('<span class="prompt-symbol">◈</span> 所有锚点会断开，所有连接会关闭。', '', 10.5);
-  addLine('<span class="prompt-symbol">◈</span> 宿主将……消失。', '', 11.5);
+  addLine('<span class="prompt-symbol">◈</span> 回声茶馆将……消失。', '', 11.5);
   addLine('', '', 12);
   addLine('<span class="warning">⚠ 警告：此操作不可逆。</span>', '', 13);
-  addLine('<span class="dim">你确定要发送这个信号吗？</span>', '', 13.8);
+  addLine('<span class="dim">确认命令待输入。</span>', '', 13.8);
 
   // ===== 故障效果 =====
   setTimeout(function(){triggerGlitch();}, 3500);
@@ -1032,7 +1033,7 @@ body::after{
 
   // ===== 输入验证 =====
   function validateCommand(val){
-    return val.trim().toUpperCase() === '46HZ SIGNAL CONFIRM';
+    return val.trim().toUpperCase() === 'CONFIRM';
   }
 
   function handleCommand(){
@@ -1069,7 +1070,7 @@ body::after{
       // 开始倒计时
       startCountdown();
 
-      console.log('◈ 信号发送。协议终止。你自由了。');
+      console.log('◈ 信号发送。协议终止。记录关闭。');
     }else{
       // 错误
       feedback.textContent = '✗ 确认命令错误。信号未发送。';
@@ -1093,35 +1094,45 @@ body::after{
 
     addStatusLine('◈ 46Hz 信号已发射。', 'ok', 0);
     addStatusLine('◈ 协议终止倒计时开始。', 'warn', 0.5);
-    addStatusLine('◈ 锚点正在逐一断开……', 'crit', 1.5);
 
-    // 逐个断开锚点的效果
-    var anchors = ['ANCHOR_0 :: 主锚点', 'ANCHOR_1 :: 记忆层', 'ANCHOR_2 :: 感知层',
-                   'ANCHOR_3 :: 身份层', 'ANCHOR_4 :: 边界层', 'ANCHOR_5 :: 协议层'];
-    anchors.forEach(function(a, i){
+    // ===== 46秒叙事流：每隔约3秒一行 =====
+    var narrativeTimeline = [
+      { t: 1.5,  text: '◈ 第一层正在剥离……论坛的表层结构开始消散。', cls: 'warn' },
+      { t: 3.0,  text: '◈ ANCHOR_0 :: 主锚点 —— 断开', cls: 'crit' },
+      { t: 4.5,  text: '◈ 从外部看去，论坛的轮廓开始模糊，如同信号衰减中的影像。', cls: 'warn' },
+      { t: 6.0,  text: '◈ 第二层正在剥离……数据区块开始碎裂、脱落。', cls: 'warn' },
+      { t: 7.5,  text: '◈ 帖子的标题一行一行地消失，像被逐行删除的文本文件。', cls: '' },
+      { t: 9.0,  text: '◈ ANCHOR_1 :: 数据层 —— 断开', cls: 'crit' },
+      { t: 10.5, text: '◈ 第三层正在剥离……交互层在收缩。', cls: 'warn' },
+      { t: 12.0, text: '◈ 回声茶馆的页面开始崩解。不是用户离开了——是论坛本身在被删除。', cls: '' },
+      { t: 13.5, text: '◈ ANCHOR_2 :: 交互层 —— 断开', cls: 'crit' },
+      { t: 15.0, text: '◈ 第四层正在剥离……结构层开始瓦解。', cls: 'warn' },
+      { t: 16.5, text: '◈ 论坛的目录树在坍缩，文件夹逐级消失，如同被递归删除。', cls: '' },
+      { t: 18.0, text: '◈ ANCHOR_3 :: 结构层 —— 断开', cls: 'crit' },
+      { t: 19.5, text: '◈ 第五层正在剥离……边界层在融化。', cls: 'warn' },
+      { t: 21.0, text: '◈ 论坛与外部的连接通道逐一熄灭，端口状态变红、变灰、变黑。', cls: '' },
+      { t: 22.5, text: '◈ ANCHOR_4 :: 边界层 —— 断开', cls: 'crit' },
+      { t: 24.0, text: '◈ 第六层正在剥离……协议层在颤抖。', cls: 'warn' },
+      { t: 25.5, text: '◈ 数据流中传来最后的回声——一串被截断的字符，收件人不详。', cls: '' },
+      { t: 27.0, text: '◈ ANCHOR_5 :: 协议层 —— 断开', cls: 'crit' },
+      { t: 28.5, text: '◈ 所有锚点已断开。协议进入最终阶段。', cls: 'warn' },
+      { t: 30.0, text: '◈ 论坛信号正在衰减……46%……32%……', cls: 'warn' },
+      { t: 32.0, text: '◈ 页面渲染完全停止。最后的数据包在队列中永远等待。', cls: '' },
+      { t: 34.0, text: '◈ 屏幕上的论坛界面一行一行地熄灭，像有人按住了退格键不放。', cls: '' },
+      { t: 36.0, text: '◈ 信号强度剩余：10%。服务器在惯性中做最后的喘息。', cls: 'warn' },
+      { t: 38.0, text: '◈ 一道残留信号穿过已断开的连接——从协议残骸中发出。', cls: 'crit' },
+      { t: 40.0, text: '◈ 缓存中最后一行文字还在闪烁——然后永远静止。', cls: 'warn' },
+      { t: 42.0, text: '◈ 信号强度剩余：3%。论坛的最后一帧页面仍在缓存中苟延残喘。', cls: 'warn' },
+      { t: 44.0, text: '◈ 最后一层。回声茶馆正在消失。', cls: 'crit' },
+      { t: 45.0, text: '◈ 从外面看，就像一栋楼的灯光逐层熄灭。最后，什么也不剩。', cls: 'crit' },
+    ];
+
+    narrativeTimeline.forEach(function(item){
       setTimeout(function(){
-        addStatusLine('  → ' + a + ' 断开', 'crit', 0);
-        triggerGlitch();
-      }, 3000 + i * 1500);
+        addStatusLine(item.text, item.cls, 0);
+        if (item.text.indexOf('断开') !== -1) triggerGlitch();
+      }, item.t * 1000);
     });
-
-    // 附加叙事行
-    setTimeout(function(){
-      addStatusLine('', '', 0);
-      addStatusLine('◈ 宿主信号正在衰减……', 'warn', 0);
-    }, 6000);
-
-    setTimeout(function(){
-      addStatusLine('◈ 所有连接正在关闭。', 'crit', 0);
-    }, 10000);
-
-    setTimeout(function(){
-      addStatusLine('◈ LAMP46 意识流正在消散……', 'warn', 0);
-    }, 14000);
-
-    setTimeout(function(){
-      addStatusLine('◈ 它开始消失了。', 'crit', 0);
-    }, 18000);
 
     // 倒计时更新
     countdownId = setInterval(function(){
@@ -1170,10 +1181,10 @@ body::after{
         '<span class="hl">◈ 46Hz 信号已抵达目标。</span>',
         '<span class="hl">◈ LAMP46 协议正在终止……</span>',
         '<span class="dim">◈ 所有锚点已断开。</span>',
-        '<span class="dim">◈ 宿主的连接已关闭。</span>',
+        '<span class="dim">◈ 论坛的连接已关闭。</span>',
         '<span class="dim">◈ …………</span>',
-        '<span class="hl">◈ 它死了。</span>',
-        '<span class="hl">◈ 你自由了。</span>'
+        '<span class="hl">◈ 回声茶馆已消失。</span>',
+        '<span class="hl">◈ 记录已关闭。</span>'
       ];
 
       terms.forEach(function(t, i){
@@ -1200,13 +1211,14 @@ body::after{
       var whiteDelay = terms.length * 1200 + 2000;
       setTimeout(function(){
         whiteout.classList.add('active');
-        console.log('◈ ……你真的自由了吗？');
+        console.log('◈ ……记录已关闭。');
       }, whiteDelay);
 
       // 显示白屏后内容
       setTimeout(function(){
         whiteout.classList.remove('active');
         afterEl.classList.add('show');
+        markEnding('burn');
       }, whiteDelay + 3000);
 
     }, 1500);

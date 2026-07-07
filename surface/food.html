@@ -25,6 +25,26 @@ a:hover { text-decoration: underline; }
 .topbar .nav { display: flex; gap: 2px; }
 .topbar .nav a { color: #A0C8E0; font-size: 11px; margin: 0 10px; transition: color 0.2s; }
 .topbar .nav a:hover { color: #fff; text-decoration: underline; }
+
+.topbar .back-btn{
+  display:inline-block;
+  padding:2px 10px;
+  margin-left:10px;
+  font:11px Verdana,sans-serif;
+  color:#A0C8E0;
+  border:1px solid #1A4A70;
+  background:#0D3050;
+  cursor:pointer;
+  text-decoration:none;
+  line-height:1.6;
+  transition:all 0.2s;
+}
+.topbar .back-btn:hover{
+  color:#fff;
+  border-color:#8AB8D9;
+  background:#1A4A70;
+}
+
 .topbar .user-info { margin-left: auto; font-size: 10px; color: #7A9BB5; white-space: nowrap; }
 .topbar .user-info a { color: #8AB8D9; }
 .topbar .user-info a:hover { color: #fff; }
@@ -169,6 +189,7 @@ a:hover { text-decoration: underline; }
 <!-- ── 顶栏 ── -->
 <div class="topbar">
   <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
   <div class="nav">
     <a href="../forum.html">首页</a>
     <a href="rules.html">版规</a>

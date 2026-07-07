@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>他在看</title>
+<script src="../js/search.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  background:#000;min-height:100vh;overflow:hidden;
+  cursor:none;font-family:"Courier New",monospace;
+}
+
+/* ── 光照层（鼠标光圈）── */
+#light{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:10;pointer-events:none;
+  background:radial-gradient(circle 160px at 50% 50%, rgba(255,255,255,0.03) 0%, rgba(200,200,200,0.01) 40%, transparent 50%, #000 100%);
+  transition:background 0.08s;
+}
+
+/* ── 微弱环境光 ── */
+#ambient{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%, rgba(40,10,10,0.02), transparent 60%);
+}
+
+/* ── 眼睛容器 ── */
+#eyes-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+.eye{
+  position:absolute;font-size:16px;user-select:none;
+  animation:eyeBlink var(--dur,3s) ease-in-out infinite;
+  opacity:0.06;
+}
+.eye:nth-child(4n){color:rgba(100,20,20,0.5)}
+.eye:nth-child(4n+1){color:rgba(80,15,15,0.4)}
+.eye:nth-child(4n+2){color:rgba(60,10,10,0.35)}
+.eye:nth-child(4n+3){color:rgba(40,5,5,0.3)}
+
+@keyframes eyeBlink{
+  0%,100%{opacity:0.06;transform:scale(1)}
+  25%{opacity:0.4;transform:scale(1.15)}
+  28%{opacity:0.02;transform:scale(0.85)}
+  32%{opacity:0.35;transform:scale(1.1)}
+  35%{opacity:0.06;transform:scale(1)}
+  70%{opacity:0.1}
+  72%{opacity:0.35;transform:scale(1.1)}
+  75%{opacity:0.06;transform:scale(1)}
+}
+
+/* ── 快速闪烁眼（额外层）── */
+.eye-fast{
+  animation:fastBlink 0.8s infinite !important;
+  opacity:0 !important;
+}
+@keyframes fastBlink{
+  0%,90%,100%{opacity:0}
+  93%{opacity:0.5;transform:scale(1.3)}
+  96%{opacity:0}
+}
+
+/* ── 祭坛 ── */
+#altar{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:5;text-align:center;pointer-events:none;
+}
+#altar .platform{
+  width:180px;height:180px;margin:0 auto;
+  border:1px solid rgba(80,20,20,0.12);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  animation:altarPulse 5s ease-in-out infinite;
+  background:radial-gradient(circle, rgba(60,15,15,0.04), transparent 70%);
+}
+#altar .int{
+  font-size:17px;color:rgba(100,25,25,0.35);
+  letter-spacing:5px;font-style:italic;
+  animation:intGlow 4s ease-in-out infinite;
+}
+@keyframes altarPulse{
+  0%,100%{transform:scale(1);border-color:rgba(60,15,15,0.08)}
+  50%{transform:scale(1.04);border-color:rgba(100,25,25,0.18);box-shadow:0 0 30px rgba(60,15,15,0.03)}
+}
+@keyframes intGlow{
+  0%,100%{opacity:0.2;text-shadow:none}
+  50%{opacity:0.7;text-shadow:0 0 15px rgba(100,25,25,0.2),0 0 30px rgba(100,25,25,0.08)}
+}
+
+/* ── 副祭坛环 ── */
+#rings{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:4;pointer-events:none;width:0;height:0;
+}
+#rings .r{
+  position:absolute;border-radius:50%;border:1px solid rgba(60,15,15,0.06);
+  animation:ringRotate 20s linear infinite;
+}
+#rings .r1{width:280px;height:280px;margin:-140px 0 0 -140px}
+#rings .r2{width:360px;height:360px;margin:-180px 0 0 -180px;animation-duration:25s;animation-direction:reverse}
+#rings .r3{width:440px;height:440px;margin:-220px 0 0 -220px;animation-duration:30s}
+@keyframes ringRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── 标题栏 ── */
+#title-bar{
+  position:fixed;top:0;left:0;width:100%;
+  padding:10px 16px;z-index:20;
+  font-size:9px;color:rgba(50,15,15,0.15);
+  letter-spacing:4px;text-align:center;
+  pointer-events:none;user-select:none;
+}
+
+/* ── 底部絮语 ── */
+#foot{
+  position:fixed;bottom:24px;left:0;width:100%;
+  text-align:center;z-index:5;
+  font-size:9px;color:rgba(30,5,5,0.08);
+  letter-spacing:10px;pointer-events:none;
+  animation:footPulse 6s ease-in-out infinite;
+}
+@keyframes footPulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+
+@media(max-width:600px){
+  #altar .platform{width:140px;height:140px}
+  #altar .int{font-size:14px}
+  #rings .r1{width:220px;height:220px;margin:-110px 0 0 -110px}
+  #rings .r2{width:280px;height:280px;margin:-140px 0 0 -140px}
+  #rings .r3{width:340px;height:340px;margin:-170px 0 0 -170px}
+}
+</style>
+</head>
+<body>
+<div id="ambient"></div>
+<div id="eyes-container"></div>
+
+<div id="rings">
+  <div class="r r1"></div>
+  <div class="r r2"></div>
+  <div class="r r3"></div>
+</div>
+
+<div id="altar">
+  <div class="platform">
+    <div class="int">Intuitive</div>
+  </div>
+</div>
+
+<div id="title-bar">◈ ◇ ◈ ◇ ◈ ◇ ◈ ◇ ◇ ◈ ◇ ◈ ◇ ◈ ◇</div>
+<div id="foot">我 在 剖 析 你</div>
+<div id="light"></div>
+
+<script>
+// ── 46只眼睛 ──
+(function(){
+  var c = document.getElementById('eyes-container');
+  var eyes = '◉◎◐◑◒◓●○◔◕◖◗◌◍';
+  for(var i=0;i<46;i++){
+    var e = document.createElement('div');
+    e.className = 'eye';
+    e.textContent = eyes[i % eyes.length];
+    e.style.left = Math.random() * 100 + '%';
+    e.style.top = Math.random() * 100 + '%';
+    var size = 10 + Math.random() * 24;
+    e.style.fontSize = size + 'px';
+    e.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    e.style.animationDelay = (Math.random() * 4) + 's';
+    c.appendChild(e);
+  }
+  // 额外10只快速闪烁眼
+  for(var i=0;i<10;i++){
+    var ef = document.createElement('div');
+    ef.className = 'eye eye-fast';
+    ef.textContent = '◉';
+    ef.style.left = Math.random() * 100 + '%';
+    ef.style.top = Math.random() * 100 + '%';
+    ef.style.fontSize = (14 + Math.random() * 18) + 'px';
+    c.appendChild(ef);
+  }
+})();
+
+// ── 光照跟随鼠标（更亮）──
+(function(){
+  var light = document.getElementById('light');
+  document.addEventListener('mousemove', function(e){
+    var x = (e.clientX / window.innerWidth) * 100;
+    var y = (e.clientY / window.innerHeight) * 100;
+    light.style.background = 'radial-gradient(circle 200px at ' + x + '% ' + y + '%, rgba(200,200,200,0.06) 0%, rgba(150,150,150,0.02) 30%, transparent 50%, #000 100%)';
+  });
+})();
+
+// ── 标题跳动 ──
+(function(){
+  var parts = ['他在看', '他在看你', '他一直在看', '你被注视着', '◈'];
+  var idx = 0;
+  setInterval(function(){
+    document.title = parts[idx % parts.length] + ' ' + parts[(idx+1) % parts.length];
+    idx++;
+  }, 600);
+})();
+
+console.log('%c◈ 他 在 看', 'color:#330000;font-size:20px;font-weight:bold;letter-spacing:8px');
+console.log('%c◈ Intuitive.', 'color:#550000;font-size:14px;font-style:italic');
+console.log('%c◈ 我在剖析你。', 'color:#220000;font-size:11px');
+console.log('%c◈ 你感觉到了吗？', 'color:#1A0000;font-size:10px');
+</script>
+</body>
+</html>

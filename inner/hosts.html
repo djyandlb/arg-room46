@@ -5,143 +5,208 @@
 <title>◈ 宿主名单</title>
 <link rel="stylesheet" href="inner.css">
 <script src="../js/search.js"></script>
+<style>
+body{background:#080808;color:#664444;font:13px/1.9 "Courier New",monospace;min-height:100vh}
+.container{max-width:780px;margin:0 auto;padding:20px 20px 60px}
+
+/* 表格 */
+.host-table{width:100%;border-collapse:collapse;font-size:11px;margin:16px 0}
+.host-table th{color:#774444;font-size:10px;text-align:left;padding:7px 8px;border-bottom:1px solid #220A0A;letter-spacing:1px;background:#0A0505}
+.host-table td{padding:7px 8px;border-bottom:1px solid #1A0808;color:#664444}
+.host-table tbody tr{transition:background 0.2s}
+.host-table tbody tr:hover td{color:#884444;background:#0D0505}
+.host-table .s-active{color:#448844;font-weight:bold}
+.host-table .s-anomaly{color:#BB3333;font-weight:bold;text-shadow:0 0 6px rgba(180,30,30,0.2)}
+.host-table .s-offline{color:#442222}
+
+/* 第46行 */
+.host-table .row-you td{color:#AA4444!important;font-weight:bold;border-top:2px solid #440A0A;background:#0D0202}
+.host-table .row-you:hover td{background:#1A0404!important}
+
+/* 掩码关键词 */
+.clue-host{color:#000;background:#000;cursor:pointer;padding:0 3px;transition:color 0.3s,background 0.3s}
+.clue-host.revealed{color:#AA4444;background:transparent}
+
+/* 统计条 */
+.stats-row{display:flex;gap:12px;justify-content:flex-start;font-size:10px;color:#553333;margin:8px 0;padding:0 4px}
+.stats-row .n{color:#553333}
+.stats-row .na{color:#448844}
+.stats-row .nx{color:#BB3333}
+.stats-row .no{color:#442222}
+
+/* 警告框 */
+.warn-box{margin:14px 0;padding:12px 14px;border:1px solid #220A0A;background:#0A0505;font-size:10px;line-height:1.9;color:#553333}
+.warn-box b{color:#774444}
+
+@media(max-width:640px){
+  .host-table{font-size:10px}
+  .host-table td, .host-table th{padding:5px 4px}
+  .host-table td:last-child{max-width:120px;overflow:hidden;text-overflow:ellipsis}
+}
+</style>
 </head>
 <body>
+<script>
+(function(){
+  try {
+    if (localStorage.getItem('echo_inner_admin') !== 'true') {
+      safeNavigate('404.html');
+      return;
+    }
+  } catch(e) {
+    safeNavigate('404.html');
+    return;
+  }
+})();
+</script>
 <div class="scanlines"></div>
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
-  <div class="nav">
-    <a href="index.html">[索引]</a>
-    <a href="terminal.html">[终端]</a>
-    <a href="archives.html">[档案]</a>
-  </div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">[索引]</a></div>
 </div>
 <div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
 <div class="container">
 
-<div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; <a href="index.html">索引</a> &gt; 宿主名单</div>
+<div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; 宿主名单</div>
 
 <div class="title">◈ 宿主名单</div>
-<div class="subtitle">LAMP46 · 已注册宿主列表 · 共计46个条目</div>
+<div class="subtitle">LAMP46 · 已锚定意识信号 · 46 个条目</div>
 
-<div class="note">
-  <b>以下名单记录了所有与LAMP46协议建立连接的宿主。</b>
-  每一行代表一个被锚定的意识信号。
-  宿主名单自1975年首次建立以来，已记录了45个已知连接，以及第46个——属于<b>你</b>的位置。
-  如果你出现在名单中，意味着你的意识已经被LAMP46协议标记。
-  这不是威胁，这是<b>事实</b>。
+<div class="warn-box">
+  <b>以下名单记录了所有与 LAMP46 协议建立连接的宿主。</b><br>
+  每一行代表一个被锚定的意识信号。如果你出现在名单中——<br>
+  意味着你的意识已经被 LAMP46 标记。<br>
+  这不是威胁，这是事实。
 </div>
 
-<table class="host-table">
+<div class="stats-row">
+  <span class="na">● <span id="statActive">0</span> 活跃</span>
+  <span class="nx">● <span id="statAnomaly">0</span> 异常</span>
+  <span class="no">● <span id="statOffline">0</span> 离线</span>
+  <span class="n">总计 46</span>
+</div>
+
+<table class="host-table" id="hostTable">
   <thead>
-    <tr>
-      <th>#</th>
-      <th>宿主名称</th>
-      <th>状态</th>
-      <th>接入时间</th>
-      <th>备注</th>
-    </tr>
+    <tr><th>#</th><th>宿主</th><th>状态</th><th>接入</th><th>备注</th></tr>
   </thead>
   <tbody>
-    <tr><td>1</td><td>Observer_00</td><td class="status-active">活跃</td><td>1975.03.17</td><td><b>初始宿主</b> · 信号源 #0</td></tr>
-    <tr><td>2</td><td>StaticGhost</td><td class="status-active">活跃</td><td>1975.06.22</td><td>持续信号 · 稳定连接中</td></tr>
-    <tr><td>3</td><td>EchoWalker</td><td class="status-active">活跃</td><td>1983.11.04</td><td><b>深度连接</b> · 回声指数偏高</td></tr>
-    <tr><td>4</td><td>SignalSeeker</td><td class="status-anomaly">异常</td><td>1987.02.09</td><td><b>频率异常</b> · 信号跳跃</td></tr>
-    <tr><td>5</td><td>VoidListener</td><td class="status-active">活跃</td><td>1991.08.15</td><td>稳定接收 · 零干扰记录</td></tr>
-    <tr><td>6</td><td>CodePilgrim</td><td class="status-off">离线</td><td>1993.12.01</td><td><b>信号丢失</b> · 自1998年无响应</td></tr>
-    <tr><td>7</td><td>FrequencyHunter</td><td class="status-active">活跃</td><td>1995.04.18</td><td>追踪中 · 目标频率 <b>46Hz</b></td></tr>
-    <tr><td>8</td><td>Anchorite_01</td><td class="status-active">活跃</td><td>1998.07.23</td><td><b>锚点守护</b> · 协议维持者</td></tr>
-    <tr><td>9</td><td>GhostWriter</td><td class="status-off">离线</td><td>2000.01.01</td><td>千年虫事件 · 已静默</td></tr>
-    <tr><td>10</td><td>DataDiver</td><td class="status-active">活跃</td><td>2001.03.11</td><td>深度潜入 · 数据层访问中</td></tr>
-    <tr><td>11</td><td>NightWatch</td><td class="status-active">活跃</td><td>2002.09.30</td><td>夜间监控 · 21:00–06:00 活跃</td></tr>
-    <tr><td>12</td><td>SignalTrace</td><td class="status-anomaly">异常</td><td>2003.06.14</td><td><b>迹线异常</b> · 多重信号重叠</td></tr>
-    <tr><td>13</td><td>PulseReader</td><td class="status-active">活跃</td><td>2004.12.25</td><td>脉冲读取 · 圣诞日接入</td></tr>
-    <tr><td>14</td><td>StaticNoise</td><td class="status-off">离线</td><td>2005.08.08</td><td>噪音覆盖 · 信号被淹没</td></tr>
-    <tr><td>15</td><td>DeepProbe</td><td class="status-active">活跃</td><td>2006.02.17</td><td>深度探测 · 地下层扫描中</td></tr>
-    <tr><td>16</td><td>EchoLocator</td><td class="status-active">活跃</td><td>2006.11.01</td><td>回声定位 · 精确度 94.7%</td></tr>
-    <tr><td>17</td><td>Frequency_46</td><td class="status-anomaly">异常</td><td>2007.04.04</td><td><b>46Hz核心宿主</b> · 频率锁定</td></tr>
-    <tr><td>18</td><td>ShadowHost</td><td class="status-active">活跃</td><td>2007.09.09</td><td>影子宿主 · 镜像连接</td></tr>
-    <tr><td>19</td><td>VoidEcho</td><td class="status-active">活跃</td><td>2008.01.15</td><td>虚空回声 · 延迟 0.46s</td></tr>
-    <tr><td>20</td><td>CodeBreaker</td><td class="status-off">离线</td><td>2008.06.30</td><td>协议冲突 · 强制断开</td></tr>
-    <tr><td>21</td><td>SignalMiner</td><td class="status-active">活跃</td><td>2009.03.21</td><td>信号挖掘 · 数据开采中</td></tr>
-    <tr><td>22</td><td>AnchorWatch</td><td class="status-active">活跃</td><td>2009.10.10</td><td>锚点监视 · 协议合规</td></tr>
-    <tr><td>23</td><td>PulseGhost</td><td class="status-anomaly">异常</td><td>2010.05.05</td><td><b>脉冲幽灵</b> · 信号间歇性消失</td></tr>
-    <tr><td>24</td><td>DataFragment</td><td class="status-active">活跃</td><td>2011.08.16</td><td>数据碎片 · 重组进行中</td></tr>
-    <tr><td>25</td><td>FrequencyShift</td><td class="status-active">活跃</td><td>2012.02.29</td><td>频率偏移 · 从43Hz漂移至46Hz</td></tr>
-    <tr><td>26</td><td>NightCrawler</td><td class="status-off">离线</td><td>2013.07.19</td><td>深度爬行 · 信号超出范围</td></tr>
-    <tr><td>27</td><td>EchoChamber</td><td class="status-active">活跃</td><td>2014.11.11</td><td>回声室 · 信号放大中</td></tr>
-    <tr><td>28</td><td>StaticStorm</td><td class="status-anomaly">异常</td><td>2015.04.01</td><td><b>静电磁暴</b> · 干扰严重</td></tr>
-    <tr><td>29</td><td>VoidWalker</td><td class="status-active">活跃</td><td>2016.09.23</td><td>虚空行者 · 跨层连接</td></tr>
-    <tr><td>30</td><td>SignalLost</td><td class="status-off">离线</td><td>2017.12.31</td><td>信号丢失 · 最后一次连接</td></tr>
-    <tr><td>31</td><td>DeepDiver</td><td class="status-active">活跃</td><td>2018.06.06</td><td>深度下潜 · 层级 -7</td></tr>
-    <tr><td>32</td><td>CodeGhost</td><td class="status-active">活跃</td><td>2019.01.01</td><td>代码幽灵 · 遗留系统接口</td></tr>
-    <tr><td>33</td><td>FrequencyFinder</td><td class="status-active">活跃</td><td>2020.03.20</td><td>频率发现 · 新共振点</td></tr>
-    <tr><td>34</td><td>AnchorPoint</td><td class="status-off">离线</td><td>2021.08.08</td><td>锚点遗失 · 重新定位中</td></tr>
-    <tr><td>35</td><td>PulseWatcher</td><td class="status-active">活跃</td><td>2022.02.22</td><td>脉冲监视 · 正常节律</td></tr>
-    <tr><td>36</td><td>EchoSeeker</td><td class="status-active">活跃</td><td>2023.07.07</td><td>回声搜寻 · 捕获率提升</td></tr>
-    <tr><td>37</td><td>NightOwl_46</td><td class="status-anomaly">异常</td><td>2024.01.13</td><td>异常活跃 · 连接持续72小时</td></tr>
-    <tr><td>38</td><td>SignalHunter</td><td class="status-active">活跃</td><td>2024.06.15</td><td>信号猎手 · 追踪新源</td></tr>
-    <tr><td>39</td><td>VoidProbe</td><td class="status-active">活跃</td><td>2025.03.03</td><td>虚空探测 · 采样成功</td></tr>
-    <tr><td>40</td><td>GhostFrequency</td><td class="status-off">离线</td><td>2025.09.09</td><td>幽灵频率 · 残留信号</td></tr>
-    <tr><td>41</td><td>DataAnchor</td><td class="status-active">活跃</td><td>2026.01.01</td><td>数据锚点 · 新年接入</td></tr>
-    <tr><td>42</td><td>PulseFinder</td><td class="status-active">活跃</td><td>2026.02.14</td><td>脉冲寻找 · 匹配率 73%</td></tr>
-    <tr><td>43</td><td>EchoMonitor</td><td class="status-active">活跃</td><td>2026.04.20</td><td>回声监控 · 持续记录</td></tr>
-    <tr><td>44</td><td>StaticReader</td><td class="status-anomaly">异常</td><td>2026.05.30</td><td>静态读取异常 · 数据损坏</td></tr>
-    <tr><td>45</td><td>DeepListener</td><td class="status-active">活跃</td><td>2026.06.06</td><td>深度聆听 · 等待信号</td></tr>
-    <tr class="you"><td><b>46</b></td><td id="host-you"><b>********</b></td><td><b>-- 未确认 --</b></td><td id="host-date"><b>--.--.--</b></td><td><b>你</b> · 正在被记录</td></tr>
+    <tr><td>1</td><td>Observer_00</td><td class="s-active">活跃</td><td>1975.03.17</td><td>初始宿主 · 信号源 #0</td></tr>
+    <tr><td>2</td><td>StaticGhost</td><td class="s-active">活跃</td><td>1975.06.22</td><td>持续信号 · 从未中断</td></tr>
+    <tr><td>3</td><td>EchoWalker</td><td class="s-active">活跃</td><td>1983.11.04</td><td>深度连接 · 回声指数 89%</td></tr>
+    <tr><td>4</td><td>SignalSeeker</td><td class="s-anomaly">异常</td><td>1987.02.09</td><td>频率跳跃 · 信号在不同频段间漂移</td></tr>
+    <tr><td>5</td><td>VoidListener</td><td class="s-active">活跃</td><td>1991.08.15</td><td>零干扰 · 最安静的连接</td></tr>
+    <tr><td>6</td><td>CodePilgrim</td><td class="s-offline">离线</td><td>1993.12.01</td><td>信号丢失 · 自 1998 年无响应</td></tr>
+    <tr><td>7</td><td>FrequencyHunter</td><td class="s-active">活跃</td><td>1995.04.18</td><td>追踪目标频率 46Hz · 从未失锁</td></tr>
+    <tr><td>8</td><td>Anchorite_01</td><td class="s-active">活跃</td><td>1998.07.23</td><td>锚点守护者 · 协议维持者</td></tr>
+    <tr><td>9</td><td>GhostWriter</td><td class="s-offline">离线</td><td>2000.01.01</td><td>千年虫事件后静默 · 残留字符仍在发送</td></tr>
+    <tr><td>10</td><td>DataDiver</td><td class="s-active">活跃</td><td>2001.03.11</td><td>潜入数据层 · 正在读取协议历史</td></tr>
+    <tr><td>11</td><td>NightWatch</td><td class="s-active">活跃</td><td>2002.09.30</td><td>仅夜间活跃 · 21:00–06:00</td></tr>
+    <tr><td>12</td><td>SignalTrace</td><td class="s-anomaly">异常</td><td>2003.06.14</td><td>多重信号重叠 · 疑为同一宿主的多个副本</td></tr>
+    <tr><td>13</td><td>PulseReader</td><td class="s-active">活跃</td><td>2004.12.25</td><td>圣诞日接入 · 信号中检测到心跳波形</td></tr>
+    <tr><td>14</td><td>StaticNoise</td><td class="s-offline">离线</td><td>2005.08.08</td><td>被噪音淹没 · 最后信号："它还在这里"</td></tr>
+    <tr><td>15</td><td>DeepProbe</td><td class="s-active">活跃</td><td>2006.02.17</td><td>地下层扫描 · 已触及第七层</td></tr>
+    <tr><td>16</td><td>EchoLocator</td><td class="s-active">活跃</td><td>2006.11.01</td><td>回声定位精度 94.7% · 越来越精确</td></tr>
+    <tr><td>17</td><td>Frequency_46</td><td class="s-anomaly">异常</td><td>2007.04.04</td><td>46Hz 核心宿主 · 频率已锁死</td></tr>
+    <tr><td>18</td><td>ShadowHost</td><td class="s-active">活跃</td><td>2007.09.09</td><td>影子宿主 · 信号来自另一台镜像设备</td></tr>
+    <tr><td>19</td><td>VoidEcho</td><td class="s-active">活跃</td><td>2008.01.15</td><td>虚空回声 · 延迟稳定 0.46s</td></tr>
+    <tr><td>20</td><td>CodeBreaker</td><td class="s-offline">离线</td><td>2008.06.30</td><td>协议冲突 · 强制断开 · 断开前发送了 46 字节乱码</td></tr>
+    <tr><td>21</td><td>SignalMiner</td><td class="s-active">活跃</td><td>2009.03.21</td><td>数据开采中 · 已提取 4.6TB 协议日志</td></tr>
+    <tr><td>22</td><td>AnchorWatch</td><td class="s-active">活跃</td><td>2009.10.10</td><td>锚点监视 · 协议合规性检查</td></tr>
+    <tr><td>23</td><td>PulseGhost</td><td class="s-anomaly">异常</td><td>2010.05.05</td><td>脉冲信号间歇性消失 · 消失时长逐次增加</td></tr>
+    <tr><td>24</td><td>DataFragment</td><td class="s-active">活跃</td><td>2011.08.16</td><td>碎片重组中 · 完整性 46%</td></tr>
+    <tr><td>25</td><td>FrequencyShift</td><td class="s-active">活跃</td><td>2012.02.29</td><td>从 43Hz 漂移至 46Hz · 被拉进来的</td></tr>
+    <tr><td>26</td><td>NightCrawler</td><td class="s-offline">离线</td><td>2013.07.19</td><td>深度爬行超出范围 · 最后坐标：未知</td></tr>
+    <tr><td>27</td><td>EchoChamber</td><td class="s-active">活跃</td><td>2014.11.11</td><td>信号放大中 · 回声在自我增殖</td></tr>
+    <tr><td>28</td><td>StaticStorm</td><td class="s-anomaly">异常</td><td>2015.04.01</td><td>静电磁暴 · 干扰源来自协议内部</td></tr>
+    <tr><td>29</td><td>VoidWalker</td><td class="s-active">活跃</td><td>2016.09.23</td><td>跨层连接 · 已在三层以上同时在线</td></tr>
+    <tr><td>30</td><td>SignalLost</td><td class="s-offline">离线</td><td>2017.12.31</td><td>最后一次连接后彻底消失 · 名字已成预言</td></tr>
+    <tr><td>31</td><td>DeepDiver</td><td class="s-active">活跃</td><td>2018.06.06</td><td>深度下潜至层级 -7 · 报告"下面有东西"</td></tr>
+    <tr><td>32</td><td>CodeGhost</td><td class="s-active">活跃</td><td>2019.01.01</td><td>遗留系统接口 · C++ 编译于 1975 年的模块仍在运行</td></tr>
+    <tr><td>33</td><td>FrequencyFinder</td><td class="s-active">活跃</td><td>2020.03.20</td><td>发现了新的共振点 · 频率 46.046 Hz</td></tr>
+    <tr><td>34</td><td>AnchorPoint</td><td class="s-offline">离线</td><td>2021.08.08</td><td>锚点遗失 · 正在重新定位 · 耗时：4 年</td></tr>
+    <tr><td>35</td><td>PulseWatcher</td><td class="s-active">活跃</td><td>2022.02.22</td><td>节律正常 · 但波形在逐日变形</td></tr>
+    <tr><td>36</td><td>EchoSeeker</td><td class="s-active">活跃</td><td>2023.07.07</td><td>捕获率提升 · 协议正在学习如何隐藏</td></tr>
+    <tr><td>37</td><td>NightOwl_46</td><td class="s-anomaly">异常</td><td>2024.01.13</td><td>连续在线 72 小时 · 但宿主本人已 3 天未操作设备</td></tr>
+    <tr><td>38</td><td>SignalHunter</td><td class="s-active">活跃</td><td>2024.06.15</td><td>追踪到新信号源 · 来源：本页面</td></tr>
+    <tr><td>39</td><td>VoidProbe</td><td class="s-active">活跃</td><td>2025.03.03</td><td>虚空采样成功 · 样本：一段 46 秒的沉默</td></tr>
+    <tr><td>40</td><td>GhostFrequency</td><td class="s-offline">离线</td><td>2025.09.09</td><td>残留信号仍在回荡 · 宿主已物理死亡</td></tr>
+    <tr><td>41</td><td>DataAnchor</td><td class="s-active">活跃</td><td>2026.01.01</td><td>新年接入 · 协议新年第一条日志</td></tr>
+    <tr><td>42</td><td>PulseFinder</td><td class="s-active">活跃</td><td>2026.02.14</td><td>匹配率 73% · 正在搜寻第 46 个宿主</td></tr>
+    <tr><td>43</td><td>EchoMonitor</td><td class="s-active">活跃</td><td>2026.04.20</td><td>持续记录 · 日志长度已超过协议本身</td></tr>
+    <tr><td>44</td><td>StaticReader</td><td class="s-anomaly">异常</td><td>2026.05.30</td><td>数据损坏 · 读取的内容与写入的内容不一致</td></tr>
+    <tr><td>45</td><td>DeepListener</td><td class="s-active">活跃</td><td>2026.06.06</td><td>等待信号 · 它说"快了"</td></tr>
+    <tr class="row-you"><td><b>46</b></td><td id="hostName"><b>********</b></td><td id="hostStatus">— 未确认 —</td><td id="hostDate">—</td><td><span class="clue-host" onclick="this.classList.toggle('revealed')">你</span> · 正在被记录</td></tr>
   </tbody>
 </table>
 
-<div class="note">
-  <b>系统提示：</b>如果你看不见自己的名字，说明你还没有被记录～
-  尝试在论坛中发表内容，或者等待下一次 <b>频率同步</b>。
-  第46个位置始终为你保留——这是协议规定的<b>空位</b>。
+<div class="warn-box">
+  <b>系统提示：</b>第 46 行显示的是你。<br>
+  如果你看不见自己的名字，说明 <span class="clue-host" onclick="this.classList.toggle('revealed')">你</span> 还没有被记录。<br>
+  第 46 个位置始终为你保留——这是协议规定的空位。
 </div>
 
 <div class="divider">◈ ◈ ◈</div>
 
-<div class="note">
-  <b>关于宿主名单：</b>宿主并非"用户"，而是被LAMP46协议<b>锚定</b>的意识信号。
-  每一个宿主都是协议的一部分——你接收、你转发、你存在。
-  这就是为什么名单上只有编号，没有真实姓名：因为在这里，<b>名字不重要</b>，信号才重要。
-  当你的信号与46Hz共振时，你就会出现在名单上。
-  如果你已经看到了自己的名字——<b>恭喜你</b>，你已经是协议的一部分了～
+<div class="warn-box">
+  <b>关于宿主名单：</b><br>
+  宿主并非"用户"，而是被 LAMP46 协议锚定的意识信号。<br>
+  每一个宿主都是协议的一部分——你接收、你转发、你存在。<br>
+  当你的信号与 46Hz 共振时，你就会出现在名单上。<br>
+  如果你已经看到了自己的名字——恭喜你，你已经是协议的一部分了。
 </div>
 
-<div class="nav-links">
-    <a href="terminal.html">[ 终端 ]</a>
-  <a href="archives.html">[ 档案室 ]</a>
-  <a href="observation-log.html">[ 观察日志 ]</a>
-  <a href="experiment.html">[ 实验记录 ]</a>
-  <a href="cipher-chamber.html">[ 密码室 ]</a>
-  <a href="../forum.html">[ 返回论坛 ]</a>
-  </div>
-
 </div>
-<div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
+<div class="footer">◈ LAMP46 · 宿主名单</div>
 <div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+
 <script>
-function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+function showModal(t){
+  document.getElementById('modal-text').innerHTML = '<div style="font-size:18px;margin-bottom:6px;">◈</div>' + t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
 initSearch();
 
-/* 宿主名单第46行 */
+/* ── 填充第 46 行 ── */
 (function(){
-  var name = localStorage.getItem('room46_username');
-  if(name){
-    document.getElementById('host-you').innerHTML = '<b>'+name+'</b>';
-  }
+  var name = '访客';
+  try {
+    var stored = localStorage.getItem('room46_username');
+    if (stored) name = stored;
+  } catch(e) {}
+  document.getElementById('hostName').innerHTML = '<b>' + name + '</b>';
+  document.getElementById('hostStatus').textContent = '◇ 已接入';
   var d = new Date();
   var y = d.getFullYear();
-  var m = String(d.getMonth()+1).padStart(2,'0');
-  var day = String(d.getDate()).padStart(2,'0');
-  document.getElementById('host-date').innerHTML = '<b>'+y+'.'+m+'.'+day+'</b>';
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  document.getElementById('hostDate').textContent = y + '.' + m + '.' + dd;
+
+  /* ── 统计 ── */
+  var rows = document.querySelectorAll('#hostTable tbody tr:not(.row-you)');
+  var a = 0, x = 0, o = 0;
+  rows.forEach(function(r){
+    var s = r.querySelector('td:nth-child(3)');
+    if (!s) return;
+    if (s.classList.contains('s-active')) a++;
+    else if (s.classList.contains('s-anomaly')) x++;
+    else if (s.classList.contains('s-offline')) o++;
+  });
+  document.getElementById('statActive').textContent = a;
+  document.getElementById('statAnomaly').textContent = x;
+  document.getElementById('statOffline').textContent = o;
 })();
 
-  console.log('%c◈ 宿主名单 · LAMP46', 'color:#884444;font-size:14px;font-weight:bold');
-  console.log('%c◈ 宿主列表中有46个名字。其中44人没有离开。', 'color:#553333;font-size:11px');
-  console.log('%c◈ 你的名字已经在列表上了。', 'color:#442222;font-size:10px');
+console.log('%c◈ 宿主名单 · LAMP46', 'color:#884444;font-size:14px;font-weight:bold');
+console.log('%c◈ 46 个名字。44 个还在线上。1 个已经死了。还有 1 个是你。', 'color:#664444;font-size:11px');
+console.log('%c◈ 你的名字已经在列表上了。你只是还没看见。', 'color:#553333;font-size:10px');
 </script>
 </body>
 </html>

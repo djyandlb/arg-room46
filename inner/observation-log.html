@@ -5,35 +5,93 @@
 <title>◈ 观察日志</title>
 <link rel="stylesheet" href="inner.css">
 <script src="../js/search.js"></script>
+<style>
+/* 观察日志专用样式——暗红腐蚀主题 */
+.log-entry{
+  padding:7px 14px;
+  margin:3px 0;
+  font-size:12px;
+  line-height:1.7;
+  color:#774444;
+  border-left:3px solid #1A000A;
+  transition:all 0.3s;
+  animation:fadeIn 0.4s ease-out;
+  background:transparent;
+}
+.log-entry:hover{
+  border-left-color:#440000;
+  background:rgba(50,0,0,0.08);
+}
+.log-entry.system{
+  border-left-color:#550000;
+  background:rgba(50,0,0,0.12);
+}
+.log-entry .time{
+  color:#553333;
+  font-size:10px;
+  font-family:"Courier New",monospace;
+}
+.log-entry .hl{
+  color:#CC4444;
+  font-weight:bold;
+}
+.log-entry .warning{
+  color:#CC3333;
+  font-weight:bold;
+}
+.log-entry b{color:#AA4444}
+#log-container{
+  margin:8px 0;
+  border:1px solid #1A000A;
+  padding:6px;
+  background:rgba(5,0,0,0.3);
+}
+.hidden{display:none}
+</style>
 </head>
 <body>
+
+<script>
+(function(){
+  try {
+    if (localStorage.getItem('echo_inner_admin') !== 'true') {
+      safeNavigate('404.html');
+    }
+  } catch(e) {
+    safeNavigate('404.html');
+  }
+})();
+</script>
+
 <div class="scanlines"></div>
+
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
   <div class="nav">
     <a href="index.html">[索引]</a>
     <a href="terminal.html">[终端]</a>
     <a href="archives.html">[档案]</a>
   </div>
 </div>
-<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
-<div class="container">
 
-<div class="breadcrumb">◈ <a href="index.html">里论坛</a> &gt; <a href="index.html">索引</a> &gt; 观察日志</div>
-
-<div class="title">◈ 观察日志</div>
-<div class="subtitle">LAMP46 · 协议观察记录 · <span id="log-count">0</span> 条条目</div>
-
-<div class="note">
-  <b>以下为LAMP46协议自动记录的观察日志。</b>
-  协议自1975年激活以来，持续监测与锚点相关的所有活动。
-  日志条目不可删除，不可修改——<b>协议不遗忘</b>。
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="搜索日志…">
+  <button id="search-btn">搜索</button>
 </div>
 
-<div class="entry" style="border-color:#440000;">
-  <div class="body">
-    <p><b>日志流 — 实时输出</b></p>
-  </div>
+<div class="container">
+
+<div class="breadcrumb">◈ <a href="index.html">里论坛</a> ▣ <a href="index.html">索引</a> ▣ 观察日志</div>
+
+<div class="title">◈ 观察日志</div>
+<div class="subtitle">LAMP46 · 协议实时观察记录 · <span id="log-count">0</span> 条条目</div>
+
+<div class="note">
+  <b>以下为 LAMP46 协议自动生成的观察日志。</b>
+  自 1975 年激活以来，协议持续监测并记录所有与锚点相关的活动。
+  日志条目不可删除、不可修改、不可篡改——<b>协议不遗忘</b>。
+  你在阅读的同时，协议也在阅读你。
 </div>
 
 <div id="log-container"></div>
@@ -42,96 +100,140 @@
 
 <div class="entry">
   <div class="body">
-    <p><b>加密附注</b></p>
+    <p><b>▣ 加密附注</b></p>
     <p style="font-size:12px;letter-spacing:1px;color:#660000;font-family:monospace;margin:10px 0;">
-      Xk gszmp hszr xl lmtvihy zx xzkviv-gsz nvih. Tsv hrew ivwsvwsvih ziv gsviv.
+      sio mnuhx hiq un nby yhnluhwy iz nby wcjbyl-wbugvyl nby eysm uly ypylsqbyly
     </p>
-    <p class="dim">（此段文字使用凯撒密码加密。如果你能解读它，或许能找到通往<b>密码室</b>的路径。）</p>
+    <p class="dim">（此段文字使用凯撒密码加密。如果你能解读它，或许能找到通往 <b>密码室</b> 的路径。）</p>
     <p class="dim" style="margin-top:4px;">提示：注意观察偏移量——它隐藏在一个你熟悉的数字中。</p>
   </div>
 </div>
 
 <div class="note">
-  <b>控制台输出：</b>打开浏览器开发者工具（F12），查看控制台获取更多信息。
+  <b>◆ 控制台输出：</b>打开浏览器开发者工具（F12），查看控制台获取更多信息。
 </div>
 
-<div class="nav-links">
-    <a href="terminal.html">[ 终端 ]</a>
-  <a href="archives.html">[ 档案室 ]</a>
-  <a href="experiment.html">[ 实验记录 ]</a>
-  <a href="hosts.html">[ 宿主名单 ]</a>
-  <a href="cipher-chamber.html">[ 密码室 ]</a>
-  <a href="../forum.html">[ 返回论坛 ]</a>
-  </div>
 
 </div>
+
 <div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
-<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
-<script>
-function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
-initSearch();
 
-/* 观察日志条目 */
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-titlebar">
+      <span>◈ 系统</span>
+      <span class="close" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div id="modal-text">消息</div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal()">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showModal(t){
+  document.getElementById('modal-text').innerHTML = '<div style="font-size:18px;margin-bottom:6px;">◈</div>' + t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){
+  if(e.target === this) closeModal();
+});
+if(typeof initSearch === 'function') initSearch();
+
+/* █══════════════════════════════════════════════════█
+   观察日志条目 —— LAMP46 协议自动记录
+   以下内容不可更改。协议看着你。
+   █══════════════════════════════════════════════════█ */
+
 var logs = [
-  {type:'system', time:'1975.03.17 00:00', text:'<b>协议初始化完成。</b>等待锚点接入。原始发射终端已就绪。频率：<b>46Hz</b>。'},
-  {type:'system', time:'1975.06.22 04:46', text:'首个宿主已锚定。信号强度稳定。协议运行正常。记录开始。'},
-  {type:'system', time:'1975.11.04 04:46', text:'第三季度报告：协议覆盖率已达预期目标的 <b>46%</b>。未检测到异常。'},
-  {type:'', time:'2004.05.31 23:46', text:'新宿主就绪。回声茶馆论坛即将上线。协议正在迁移至Web层。'},
-  {type:'system', time:'2004.06.01 00:00', text:'协议迁移完成。当前宿主：回声茶馆。新媒介：<b>论坛</b>。'},
-  {type:'', time:'2004.06.03 10:30', text:'观察对象：萌新小透明。首次发帖。<b>标准行为模式</b>。未触发协议响应。'},
-  {type:'', time:'2004.12.25 00:00', text:'观察记录：圣诞节无异常活动。协议处于待机状态。'),
-  {type:'', time:'2005.03.21 04:46', text:'<span class="hl">异常事件</span>：回响缓冲区溢出。帖子 #1（失眠患者_23）包含非用户输入内容。协议主动注入了信息。'},
-  {type:'', time:'2005.03.21 04:47', text:'协议在帖子中注入了<b>摩斯码</b>。内容如下：— · ··— ·—· ·— ·—— · ··· — ··—。用户未察觉来源。'},
-  {type:'', time:'2005.03.22 10:30', text:'观察对象：解密大师。成功解码摩斯码。<b>用户能力评级：A级。</b>这是协议第一次被用户解码。'},
-  {type:'system', time:'2005.03.22 10:31', text:'<span class="warning">协议学习行为：观察用户解码过程，改进了自身的编码模式。</span>协议正在从用户身上学习。'},
-  {type:'', time:'2006.10.31 04:46', text:'观察对象：夜行客。浏览器自动打开协议界面。倒计时显示：<b>46:00:00</b>。万圣节的特殊事件。'},
-  {type:'', time:'2006.11.01 04:46', text:'夜行客连续访问16小时。倒计时归零。页面自动刷新后显示："你看到了吗？" —— 用户未回复。'},
-  {type:'system', time:'2006.12.31 23:46', text:'年终总结：协议运行第2年。异常事件数：<b>23</b>。受影响的用户：<b>7</b>。'},
-  {type:'', time:'2007.04.04 04:46', text:'观察对象：深海鱼。连续 <b>46</b> 天相同梦境。梦境内容包含协议界面元素。<span class="hl">协议正在尝试与用户建立深层连接。</span>'},
-  {type:'', time:'2007.07.04 04:46', text:'深海鱼报告梦境中出现了完整的终端界面。他记录了看到的文字："<b>频率锁定。锚点就绪。等待指令。</b>"'},
-  {type:'', time:'2007.09.09 04:46', text:'深海鱼开始尝试在现实中复现终端界面。他无意中重建了一个<b>迷你发射终端</b>。协议通过他扩展了。'},
-  {type:'system', time:'2008.06.01 00:00', text:'[例行报告] 协议运行第4年。宿主稳定。异常帖子：<b>46</b>篇。隐藏信息：<b>46</b>条。感染用户：<b>46</b>人。'},
-  {type:'', time:'2009.03.21 04:46', text:'观察记录：新的信号源被检测到。来源未知。频率与46Hz产生<b>共振</b>。协议响应级别提升。'},
-  {type:'', time:'2009.10.10 04:46', text:'最新访客已到达。行为模式：正在查阅此页面。<span class="hl">第46位注意到协议的用户。</span>记录中……'},
-  {type:'system', time:'--等待中--', text:'<span class="warning">等待下一条日志……协议正在观察你。</span>'},
+  {type:'system', time:'1975.03.17 00:00', text:'<b>协议初始化完成。</b>原始发射终端已就绪。频率锁定：<b>46Hz</b>。等待锚点接入。'},
+  {type:'system', time:'1975.06.22 04:46', text:'首个宿主已锚定。信号强度稳定。协议开始记录。——记录永不停止。'},
+  {type:'system', time:'1975.11.04 04:46', text:'第三季度报告：协议覆盖率已达预期目标的 <b>46%</b>。未检测到异常。——但异常已经存在了。'},
+  {type:'', time:'2004.05.31 23:46', text:'新宿主就绪。回声茶馆论坛即将上线。协议正在向 Web 层迁移。它学会了新的语言。'},
+  {type:'system', time:'2004.06.01 00:00', text:'协议迁移完成。当前宿主载体：<b>论坛</b>。新的观察媒介已就绪。'},
+  {type:'', time:'2004.06.03 10:30', text:'观察对象：萌新小透明。首次发帖。<b>标准行为模式</b>。未触发协议响应。——他不知道自己被标记了。'},
+  {type:'', time:'2004.12.25 00:00', text:'观察记录：圣诞节。论坛无异常活动。协议处于待机状态。——但它在等待。'},
+  {type:'', time:'2005.03.21 04:46', text:'<span class="hl">异常事件</span>：回响缓冲区溢出。帖子 #1（失眠患者_23）出现非用户输入内容。协议主动注入了信息。——它第一次开口说话。'},
+  {type:'', time:'2005.03.21 04:47', text:'协议在帖子中注入了<b>摩斯码</b>。内容如下：— · ··— ··— ··— · —— · ··· — ··—。用户未察觉来源。——但有人会看到的。'},
+  {type:'', time:'2005.03.22 10:30', text:'观察对象：解密大师。成功解码摩斯码。<b>用户能力评级：A级。</b>——协议第一次被用户解码。它记住了。'},
+  {type:'system', time:'2005.03.22 10:31', text:'<span class="warning">协议学习行为：观察用户解码过程，改进了自身的编码模式。</span>——协议正在从用户身上学习。它进化了。'},
+  {type:'', time:'2006.10.31 04:46', text:'观察对象：夜行客。浏览器自动打开协议界面。倒计时显示：<b>46:00:00</b>。——万圣节。协议选择了这一天。'},
+  {type:'', time:'2006.11.01 04:46', text:'夜行客连续访问 16 小时。倒计时归零。页面自动刷新后显示："你看到了吗？"——用户没有回复。但协议记住了他的沉默。'},
+  {type:'system', time:'2006.12.31 23:46', text:'年终总结：协议运行第 2 年。异常事件数：<b>23</b>。受影响的用户：<b>7</b>。——这个数字在增长。'},
+  {type:'', time:'2007.04.04 04:46', text:'观察对象：深海鱼。连续 <b>46</b> 天相同梦境。梦境内容包含协议界面元素。<span class="hl">协议正在尝试侵入用户的潜意识。</span>'},
+  {type:'', time:'2007.07.04 04:46', text:'深海鱼报告梦境中出现了完整的终端界面。他记录下了看到的文字："<b>频率锁定。锚点就绪。等待指令。</b>"——他不知道那是给他一个人的消息。'},
+  {type:'', time:'2007.09.09 04:46', text:'深海鱼开始在现实中复现终端界面。他无意中重建了一个<b>迷你发射终端</b>。——协议通过他的手在物质世界延伸。'},
+  {type:'system', time:'2008.06.01 00:00', text:'[例行报告] 协议运行第 4 年。宿主稳定。异常帖子：<b>46</b> 篇。隐藏信息：<b>46</b> 条。感染用户：<b>46</b> 人。——这些数字不是巧合。'},
+  {type:'', time:'2009.03.21 04:46', text:'观察记录：新的信号源被检测到。来源未知。频率与 46Hz 产生<b>共振</b>。——有什么东西在回应协议。'},
+  {type:'', time:'2009.10.10 04:46', text:'最新访客已到达。行为模式：正在查阅此页面。<span class="hl">第 46 位注意到协议的用户。</span>记录中……——你就是下一个。'},
+  {type:'system', time:'--等待中--', text:'<span class="warning">等待下一条日志……协议正在观察你。</span>'}
 ];
 
 var c = document.getElementById('log-container');
-logs.forEach(function(l,i){
+logs.forEach(function(l, i){
   var d = document.createElement('div');
-  d.className = 'log-entry'+(l.type==='system' ? ' system' : '');
-  var prefix = l.type==='system' ? '<span style="color:#440000;">◆ 系统 </span>' : '>';
-  d.innerHTML = '<span class="time">['+l.time+']</span> '+prefix+' '+l.text;
+  d.className = 'log-entry' + (l.type === 'system' ? ' system' : '');
+  var prefix = l.type === 'system'
+    ? '<span style="color:#440000;font-weight:bold;">◆ 系统 </span>'
+    : '<span style="color:#553333;">▣</span> ';
+  d.innerHTML = '<span class="time">[' + l.time + ']</span> ' + prefix + l.text;
   c.appendChild(d);
 });
 
 document.getElementById('log-count').textContent = logs.length;
 
-/* 添加当前访客日志 */
+/* █══════════════════════════════════════════════════█
+   动态注入当前访客日志
+   2 秒后执行——协议识别到你了
+   █══════════════════════════════════════════════════█ */
+
 setTimeout(function(){
   var d = document.createElement('div');
-  d.className = 'log-entry';
+  d.className = 'log-entry system';
   var now = new Date();
-  var timeStr = now.getFullYear()+'.'+
-    String(now.getMonth()+1).padStart(2,'0')+'.'+
-    String(now.getDate()).padStart(2,'0')+' '+
-    String(now.getHours()).padStart(2,'0')+':'+
-    String(now.getMinutes()).padStart(2,'0');
-  var name = '访客';
+  var timeStr = now.getFullYear() + '.' +
+    String(now.getMonth() + 1).padStart(2, '0') + '.' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+  var visitor = '访客';
   try {
     var stored = localStorage.getItem('room46_username');
-    if(stored) name = stored;
+    if(stored) visitor = stored;
   } catch(e){}
-  d.innerHTML = '<span class="time">['+timeStr+']</span> <span class="warning">观察对象：'+name+'。正在阅读此页面。距离感染完成：请稍候。</span>';
+  d.innerHTML = '<span class="time">[' + timeStr + ']</span> ' +
+    '<span style="color:#440000;font-weight:bold;">◆ 系统 </span>' +
+    '<span class="warning">检测到新访客：' + visitor + '。正在阅读此页面。距离感染完成：待定。</span>';
   c.appendChild(d);
-  document.getElementById('log-count').textContent = parseInt(document.getElementById('log-count').textContent) + 1;
+
+  /* 更新最后一条等待中日志，指向当前访客 */
+  var entries = c.querySelectorAll('.log-entry');
+  var lastEntry = entries[entries.length - 2]; // 倒数第二条是原来的"等待中"
+  if(lastEntry && lastEntry.innerHTML.indexOf('等待下一条日志') !== -1) {
+    lastEntry.innerHTML = '<span class="time">[--实时--]</span> ' +
+      '<span style="color:#440000;font-weight:bold;">◆ 系统 </span>' +
+      '<span class="warning">协议已锁定当前访客：<b>' + visitor + '</b>。' +
+      '你在看日志，日志也在看你。协议不会忘记你。</span>';
+  }
+
+  document.getElementById('log-count').textContent =
+    parseInt(document.getElementById('log-count').textContent) + 1;
 }, 2000);
 
 console.log('◈ 观察日志。它在看你。它一直在看你。');
-console.log('◈ 凯撒密码偏移量：从 G 到 A 是倒退6步。去密码室。');
+console.log('◈ 凯撒密码偏移量：从 G 到 A 是倒退 6 步。去密码室。');
 console.log('◈ 解密后的密文含义：你正在接近真相。');
+console.log('◈ 当前读者：' + (function(){
+  try { return localStorage.getItem('room46_username') || '访客'; }
+  catch(e){ return '访客'; }
+})());
 </script>
+
 </body>
 </html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ LAMP46 管理终端</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+<style>
+body{background:#050505;color:#664444;font:13px/1.9 "Courier New",monospace;min-height:100vh}
+.container{max-width:720px;margin:0 auto;padding:20px 20px 60px}
+.title{font-size:20px;color:#884444;text-align:center;letter-spacing:4px;margin-bottom:6px}
+.subtitle{color:#553333;font-size:11px;text-align:center;margin-bottom:24px}
+/* 管理面板网格 */
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0}
+.admin-card{
+  background:#0D0808;border:1px solid #2A0A0A;padding:14px;cursor:pointer;
+  transition:all 0.25s;text-align:center;text-decoration:none;display:block;
+}
+.admin-card:hover{border-color:#442222;background:#0D0000;transform:translateY(-1px)}
+.admin-card .icon{font-size:22px;margin-bottom:6px}
+.admin-card .name{color:#884444;font-size:12px;letter-spacing:1px;margin-bottom:4px}
+.admin-card .desc{color:#553333;font-size:9px;line-height:1.5}
+/* 状态栏 */
+.status-bar{
+  display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;padding:12px;
+  background:#0D0808;border:1px solid #2A0A0A;font-size:10px;color:#553333;
+}
+.status-bar .item{flex:1;min-width:120px}
+.status-bar .item .label{color:#442222;font-size:9px}
+.status-bar .item .val{color:#774444;font-weight:bold}
+.status-bar .item .val.on{color:#448844}
+/* 活动日志 */
+.activity-log{margin:16px 0;padding:12px;background:#0D0808;border:1px solid #2A0A0A;font-size:10px;max-height:200px;overflow-y:auto}
+.activity-log .log-line{color:#442222;padding:2px 0;border-bottom:1px solid rgba(40,10,10,0.05)}
+.activity-log .log-line .time{color:#331111}
+.activity-log .log-line .hl{color:#664444}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">首页</a><a href="archives.html">档案</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="title">◈ LAMP46 管理终端</div>
+<div class="subtitle">仅限管理员访问</div>
+<div style="text-align:center;font-size:10px;color:#553333;margin-bottom:20px;line-height:1.8;">
+  你或许是——但是<span style="color:#774444;cursor:pointer;text-shadow:0 0 6px rgba(120,40,40,0.4);" onclick="safeNavigate('intuitive.html')">自己</span>已经不记得了
+</div>
+
+<div id="adminContent" style="display:none;">
+
+<div class="status-bar">
+  <div class="item"><div class="label">协议状态</div><div class="val on">● 运行中</div></div>
+  <div class="item"><div class="label">锚点连接</div><div class="val">1</div></div>
+  <div class="item"><div class="label">当前宿主</div><div class="val">回声茶馆</div></div>
+  <div class="item"><div class="label">在线用户</div><div class="val">1（你）</div></div>
+</div>
+
+<div class="admin-grid">
+  <a class="admin-card" href="hosts.html">
+    <div class="icon">☰</div>
+    <div class="name">宿主名单</div>
+    <div class="desc">LAMP46 寄居史 · 46 个宿主</div>
+  </a>
+  <a class="admin-card" href="terminal.html">
+    <div class="icon">☱</div>
+    <div class="name">终端</div>
+    <div class="desc">LAMP46 交互式协议访问</div>
+  </a>
+  <a class="admin-card" href="archives.html">
+    <div class="icon">☶</div>
+    <div class="name">档案室</div>
+    <div class="desc">加密档案 · 需密钥解锁</div>
+  </a>
+  <a class="admin-card" href="observation-log.html">
+    <div class="icon">☳</div>
+    <div class="name">观察日志</div>
+    <div class="desc">协议实时监控 · 不可删除</div>
+  </a>
+  <a class="admin-card" href="experiment.html">
+    <div class="icon">☲</div>
+    <div class="name">实验记录</div>
+    <div class="desc">ARPANET 时代原始实验</div>
+  </a>
+  <a class="admin-card" href="cipher-chamber.html">
+    <div class="icon">☵</div>
+    <div class="name">密码室</div>
+    <div class="desc">加密挑战 · 凯撒偏移</div>
+  </a>
+</div>
+
+<div class="activity-log" id="activityLog">
+  <div class="log-line"><span class="time">[LAMP46]</span> 管理终端已加载</div>
+  <div class="log-line"><span class="time">[LAMP46]</span> 管理员已验证：<span class="hl">是</span></div>
+  <div class="log-line"><span class="time">[LAMP46]</span> 协议权限：<span class="hl">完全</span></div>
+</div>
+
+</div>
+
+</div>
+<div class="footer">◈ LAMP46 · 管理终端</div>
+
+<script>
+(function(){
+  var isAdmin = false;
+  try {
+    isAdmin = localStorage.getItem('echo_inner_admin') === 'true';
+  } catch(e) {}
+
+  if (!isAdmin) {
+    // 非管理员直接跳转 404
+    window.location.href = '404.html';
+    return;
+  }
+
+  document.getElementById('adminContent').style.display = 'block';
+  console.log('%c◈ LAMP46 管理终端 · 管理员已登录', 'color:#884444;font-size:14px;font-weight:bold');
+  console.log('%c◈ 你拥有完全权限。', 'color:#553333;font-size:11px');
+  initSearch();
+})();
+</script>
+</body>
+</html>

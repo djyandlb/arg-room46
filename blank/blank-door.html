@@ -10,6 +10,15 @@ body{background:#000;color:#8B0000;font:13px/1.8 "Courier New",monospace;min-hei
 .topbar{background:#0D3050;padding:8px 16px;display:flex;align-items:center;border-bottom:2px solid #0A2440;position:relative;z-index:10;opacity:0.5}
 .topbar .logo{font:bold 16px "Times New Roman",serif;color:#FFD700;cursor:pointer;opacity:0.5}
 .topbar .logo span{color:#8AB8D9}
+
+.topbar .back-btn{
+  display:inline-block;padding:2px 10px;margin-left:10px;
+  font:11px Verdana,sans-serif;color:#8AB8D9;
+  border:1px solid #1A4A70;background:#0D3050;
+  cursor:pointer;text-decoration:none;line-height:1.6;
+  transition:all 0.2s;
+}
+.topbar .back-btn:hover{color:#fff;border-color:#8AB8D9;background:#1A4A70}
 .topbar .nav{margin-left:auto}
 .topbar .nav a{color:#8AB8D9;text-decoration:none;font-size:11px;opacity:0.5}
 .topbar .nav a:hover{opacity:1}
@@ -125,7 +134,8 @@ body{background:#000;color:#8B0000;font:13px/1.8 "Courier New",monospace;min-hei
 <div class="words-bottom">ドアドアドアドアドアドアドアドアドアドアドアドア</div>
 
 <div class="topbar">
-<div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
+<div class="logo" onclick="safeNavigate('../forum.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
 <div class="nav"><a href="../forum.html">首页</a></div>
 </div>
 <div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>

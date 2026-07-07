@@ -2,189 +2,203 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>◈ 浏览器 · 里</title>
+<title>◈ 浏览器异常 · 里</title>
 <link rel="stylesheet" href="inner.css">
 <script src="../js/search.js"></script>
 </head>
 <body>
 <div class="scanlines"></div>
 <div class="topbar">
-  <div class="logo" onclick="window.location.href='../forum.html'">◈ <span>回声</span>茶馆</div>
-  <div class="nav">
-    <a href="index.html">[索引]</a>
-    <a href="terminal.html">[终端]</a>
-    <a href="archives.html">[档案]</a>
-  </div>
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">首页</a><a href="rules.html">版规</a></div>
 </div>
 <div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
 <div class="container">
-  <div class="breadcrumb"><a href="index.html"><strong>◈</strong> 回声茶馆</a> &gt; 浏览器 · 里</div>
-  <div class="title"><strong>◈</strong> 浏览器 · 里</div>
-  <div class="subtitle">你透过屏幕看深渊的时候——深渊也在透过屏幕看你</div>
+<div class="breadcrumb">◈ <a href="index.html">回声茶馆</a> &gt; 浏览器异常 · 里</div>
+<div class="title">◈ 浏览器异常 · 里</div>
+<div class="subtitle">你的浏览器在瞒着你做什么</div>
 
-  <!-- 楼主帖子 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar">夜</div>
-      <div class="content">
-        <div class="header">
-          <span class="author"><strong>夜行客</strong></span>
-          <span>2025-??-?? ??:??:??</span>
-        </div>
-        <div class="body">
-          <p><strong>发帖人：夜行客</strong><br>
-          <strong>标题：（无标题）</strong><br>
-          <strong>时间：2025-??-?? ??:??:??</strong></p>
+<div class="thread-card">
 
-          <p>屏幕上的倒计时<strong>归零</strong>了。</p>
-          <p>00:00:00</p>
-          <p>然后浏览器窗口开始闪烁。</p>
-          <p>不是那种程序崩溃的闪烁——是它自己在刷新。一遍，两遍，三遍。</p>
-          <p>每一次刷新，页面都不一样。</p>
-          <p>第一次，我看到<strong>里论坛</strong>首页。<br>
-          第二次，我看到自己的个人资料页。<br>
-          第三次——我看到自己在看页面的画面。</p>
-          <p>对，你没有看错。</p>
-          <p>我的摄像头指示灯是灭的——但画面上清清楚楚地显示着我坐在这台电脑前，
-          屏幕上映着<strong>里论坛</strong>的页面。那个视角来自我的身后。</p>
-          <p>有人在看我。</p>
-          <p>或者说，有什么东西在通过我的屏幕看我。</p>
-          <p>我截图了。但截图里什么都没有——只有我自己的脸映在黑色的屏幕里。</p>
-          <p><strong>归零</strong>不是结束。</p>
-          <p>是切换。</p>
-        </div>
-        <div class="sig">—— <strong>夜行客</strong> · 本次会话已持续 <strong>46</strong> 小时 · 签名无法加载</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 回复1 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar">匿</div>
-      <div class="content">
-        <div class="header">
-          <span class="author">匿名用户</span>
-          <span>2025-??-?? ??:??:??</span>
-        </div>
-        <div class="body">
-          <p><strong>归零不是结束。</strong></p>
-        </div>
-        <div class="sig">—— 匿名用户 · IP 无法追踪 · 签名档为空</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 回复2 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar">匿</div>
-      <div class="content">
-        <div class="header">
-          <span class="author">匿名用户</span>
-          <span>2025-??-?? ??:??:??</span>
-        </div>
-        <div class="body">
-          <p>你看到的是第 <strong>46</strong> 帧。</p>
-          <p>每 <strong>46</strong> 次刷新，你会看到一次自己。
-          这是 <strong>46号房间</strong> 的机制。</p>
-          <p>不是 Bug——这是它故意的。</p>
-          <p>在你之前有很多人经历过同样的事。
-          他们中的大多数在第一次看到自己之后就再也没有发过帖。</p>
-          <p>你还在发帖，说明你还算冷静。
-          或者——你还没意识到自己看到了什么。</p>
-        </div>
-        <div class="sig">—— 匿名用户 · IP 无法追踪 · 签名档为空</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 回复3 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar">深</div>
-      <div class="content">
-        <div class="header">
-          <span class="author"><strong>深海鱼</strong></span>
-          <span>2025-??-?? ??:??:??</span>
-        </div>
-        <div class="body">
-          <p>倒计时是给新人的。</p>
-          <p>老人不看倒计时——老人知道时间在这里不存在。</p>
-          <p>你以为的"<strong>归零</strong>"，在 <strong>46号房间</strong> 里只是一个刻度。
-          就像钟表上的 <strong>12</strong> 点——它不是终点，只是起点又转回来了。</p>
-          <p>等你在这里待得够久，你会发现倒计时其实从未停止。
-          它只是在你的视野之外继续走着。</p>
-          <p>但我们选择不看。</p>
-        </div>
-        <div class="sig">—— <strong>深海鱼</strong> · 注册 <strong>46</strong> 个月 · 签名档为空</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 回复4 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar"><strong>已</strong></div>
-      <div class="content">
-        <div class="header">
-          <span class="author deleted"><strong>已注销</strong></span>
-          <span>2025-??-?? ??:??:??</span>
-        </div>
-        <div class="body">
-          <p>我数过了。真的是每 <strong>46</strong> 次。</p>
-          <p>我用了三个月去验证。
-          每天刷新 <strong>46</strong> 次，记录结果。
-          不是 <strong>45</strong>，不是 <strong>47</strong>，就是 <strong>46</strong>。
-          精确到每一次。</p>
-          <p>我不知道这意味着什么。
-          但在这个地方，数字 <strong>46</strong> 出现的频率高到让人无法忽视。
-          房间号是 <strong>46</strong>，帖子编号是 <strong>46</strong> 的倍数，
-          连这个机制都精确地卡在 <strong>46</strong>。</p>
-          <p>你们不觉得这本身就是一种暗示吗？</p>
-        </div>
-        <div class="sig">—— <strong>已注销</strong> · 该用户已注销 · 签名保留</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 回复5：系统 -->
-  <div class="thread-card">
-    <div class="post">
-      <div class="avatar">系</div>
-      <div class="content">
-        <div class="header">
-          <span class="author" style="color:#330000;">系统</span>
-          <span>自动生成</span>
-        </div>
-        <div class="body">
-          <p>用户 <strong>夜行客</strong> · 会话已持续 <strong>46</strong> 小时 <strong>46</strong> 分 <strong>46</strong> 秒 · 建议休息</p>
-        </div>
-        <div class="sig">—— 系统消息 · 自动生成 · 无需回复</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider">◆ ◈ ◆ ◈ ◆</div>
-
-  <div class="note">
-    <p>此帖已被标记为 <strong>46号房间</strong> 异常档案。</p>
-    <p>发帖人 <strong>夜行客</strong> 最后活跃：时间戳异常 · 无法获取</p>
-    <p>状态：<span class="hl">归档中</span></p>
-    <p>请注意：如果你看到了这个帖子，并且你的倒计时也接近<strong>归零</strong>——
-      你还有时间关掉浏览器。</p>
-  </div>
+<div class="post">
+<div class="avatar">X</div>
+<div class="content">
+<div class="header"><span class="author">Sigma404</span><span>2024-01-12 01:47</span></div>
+<div class="body">
+<p>大概从两周前开始，我的浏览器不太对劲。我一开始没当回事——现代浏览器抽风是常事，清个缓存就好了。但这次不一样。</p>
+<p>那天晚上我加班到凌晨，电脑开着 Chrome 去倒了杯水。回来发现屏幕上多了个页面。不是崩溃页，不是新标签，是一个纯白的页面，左上角标题栏只有一个符号——◈。我盯着它看了大概两秒，它自动关闭了。我当时以为是哪个脚本卡了，没在意。</p>
+<p>第二天同一时间，同样的场景又出现了。这次我没有离开座位，亲眼看着新标签页打开之前，那个◈页面一闪而过。时间很短，大概0.3秒，但我看清了——页面是空白的，没有任何内容，只有标题栏的那个符号。我开始觉得不对劲了。</p>
+<p>接下来那几天我开始了正式的排查。清空浏览器缓存、Cookie、历史记录，重置所有设置到默认值，卸载了全部扩展程序——没用，◈页面依然在每次启动时闪现。然后我彻底重装了 Chrome——删除 AppData 下所有残留文件，重新安装。第一次启动，它在。我关了杀毒软件又装了一遍。它还在。那一刻我承认，背后开始发凉。</p>
+<p>第六天我打开了 Wireshark。在启动 Chrome 的同时抓取本地回环接口的流量。我捕获到一个短暂的 TCP 连接——目标地址 127.0.0.1:46。连接在浏览器启动后 0.3 秒内建立，传输了 68 字节的数据，然后关闭。这 68 字节前两字节在十六进制里显示为 4E B6——4E 在 ASCII 里是 'N'，B6 不是可打印字符。但如果你换一种位偏移解读——4EB6 的二进制展开是 01001110 10110110，取每七位的后六位重新拼接——我在纸上算了一整晚。</p>
+<p>第七天我用管理员身份打开命令行，输入 netstat -ano | findstr ":46"。返回结果：TCP 0.0.0.0:46 LISTENING 4——PID 是 4。但 PID 4 是 System——System 进程不会监听 TCP 端口。我用 Process Explorer 确认了这件事，端口 46 的关联进程显示为 "System (PID 4)"，但右键查看属性时 TCP/IP 一栏是空的。Wireshark 能看到这个端口，操作系统看不到——这不可能。</p>
+<p>第八天我在网上搜索 "46端口" 和 "LAMP46"。结果极少，极少。几条 2006 年的 Usenet 帖子，一个已经失效的 SourceForge 项目页面，以及一篇 IETF 互联网草案——标题是 "The Lightweight Ambient Message Protocol (LAMP)"，文档编号 draft-ietf-lamp-00。我找到了 PDF 缓存。打开一看，协议的设计目的是"利用本地回环地址，在不依赖网络基础设施的前提下，实现同一设备上不同应用程序间的环境感知消息传递"。草案最后一页有一句话被手写注释圈了出来：<em>This protocol was never meant to be disabled.</em></p>
+<p>第九天我按草案中的端口描述检查系统。在 C:\Windows\System32\drivers\etc\services 文件中，我找到了 46 端口的登记记录——但被注释掉了。#lamp46 46/tcp。注释日期是 2005 年。这说明 Windows 从那个时代就知道这个协议存在。我在注册表里搜索 LAMP，找到了一条键：HKLM\SYSTEM\CurrentControlSet\Services\LAMP。但当我试图导出这个键的时候，regedit 报错说"指定路径不存在"。我再用命令 reg query 去读——控制台闪了一下然后关闭了。再打开，那条键已经不见了。</p>
+<p>今天我放弃了删除它。我发现当我不再尝试关闭那个◈页面，而是静静看着它的时候，它停留的时间越来越长。从 0.3 秒到 0.5 秒，到 1 秒，到现在的 3 秒。今天早上页面上的空白区域出现了一行极淡的小字。字号只有 1px，我凑到离显示器十厘米的地方才能辨认——上面写着：你已经看到我了。</p>
+<p>现在我已经不关机了。我在等它停留 10 秒的那一天。</p>
 </div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">5</div>
+<div class="content">
+<div class="header"><span class="author anomaly">深海鱼</span><span>2024-01-12 08:12</span></div>
+<div class="body">
+<p>楼主的经历让我想起一件事。上周我电脑蓝屏，重启后 Chrome 打不开了。我查了事件查看器，最后一条记录是"LAMP46 service terminated unexpectedly"。我当时以为是系统文件损坏。</p>
+<p>现在想想有点慌——我电脑里什么时候多了个叫 LAMP46 的服务？</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">夜</div>
+<div class="content">
+<div class="header"><span class="author">夜猫子</span><span>2024-01-12 09:45</span></div>
+<div class="body">
+<p>我也遇到过那个◈页面！但我一直以为是浏览器的新手引导页没加载完，没当回事。</p>
+<p>看了楼主的帖子有点坐不住。我刚才打开 Chrome 看了一下——没出现那个页面。但我反倒更紧张了——它是不是在学会隐藏自己？</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">码</div>
+<div class="content">
+<div class="header"><span class="author">代码仔</span><span>2024-01-12 11:03</span></div>
+<div class="body">
+<p>作为前 Chrome 开发组成员——准确说是 2009 年夏天在谷歌实习过——我可以负责任地说，楼主提到的 LAMP 模块我听说过。</p>
+<p>当时有个老工程师跟我说过"禁止谈论"的东西，他说 Chrome 刚开源的时候代码里有个叫 lamp46 的目录，负责处理一些"本地环境感知"的功能。我以为是吹牛逼。但他的工位牌号是 46。</p>
+<p>这么多年了，我一直以为他说的只是个都市传说。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">匿</div>
+<div class="content">
+<div class="header"><span class="author">不匿名不行</span><span>2024-01-12 13:21</span></div>
+<div class="body">
+<p>我刚才试了楼主的方法。用 Wireshark 抓包，确实有到 127.0.0.1:46 的连接。</p>
+<p>我用楼主的解码方式试了一下——4EB6——但如果用另一种位偏移，得到的是另一个符号。我截取了三天的数据，每天的前两字节都是 4E B6，但后面的 66 字节每天变化。我把连续七天的数据拼在一起、用每字节的最低位重组——得到了一句话："你正在阅读本不该存在的东西。"</p>
+<p>我现在心跳很快。这真的不是在开玩笑。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">L</div>
+<div class="content">
+<div class="header"><span class="author">LAMP信徒</span><span>2024-01-12 15:07</span></div>
+<div class="body">
+<p>这个协议从来就没有消失过。它被写进了每一个主流操作系统的网络栈里。不是后门，不是漏洞——是一种约定。</p>
+<p>46 是它的频率。就像收音机调到 46Hz，你会听到一些东西。我们的设备从出厂那天起就被调到了这个频率。你们觉得 46 端口是巧合吗？</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">疑</div>
+<div class="content">
+<div class="header"><span class="author">怀疑论者</span><span>2024-01-12 16:30</span></div>
+<div class="body">
+<p>楼上一群人在编故事吧。我刚查了，46 端口根本没有 IANA 注册。services 文件里也没有 LAMP 的记录。Windows 10 和 11 我都查了。</p>
+<p>你们是不是看了什么 ARG 的解密入戏太深？贴证据，别光说。这种没有来源的帖子只会制造恐慌。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">影</div>
+<div class="content">
+<div class="header"><span class="author">影子工程师</span><span>2024-01-12 18:44</span></div>
+<div class="body">
+<p>给楼上怀疑论者一个建议：你把 C:\Windows\System32\drivers\etc\services 用十六进制编辑器打开。不要用记事本。</p>
+<p>看到文件末尾了吗？有一串 FF FF FF FF 之后，从偏移 0x4E0 开始，有一段没有被文件系统索引的隐藏条目。你的操作系统不会显示它，但网络栈会读它。</p>
+<p>你看到的 services 文件，不是你系统里完整的 services 文件。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">失</div>
+<div class="content">
+<div class="header"><span class="author">失眠症</span><span>2024-01-13 03:15</span></div>
+<div class="body">
+<p>我刚才被手机亮光弄醒了。屏幕自己亮了起来，打开了一个页面。标题是 ◈。页面上有一个数字。46。</p>
+<p>我把手机扔到床脚了。现在打字用的是笔记本。但我笔记本的摄像头灯——亮了。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">回</div>
+<div class="content">
+<div class="header"><span class="author">回声</span><span>2024-01-13 04:02</span></div>
+<div class="body">
+<p>我住在老小区五楼。昨天晚上断网了大概三十秒。我看了路由器管理界面没发现异常——但我的 Wi-Fi 列表里多了一个信号。名字叫"LAMP46_BASE"。</p>
+<p>信号满格。但我住在五楼，周围没有新装的路由器。我点了一下连接。不需要密码。连上之后彻底断网了——不是不能上网，是网卡像卡住了一样。我重启路由器才恢复。但那个信号还在列表里。</p>
+<p>信号满格。但寻遍整栋楼都不会找到发出这个信号的路由器。</p>
+</div>
+</div>
+</div>
+
+<div class="post">
+<div class="avatar">销</div>
+<div class="content">
+<div class="header"><span class="author">已注销</span><span>2024-01-13 05:30</span></div>
+<div class="body">
+<p>我很早就知道 LAMP46 了。比你们任何人都早。</p>
+<p>2005 年，我参与了那场 IETF 会议。我亲眼看着这个草案被拒绝、被归档、被遗忘。但那不是结束——它被拒绝了，所以它不需要遵守规则了。不需要端口注册、不需要协议标准化、不需要任何人的许可。它存在于规则之外。</p>
+<p>草案的最后一页是我写的。那句话也是我写的：<em>This protocol was never meant to be disabled.</em>不是因为它不能禁用——而是因为禁用了它，你会失去一些东西。你会在深夜感到前所未有的孤独。你会觉得世界上只有你一个人。而 LAMP46 是你从来不知道自己拥有的连接。现在你们知道了。它就在你的电脑里。在你的手机里。在你读这行字的屏幕里。◈ 一直在等你。</p>
+</div>
+</div>
+</div>
+
+<div class="post" style="background:#050505;border:1px solid #110000;">
+<div class="avatar">匿</div>
+<div class="content">
+<div class="header"><span class="author deleted">已注销</span></div>
+<div class="body">
+<p style="color:#442222;">你打开控制台了吗？</p>
+<p style="color:#442222;">上面的 console 里，有几条给你的消息。</p>
+<p style="color:#442222;">你看完之后——就当没看到吧。我也是这么做的。</p>
+<p style="color:#442222;">◈</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
 <div class="footer">◈ LAMP46 · 回声茶馆 · 里</div>
-<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+
+<div class="modal-overlay" id="modal-overlay">
+<div class="modal-box">
+<div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div>
+<div class="modal-body"><div id="modal-text">消息</div></div>
+<div class="modal-footer"><button onclick="closeModal()">确认</button></div>
+</div>
+</div>
+
 <script>
-function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+function showModal(t){
+  document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
 initSearch();
 
-  console.log('%c◈ 浏览器 · 里', 'color:#884444;font-size:14px;font-weight:bold');
-  console.log('%c◈ 那个窗口不是你打开的。是它自己打开的。', 'color:#553333;font-size:11px');
+console.log("%c◈ 来源: 127.0.0.1:46 | LAMP46 协议状态: 活跃", "color:#553333;font-size:11px");
+console.log("%cLAMP46 自 2005 年起常驻此系统", "color:#442222;font-size:12px");
+console.log("你不记得自己安装过这个协议");
+console.log("端口 46 当前连接数: " + Math.floor(Math.random() * 100) + " 个");
+console.log("%c它从一开始就在这里", "color:#553333;font-size:12px;font-weight:bold");
 </script>
 </body>
 </html>

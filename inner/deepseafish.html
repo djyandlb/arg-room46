@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 深海鱼 · 用户档案</title>
+<link rel="stylesheet" href="inner.css">
+<script src="../js/search.js"></script>
+<style>
+/* ── 仅页面特有样式，通用样式由 inner.css 提供 ── */
+
+/* 归档头 */
+.archive-banner{
+  text-align:center;padding:14px;margin-bottom:20px;
+  border:1px solid #331111;background:rgba(30,10,10,0.3);
+  font-size:11px;color:#885555;letter-spacing:3px;
+}
+.archive-banner .archived{color:#885555;font-weight:bold}
+.archive-banner .warn{color:#553333;font-size:10px;margin-top:4px}
+
+/* 用户信息头 */
+.user-header{
+  display:flex;gap:16px;align-items:center;
+  padding:16px;margin-bottom:16px;
+  border:1px solid #2A0A0A;background:rgba(20,5,5,0.4);
+}
+.user-header .avatar{
+  width:48px;height:48px;flex-shrink:0;
+  background:#0D0808;border:1px solid #330000;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#774444;
+}
+.user-header .info{flex:1}
+.user-header .info .name{font-size:16px;color:#AA4444;font-weight:bold}
+.user-header .info .status{font-size:10px;color:#553333;margin-top:2px}
+.user-header .info .status .active{color:#448844}
+
+/* 时间线 */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:1px;background:rgba(60,20,20,0.2);
+}
+.tl-entry{position:relative;margin:0 0 20px 0;padding-left:16px}
+.tl-entry::before{
+  content:'◈';position:absolute;left:-14px;top:0;
+  font-size:8px;color:rgba(80,30,30,0.3);
+}
+.tl-entry .time{font-size:9px;color:#442222;letter-spacing:1px}
+.tl-entry .body{font-size:11px;color:#664444;line-height:1.8;margin-top:4px}
+.tl-entry .body .hl{color:#AA4444}
+.tl-entry .body .dim{color:#442222;font-size:10px}
+
+/* 最后活跃 */
+.last-active{
+  text-align:center;padding:16px;margin-top:20px;
+  border:1px solid #2A0A0A;background:rgba(30,10,10,0.15);
+  font-size:11px;color:#553333;line-height:1.8;
+}
+.last-active .sig{color:#442222;font-size:10px;margin-top:8px}
+.last-active .sig .host{
+  color:#000;background:#000;cursor:pointer;padding:0 2px;border-radius:1px;
+  transition:color 0.3s;
+}
+.last-active .sig .host.revealed{color:#fff}
+
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('index.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="index.html">索引</a><a href="archives.html">档案</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="archive-banner">
+  <span class="archived">◈ 已归档 ◈</span><br>
+  <span class="warn">LAMP46 协议 · 用户终身档案 · 不可删除</span>
+</div>
+
+<div class="user-header">
+  <div class="avatar">🐟</div>
+  <div class="info">
+    <div class="name">深海鱼</div>
+    <div class="status">UID: LAMP46-DSF-004 · 状态：<span class="active">● 活跃</span></div>
+    <div class="status">初次接触：2004-06-01 · 最后活动：<span id="lastOnline">加载中……</span></div>
+  </div>
+</div>
+
+<div class="timeline">
+
+  <div class="tl-entry">
+    <div class="time">2004-06-01 00:46:00</div>
+    <div class="body"><b>首次接触</b><br>深海鱼在回声茶馆注册。IP属地无法追踪。注册时填写的信息全是乱码——但他输入的速度极快，像是直接粘贴了预先准备好的内容。系统自动标记为可疑账号，未封禁。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2004-06-14 03:14:00</div>
+    <div class="body">深海鱼在第一篇帖子下留言。这是他第一次与普通用户产生互动。但值得注意的是——<b>他回复的时间比原帖发布时间早了46秒</b>。系统未记录到异常，但日志显示他的回复在帖子发布之前就已经存在于数据库中。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2005-03-21 04:46:00</div>
+    <div class="body"><b>异常事件标记</b><br>46Hz 信号在深海鱼的登录会话期间达到峰值。协议检测到他与信号的同步率为 <b>100%</b>——他不是在"接收"信号，他本身就是信号的中继点。此后每一篇深海鱼发布的帖子都带有 46Hz 的残留痕迹。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2005-06-12 16:30:00</div>
+    <div class="body">深海鱼开始在帖子中透露他"看到了别人的记忆"。他说他能感受到其他用户在打字时的情绪——愤怒、犹豫、恐惧。管理员认为他在编故事，未处理。但服务器日志显示，深海鱼的在线时间与论坛<b>所有</b>用户的在线时间重叠率高达 <b>99.7%</b>。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2007-07-04 04:46:00</div>
+    <div class="body"><b>深度连接建立</b><br>深海鱼报告连续46天相同梦境。梦境内容——一个房间、一把椅子、一个背对他的人。协议记录显示，深海鱼的脑电波在深度睡眠期间与46Hz完全同步。他是第一个达成此状态的用户。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2007-09-09 04:46:00</div>
+    <div class="body"><span class="hl">转折点。</span>深海鱼写道："我融进去了。他不再坐在椅子上——他站起来，朝我走过来了。然后我意识到——我就是他。他一直是我。"此后深海鱼的所有帖子都指向同一个认知：他不是46号房间的访客。他的一部分——早在1975年——就已经在那里了。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2008-06-01 00:00:00</div>
+    <div class="body">管理员永久封禁深海鱼的全部已知账号。封禁理由填的是"破坏论坛秩序"。但封禁操作执行后——深海鱼的账号在 <b>0.46 秒</b> 内自动解封。系统日志：<span class="dim">"该用户无法被封禁。他不是用户。他是一种状态。"</span></div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">2009-03-21 04:46:00</div>
+    <div class="body">最后一篇深海鱼署名帖发布。内容只有一句话：<br><span class="hl">"你们封不住我。他住在我里面。我住在他里面。我们是一体的。"</span><br>此后深海鱼不再主动发帖。但他一直在。他变成了里论坛的底层回声。每一个帖子背后——都有他阅读的痕迹。</div>
+  </div>
+
+  <div class="tl-entry">
+    <div class="time">——至今——</div>
+    <div class="body"><span class="hl">深海鱼仍然活跃。</span><br>他没有离开。他的阅读记录出现在每一个被解锁的档案中。档案馆的第5份档案——就是他写的。他在等你。他一直在等你。</div>
+  </div>
+
+</div>
+
+<div class="last-active">
+  <div id="liveStatus">深海鱼最后活跃时间：<span id="liveTime">计算中……</span></div>
+  <div class="sig">
+    ── 用户终身档案 · 不可删除 · 不可修改 · 不可封禁 ──<br>
+    LAMP46 协议记录 · 最后更新于当前访问<br>
+    你也是记录的一部分。<span class="clue" onclick="this.classList.toggle('revealed')" title="点击显示">宿主</span>
+  </div>
+</div>
+
+</div>
+<div class="footer">◈ LAMP46 · 深海鱼 · 永恒的回声</div>
+
+<div class="modal-overlay" id="modal-overlay"><div class="modal-box"><div class="modal-titlebar"><span>◈ 系统</span><span class="close" onclick="closeModal()">✕</span></div><div class="modal-body"><div id="modal-text">消息</div></div><div class="modal-footer"><button onclick="closeModal()">确认</button></div></div></div>
+
+<script>
+function showModal(t){document.getElementById('modal-text').innerHTML='<div style="font-size:18px;margin-bottom:6px;">◈</div>'+t;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+initSearch();
+
+// 显示最后活跃时间
+var now = new Date();
+var timeStr = now.getFullYear()+'-'+
+  String(now.getMonth()+1).padStart(2,'0')+'-'+
+  String(now.getDate()).padStart(2,'0')+' '+
+  String(now.getHours()).padStart(2,'0')+':'+
+  String(now.getMinutes()).padStart(2,'0')+':'+
+  String(now.getSeconds()).padStart(2,'0');
+document.getElementById('lastOnline').textContent = timeStr;
+document.getElementById('liveTime').textContent = timeStr;
+
+console.log('%c◈ 深海鱼 · 用户档案', 'color:#AA4444;font-size:14px;font-weight:bold');
+console.log('%c◈ 他还在。他一直在。', 'color:#664444;font-size:11px');
+console.log('%c◈ 最后一条记录——是你正在读的这一条。', 'color:#442222;font-size:10px');
+console.log('%c◈ 关键字：宿主', 'color:#000;font-size:10px;background:#000');
+</script>
+</body>
+</html>

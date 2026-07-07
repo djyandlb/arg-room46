@@ -102,27 +102,33 @@ function doSearch() {
   if (!q) return;
   var prefix = getSearchPrefix();
   var ql = q.toLowerCase();
+  var url = '' + window.location;
 
   // 特殊分流：深海鱼 — 表论坛搜去 surface, 里论坛搜去 inner
   if (ql.indexOf('深海鱼') !== -1) {
-    var target = prefix === '../' ? 'inner/deepseafish.html' : 'surface/deepseafish.html';
+    var isInner = url.indexOf('/inner/') !== -1;
+    var target = isInner ? 'inner/deepseafish.html' : 'surface/deepseafish.html';
     addSearchHistory(q, target);
     safeNavigate(prefix + target);
     return;
   }
 
   // 特殊分流：Intuitive — 仅限 inner
-  if ((ql.indexOf('intuitive') !== -1 || ql.indexOf('直觉') !== -1) && prefix === '../') {
-    addSearchHistory(q, 'intuitive.html');
-    safeNavigate('../inner/intuitive.html');
-    return;
+  if ((ql.indexOf('intuitive') !== -1 || ql.indexOf('直觉') !== -1)) {
+    if (url.indexOf('/inner/') !== -1) {
+      addSearchHistory(q, 'intuitive.html');
+      safeNavigate('../inner/intuitive.html');
+      return;
+    }
   }
 
   // 特殊分流：自己 — 仅限 inner
-  if (ql.indexOf('自己') !== -1 && prefix === '../') {
-    addSearchHistory(q, 'self.html');
-    safeNavigate('../inner/self.html');
-    return;
+  if (ql.indexOf('自己') !== -1) {
+    if (url.indexOf('/inner/') !== -1) {
+      addSearchHistory(q, 'self.html');
+      safeNavigate('../inner/self.html');
+      return;
+    }
   }
 
   var keys = Object.keys(SEARCH_MAP).sort(function(a,b){return b.length - a.length;});

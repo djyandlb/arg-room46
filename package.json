@@ -1,0 +1,9 @@
+{
+  "name": "room46-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "回声茶馆 · Room46 ARG 游戏",
+  "scripts": {
+    "build": "echo '纯静态项目，无需构建'"
+  }
+}

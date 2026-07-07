@@ -14,8 +14,11 @@ var SEARCH_MAP = {
   'Room46':       'blank/blank-room.html',
   '这扇门':       'blank/blank-door.html',
   '镜像':         'blank/blank-mirror.html',
+  'surface/tutorial.html':            'extra',
   '倒影':         'blank/blank-mirror.html',
+  'surface/tutorial.html':            'extra',
   '正反':         'blank/blank-mirror.html',
+  'surface/tutorial.html':            'extra',
   '46Hz':        'blank/blank-signal.html',
   '信号':         'blank/blank-signal.html',
   '遗忘':         'blank/blank-forgotten.html',
@@ -285,6 +288,7 @@ var EXTRA_MAP = {
   'inner/self.html':                  'easter egg',
   'inner/eye.html':                   'easter egg',
   'blank/blank-mirror.html':          'easter egg',
+  'surface/tutorial.html':            'extra',
 };
 
 /* ── 所有页面统一顺序（表论坛→里论坛→最后记录） ── */
@@ -328,12 +332,16 @@ function injectPageLabel() {
     else if (url.indexOf('/decode/') !== -1) prefix = 'decode/';
     else if (url.indexOf('/ending/') !== -1) prefix = 'ending/';
     var pageKey = prefix + filename;
+    // 兼容无 .html 后缀的 URL（Cloudflare 等部署环境）
+    if (filename.indexOf('.html') === -1 && filename.indexOf('.') === -1) { filename = filename + '.html'; }
 
     // 特殊目录：显示固定标签
     if (prefix === 'gateway/') { createLabel('路径', 'extra'); return; }
     if (prefix === 'blank/')   { createLabel('Blank', 'extra'); return; }
     if (prefix === 'decode/')  { createLabel('解码页', 'extra'); return; }
     if (prefix === 'ending/')  { createLabel('结局', 'egg'); return; }
+    // 教程页面：显示"教程"
+    if (filename === 'tutorial.html') { createLabel('教程', 'extra'); return; }
 
     // 统一顺序查找
     for (var i = 0; i < ALL_PAGES.length; i++) {

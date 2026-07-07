@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>◈ 教程 · 回声茶馆 ARG 解谜指南</title>
+<script src="../js/search.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:13px/1.8 Verdana,sans-serif;background:#F0F0F0;color:#333;min-height:100vh}
+::selection{background:#0D3050;color:#fff}
+::-webkit-scrollbar{width:6px;background:#F0F0F0}
+::-webkit-scrollbar-thumb{background:#C0C0C0;border-radius:3px}
+.topbar{background:#0D3050;padding:6px 16px;display:flex;align-items:center;gap:24px;border-bottom:2px solid #0A2440;flex-wrap:wrap}
+.topbar .logo{font:bold 18px "Times New Roman",serif;color:#FFD700;letter-spacing:2px;cursor:pointer;text-shadow:1px 1px 0 #000}
+.topbar .logo span{color:#8AB8D9}
+.topbar .back-btn{display:inline-block;padding:2px 10px;margin-left:10px;font:10px monospace;color:#8AB8D9;border:1px solid #4A7A9A;background:transparent;cursor:pointer;text-decoration:none;transition:all 0.2s}
+.topbar .back-btn:hover{color:#fff;border-color:#8AB8D9;background:#1A4A70}
+.topbar .nav{margin-left:auto;display:flex;gap:2px}
+.topbar .nav a{color:#A0C8E0;font-size:11px;margin:0 10px;transition:color 0.2s}
+.topbar .nav a:hover{color:#fff;text-decoration:underline}
+.search-bar{background:#F0F2F5;padding:10px 16px;border-bottom:1px solid #C0C0C0;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:360px;padding:5px 8px;border:1px solid #C0C0C0;font:11px Verdana,sans-serif;color:#333;background:#fff;outline:none}
+.search-bar input:focus{border-color:#0D3050}
+.search-bar button{padding:4px 14px;background:#0D3050;border:1px solid #0A2440;color:#fff;font:10px Verdana,sans-serif;cursor:pointer}
+.search-bar button:hover{background:#1A4A70}
+.container{max-width:800px;margin:0 auto;padding:20px 20px 40px;animation:fadeIn 0.4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.breadcrumb{font-size:10px;color:#888;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #E0E0E0}
+.breadcrumb a{color:#0000CC;text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.title{font-size:20px;color:#0D3050;margin-bottom:4px;letter-spacing:1px}
+.subtitle{font-size:11px;color:#888;margin-bottom:24px}
+.panel{background:#fff;border:1px solid #D0D0D0;margin-bottom:16px}
+.panel-header{background:#F0F2F5;padding:8px 12px;font-size:10px;color:#666;border-bottom:1px solid #D0D0D0;font-weight:bold;letter-spacing:1px}
+.panel-body{padding:12px 16px;font-size:12px;line-height:2;color:#444}
+.panel-body h4{color:#0D3050;font-size:13px;margin:16px 0 6px;border-left:3px solid #0D3050;padding-left:8px}
+.panel-body h4:first-child{margin-top:0}
+.panel-body p{margin:6px 0;text-indent:2em}
+.panel-body .hl{color:#CC0000;font-weight:bold}
+.panel-body .hl-b{color:#0000CC;font-weight:bold}
+.panel-body .key{background:#FFF8E0;border:1px solid #E0C800;padding:1px 6px;font-family:Courier New,monospace;font-size:11px;border-radius:2px}
+.panel-body .tip{background:#F8FFF8;border:1px solid #C0E0C0;padding:8px 12px;margin:8px 0;font-size:11px;color:#555;border-radius:2px}
+.panel-body .tip b{color:#0D3050}
+.panel-body ul{margin:6px 0 6px 20px;list-style:none}
+.panel-body ul li{padding:3px 0;position:relative}
+.panel-body ul li::before{content:"▸";color:#0D3050;position:absolute;left:-14px}
+.panel-body .step-box{background:#F8FAFC;border:1px solid #D0D8E0;padding:10px 14px;margin:8px 0;border-radius:2px}
+.panel-body .step-box .step-num{display:inline-block;width:20px;height:20px;background:#0D3050;color:#fff;text-align:center;line-height:20px;font-size:10px;font-weight:bold;margin-right:6px;border-radius:2px}
+.footer{text-align:center;padding:16px;font-size:9px;color:#888;border-top:1px solid #E0E0E0;margin-top:24px}
+@media(max-width:600px){
+  .container{padding:12px}
+  .title{font-size:17px}
+  .panel-body{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo" onclick="safeNavigate('../forum.html')">◈ <span>回声</span>茶馆</div>
+  <a href="#" onclick="history.back();return false;" class="back-btn">← 返回</a>
+  <div class="nav"><a href="../forum.html">首页</a></div>
+</div>
+<div class="search-bar"><input type="text" id="search-input" placeholder="搜索…"><button id="search-btn">搜索</button></div>
+<div class="container">
+
+<div class="breadcrumb">◈ <a href="../forum.html">回声茶馆</a> &gt; 教程</div>
+<div class="title">◈ 回声茶馆 ARG 解谜指南</div>
+<div class="subtitle">欢迎来到回声茶馆 · 这里有你想知道的一切</div>
+
+<div class="panel">
+  <div class="panel-header">◈ 什么是「回声茶馆」？</div>
+  <div class="panel-body">
+    <p>回声茶馆是一个 <span class="hl">ARG</span>（替代现实游戏）解谜项目。它伪装成一个千禧年风格的网络论坛，但实际上——它是一个巨大的、层层嵌套的谜题盒。</p>
+    <p>你在这个论坛中看到的一切——帖子、回复、用户、页面——都可能是谜题的一部分。没有什么是不重要的。每一个数字、每一段代码注释、每一张图片——都可能是通往下一层的钥匙。</p>
+    <p class="tip"><b>核心原则：</b>这不是一个普通的论坛。它是一个会回应你的东西。你搜索的每一个关键词——都可能打开一扇门。</p>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">◈ 基本玩法</div>
+  <div class="panel-body">
+    <h4>搜索是你最强大的工具</h4>
+    <p>页面顶部的 <span class="key">搜索框</span> 是贯穿整个游戏的核心交互方式。你在论坛中看到的每一个可疑的词语、名字、编号——都应该试试搜一下。</p>
+    <p>例如：你在某个帖子里看到了一个奇怪的词，把它复制到搜索框里按回车——你可能就会被带到另一个隐藏页面。</p>
+
+    <h4>关注控制台</h4>
+    <p>按 <span class="key">F12</span> 打开开发者工具，查看 Console（控制台）。很多页面在加载时会向控制台输出隐藏信息。</p>
+
+    <h4>点击一切看起来可以点击的东西</h4>
+    <p>有些文字是黑底黑字的——选中它们或点击它们，可能会揭示隐藏内容。有疑问的地方就点点看。</p>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">◈ 右下角的数字</div>
+  <div class="panel-body">
+    <p>每个页面右下角会显示一个 <span class="key">X / 50</span> 样式的编号。这个编号表示你在整个流程中的探索进度。</p>
+    <p>编号越大，越接近结局。<span class="hl">50 / 50</span> 是最终的记录页——它会在你完成足够多的探索后解锁。</p>
+    <p>某些目录（如解码页、空白页）会显示固定标签，因为它们是独立于主线之外的。</p>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">◈ 开始探索</div>
+  <div class="panel-body">
+    <p>准备好了？从论坛的帖子开始读起吧。</p>
+    <p>第一篇推荐阅读的帖子是 <span class="hl-b">「回音——它在回答你。你确定要听吗？」</span>——那里有一个用摩斯码隐藏的信息。</p>
+    <p>你不需要一次性理解所有东西。谜题是层层递进的。如果你卡住了——换个词搜索。</p>
+    <p style="text-align:center;color:#888;margin-top:16px;text-indent:0;">◈ 回声茶馆 · 每一次回声都在等你 ◈</p>
+  </div>
+</div>
+
+</div>
+<div class="footer">◈ 回声茶馆 · ARG 解谜指南 · 新手必读</div>
+
+<script>
+initSearch();
+
+console.log('%c◈ 回声茶馆 · 新手教程', 'color:#0D3050;font-size:14px;font-weight:bold');
+console.log('%c◈ 你已经迈出了第一步。剩下的路——都在搜索框里。', 'color:#666;font-size:11px');
+console.log('%c◈ 记住：没有什么是不重要的。', 'color:#888;font-size:10px');
+</script>
+</body>
+</html>
